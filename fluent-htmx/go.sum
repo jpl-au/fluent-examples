@@ -1,0 +1,6 @@
+github.com/jpl-au/chain v0.1.1 h1:uG9SnMswbiGb3WFVwrM2B6LNhIZvH2cmbWHGWg6qj0k=
+github.com/jpl-au/chain v0.1.1/go.mod h1:8QebLCICdoF101FfiobEIndqgh3Yrljqb4EEQLyG/Qc=
+github.com/klauspost/compress v1.17.9 h1:6KIumPrER1LHsvBVuDa0r5xaG0Es51mhhB9BQB2qeMA=
+github.com/klauspost/compress v1.17.9/go.mod h1:Di0epgTjJY877eYKx5yC51cX2A2Vl2ibi7bDH9ttBbw=
+github.com/lxzan/gws v1.9.0 h1:my3sfqb0GjwP+gRONjNWVzcBrpud0IP3vj9soIt9pXo=
+github.com/lxzan/gws v1.9.0/go.mod h1:gXHSCPmTGryWJ4icuqy8Yho32E4YIMHH0fkDRYJRbdc=

@@ -1,0 +1,729 @@
+/* Contact Manager
+ *
+ * Dark theme matching the tether feature explorer. oklch colour
+ * space with cool charcoal backgrounds and warm amber accents.
+ * All colours defined as design tokens in :root.
+ */
+
+/* Inter variable font - bundled locally, no CDN dependency. */
+@font-face {
+  font-family: "InterVariable";
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: swap;
+  src: url("fonts/inter/InterVariable.woff2") format("woff2");
+}
+@font-face {
+  font-family: "InterVariable";
+  font-style: italic;
+  font-weight: 100 900;
+  font-display: swap;
+  src: url("fonts/inter/InterVariable-Italic.woff2") format("woff2");
+}
+
+/* JetBrains Mono variable font - bundled locally, no CDN dependency. */
+@font-face {
+  font-family: "JetBrains Mono";
+  font-style: normal;
+  font-weight: 100 800;
+  font-display: swap;
+  src: url("fonts/jetbrains-mono/JetBrainsMono-Variable.woff2") format("woff2");
+}
+@font-face {
+  font-family: "JetBrains Mono";
+  font-style: italic;
+  font-weight: 100 800;
+  font-display: swap;
+  src: url("fonts/jetbrains-mono/JetBrainsMono-Variable-Italic.woff2") format("woff2");
+}
+
+/* ------------------------------------------------------------------ */
+/* Design tokens                                                      */
+/* ------------------------------------------------------------------ */
+
+:root {
+  /* Backgrounds - cool charcoal */
+  --background:    oklch(0.17 0.008 260);
+  --foreground:    oklch(0.985 0.005 75);
+  --card:          oklch(0.215 0.008 260);
+  --card-fg:       oklch(0.985 0.005 75);
+
+  /* Primary - lifted dark surface, white text */
+  --primary:       oklch(0.32 0.015 260);
+  --primary-fg:    oklch(0.985 0.005 75);
+  --primary-hover: oklch(0.38 0.015 260);
+  --primary-border: oklch(1 0 0 / 18%);
+
+  /* Secondary - a step below primary, more muted */
+  --secondary:     oklch(0.26 0.008 260);
+  --secondary-fg:  oklch(0.78 0.010 260);
+  --secondary-hover: oklch(0.32 0.010 260);
+
+  /* Muted */
+  --muted:         oklch(0.27 0.008 260);
+  --muted-fg:      oklch(0.68 0.010 260);
+  --accent:        oklch(0.36 0.010 260);
+  --accent-fg:     oklch(0.985 0.005 75);
+
+  /* Accents */
+  --accent-rose:        oklch(0.65 0.12 12);
+  --accent-rose-muted:  oklch(0.30 0.04 12);
+  --accent-purple:      oklch(0.65 0.08 300);
+
+  /* Feedback */
+  --destructive:   oklch(0.704 0.191 22.216);
+  --danger:        oklch(0.45 0.15 25);
+  --danger-fg:     oklch(0.95 0.02 25);
+  --danger-border: oklch(0.55 0.18 25);
+  --danger-hover:  oklch(0.5 0.17 25);
+  --success:       oklch(0.72 0.17 142);
+
+  /* Borders */
+  --border:        oklch(1 0 0 / 10%);
+  --input:         oklch(1 0 0 / 14%);
+  --ring:          oklch(0.58 0.02 75);
+  --ring-shadow:   oklch(0.58 0.02 75 / 30%);
+  --hover-border:  oklch(1 0 0 / 18%);
+  --radius:        0.625rem;
+  --mono:          "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+}
+
+/* ------------------------------------------------------------------ */
+/* Reset & base                                                       */
+/* ------------------------------------------------------------------ */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  font-family: "InterVariable", ui-sans-serif, system-ui, -apple-system,
+    BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+  font-size: 16px;
+  line-height: 1.5;
+  color: var(--foreground);
+  background: var(--background);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.shell {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+a {
+  color: var(--foreground);
+  text-decoration: none;
+}
+a:hover {
+  color: var(--foreground);
+}
+
+img,
+svg {
+  display: block;
+  max-width: 100%;
+}
+
+/* ------------------------------------------------------------------ */
+/* Layout                                                             */
+/* ------------------------------------------------------------------ */
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 4rem;
+  padding: 0 2rem;
+  border-bottom: 1px solid var(--border);
+  background: var(--card);
+}
+
+.header-left {
+  display: flex;
+  align-items: center;
+  align-self: stretch;
+  gap: 0.75rem;
+}
+
+.header-brand {
+  display: flex;
+  align-items: center;
+  align-self: stretch;
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--accent-rose);
+  letter-spacing: -0.025em;
+  padding-right: 1rem;
+  border-right: 1px solid var(--border);
+}
+
+.header-title {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--foreground);
+  padding-left: 1rem;
+}
+
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.content {
+  padding: 2.5rem;
+  max-width: 56rem;
+  margin: 0 auto;
+}
+
+.page {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+/* ------------------------------------------------------------------ */
+/* Cards                                                              */
+/* ------------------------------------------------------------------ */
+
+.card {
+  background: var(--card);
+  border-radius: var(--radius);
+  padding: 1.75rem;
+  border: 1px solid var(--border);
+  transition: border-color 150ms;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  font-size: 0.8125rem;
+}
+.card:hover {
+  border-color: var(--hover-border);
+}
+
+.card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: -0.25rem;
+}
+
+.card-title {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--card-fg);
+}
+
+/* When card-title is a direct child (no card-header), preserve spacing */
+.card > .card-title {
+  margin-bottom: -0.25rem;
+}
+
+/* ------------------------------------------------------------------ */
+/* Buttons                                                            */
+/* ------------------------------------------------------------------ */
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.375rem;
+  padding: 0.375rem 0.625rem;
+  border-radius: 0.375rem;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  line-height: 1.5rem;
+  border: 1px solid var(--border);
+  cursor: pointer;
+  white-space: nowrap;
+  text-decoration: none;
+  transition: background 150ms, border-color 150ms, color 150ms, opacity 150ms;
+}
+.btn:focus-visible {
+  outline: 2px solid var(--ring);
+  outline-offset: 2px;
+}
+
+.btn-primary {
+  background: var(--primary);
+  color: var(--primary-fg);
+  border-color: var(--primary-border);
+}
+.btn-primary:hover {
+  background: var(--primary-hover);
+}
+
+.btn-secondary {
+  background: var(--secondary);
+  color: var(--secondary-fg);
+}
+.btn-secondary:hover {
+  background: var(--secondary-hover);
+  color: var(--primary-fg);
+}
+
+.btn-danger {
+  background: var(--danger);
+  color: var(--danger-fg);
+  border-color: var(--danger-border);
+}
+.btn-danger:hover {
+  background: var(--danger-hover);
+}
+
+.btn-link {
+  background: transparent;
+  color: var(--foreground);
+  border: none;
+  padding: 0;
+  font-weight: 500;
+}
+.btn-link:hover {
+  color: var(--foreground);
+}
+
+.btn-sm {
+  padding: 0.25rem 0.5rem;
+  font-size: 0.75rem;
+}
+
+/* Layout components */
+.layout-row {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+.layout-stack {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.75rem;
+}
+
+/* ------------------------------------------------------------------ */
+/* Forms                                                              */
+/* ------------------------------------------------------------------ */
+
+.input,
+input[type="text"],
+input[type="email"],
+input[type="tel"],
+textarea {
+  display: block;
+  max-width: 24rem;
+  width: 100%;
+  padding: 0.375rem 0.75rem;
+  border: 1px solid var(--input);
+  border-radius: 0.375rem;
+  font-size: 0.875rem;
+  line-height: 1.5rem;
+  color: var(--foreground);
+  background: transparent;
+  transition: border-color 150ms, box-shadow 150ms;
+}
+.input:focus,
+input:focus,
+textarea:focus {
+  border-color: var(--ring);
+  box-shadow: 0 0 0 2px var(--ring-shadow);
+  outline: none;
+}
+.input::placeholder,
+input::placeholder,
+textarea::placeholder {
+  color: var(--muted-fg);
+}
+
+textarea.input {
+  min-height: 5rem;
+  resize: vertical;
+}
+
+.label {
+  display: block;
+  font-size: 0.875rem;
+  font-weight: 500;
+  line-height: 1.5rem;
+  color: var(--foreground);
+}
+
+/* Forms inside cards get vertical spacing between children */
+form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.375rem;
+}
+
+/* ------------------------------------------------------------------ */
+/* Row layout                                                         */
+/* ------------------------------------------------------------------ */
+
+.row {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+/* ------------------------------------------------------------------ */
+/* Text helpers                                                       */
+/* ------------------------------------------------------------------ */
+
+.hint {
+  font-family: var(--mono);
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  color: var(--muted-fg);
+}
+
+.result-text {
+  font-size: 0.8125rem;
+  color: var(--foreground);
+}
+
+.result-muted {
+  color: var(--muted-fg);
+}
+
+/* ------------------------------------------------------------------ */
+/* Contact list                                                       */
+/* ------------------------------------------------------------------ */
+
+.contact-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.contact-item {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid var(--border);
+  transition: background 150ms;
+}
+.contact-item:last-child {
+  border-bottom: none;
+}
+.contact-item:hover {
+  background: var(--secondary);
+}
+
+.contact-name {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--foreground);
+  text-decoration: none;
+  min-width: 10rem;
+}
+.contact-name:hover {
+  color: var(--foreground);
+}
+
+.contact-email {
+  color: var(--muted-fg);
+  font-size: 0.875rem;
+  flex: 1;
+}
+
+.contact-notes {
+  font-size: 0.75rem;
+  color: var(--muted-fg);
+  font-family: var(--mono);
+}
+
+/* ------------------------------------------------------------------ */
+/* Contact detail                                                     */
+/* ------------------------------------------------------------------ */
+
+.contact-detail {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.contact-field {
+  display: flex;
+  gap: 0.75rem;
+  font-size: 0.8125rem;
+}
+
+.contact-field-label {
+  font-weight: 500;
+  color: var(--foreground);
+  min-width: 5rem;
+}
+
+.contact-field-value {
+  color: var(--muted-fg);
+}
+
+/* ------------------------------------------------------------------ */
+/* Note list                                                          */
+/* ------------------------------------------------------------------ */
+
+.note-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.note-item {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.75rem 1rem;
+  background: var(--muted);
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+}
+
+.note-content {
+  font-size: 0.8125rem;
+  color: var(--foreground);
+  line-height: 1.5;
+  flex: 1;
+}
+
+.note-meta {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-shrink: 0;
+}
+
+.note-time {
+  font-size: 0.75rem;
+  color: var(--muted-fg);
+  font-family: var(--mono);
+  white-space: nowrap;
+}
+
+/* Note delete form - override the global form flex to stay inline */
+.note-item form {
+  display: inline;
+  gap: 0;
+  flex-direction: row;
+}
+
+/* ------------------------------------------------------------------ */
+/* Contact detail                                                     */
+/* ------------------------------------------------------------------ */
+
+.detail-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.detail-row {
+  display: flex;
+  gap: 0.75rem;
+  font-size: 0.8125rem;
+}
+
+.detail-label {
+  font-weight: 500;
+  color: var(--foreground);
+  min-width: 5rem;
+}
+
+.detail-value {
+  color: var(--muted-fg);
+}
+
+/* Header action groups - multiple buttons side by side in the header */
+.header-actions-group {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+/* ------------------------------------------------------------------ */
+/* Dropdown menu                                                      */
+/* ------------------------------------------------------------------ */
+
+.menu {
+  position: relative;
+}
+
+.menu-trigger {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  border-radius: 0.375rem;
+  font-size: 1.25rem;
+  color: var(--muted-fg);
+  cursor: pointer;
+  transition: background 150ms, color 150ms;
+  user-select: none;
+}
+.menu-trigger:hover {
+  background: var(--secondary);
+  color: var(--foreground);
+}
+
+.menu-dropdown {
+  display: none;
+  position: absolute;
+  top: 100%;
+  right: 0;
+  z-index: 10;
+  min-width: 10rem;
+  margin-top: 0.25rem;
+  padding: 0.25rem 0;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: 0 4px 12px oklch(0 0 0 / 30%);
+}
+
+.menu-dropdown.menu-open {
+  display: flex;
+  flex-direction: column;
+}
+
+.menu-item {
+  display: block;
+  padding: 0.5rem 0.75rem;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: var(--foreground);
+  text-decoration: none;
+  transition: background 150ms;
+  cursor: pointer;
+  border: none;
+  background: none;
+  text-align: left;
+  width: 100%;
+}
+.menu-item:hover {
+  background: var(--secondary);
+  color: var(--foreground);
+}
+
+.menu-item-danger {
+  color: var(--destructive);
+}
+.menu-item-danger:hover {
+  background: var(--danger);
+  color: var(--danger-fg);
+}
+
+/* Reset form styling inside menu items */
+.menu-form {
+  display: contents;
+  gap: 0;
+  flex-direction: row;
+}
+
+/* ------------------------------------------------------------------ */
+/* Sticky footer                                                      */
+/* ------------------------------------------------------------------ */
+
+.footer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  padding: 0.75rem 2rem;
+  border-top: 1px solid var(--border);
+  background: var(--card);
+  font-size: 0.75rem;
+  margin-top: auto;
+}
+
+.footer-link {
+  color: var(--muted-fg);
+  text-decoration: none;
+  transition: color 150ms;
+}
+.footer-link:hover {
+  color: var(--foreground);
+}
+
+.footer-sep {
+  color: var(--muted-fg);
+}
+
+/* Connection status indicators */
+.status-connecting  { color: var(--muted-fg); font-size: 0.8125rem; }
+.status-connected   { color: var(--success); font-size: 0.8125rem; }
+.status-disconnected { color: var(--destructive); font-size: 0.8125rem; }
+.status-reconnecting { color: oklch(0.65 0.15 250); font-size: 0.8125rem; }
+
+/* ------------------------------------------------------------------ */
+/* Live log feed                                                      */
+/* ------------------------------------------------------------------ */
+
+.log-feed {
+  max-height: 24rem;
+  overflow-y: auto;
+  background: var(--background);
+  border: 1px solid var(--border);
+  border-radius: 0.375rem;
+  padding: 0.5rem;
+  font-family: var(--mono);
+  font-size: 0.75rem;
+  line-height: 1.625;
+}
+
+.log-entry {
+  display: flex;
+  gap: 0.5rem;
+  padding: 0.25rem 0.375rem;
+  border-bottom: 1px solid oklch(1 0 0 / 4%);
+}
+.log-entry:last-child {
+  border-bottom: none;
+}
+
+.log-time {
+  color: var(--muted-fg);
+  flex-shrink: 0;
+}
+
+.log-level {
+  font-weight: 600;
+  flex-shrink: 0;
+  min-width: 3.5rem;
+}
+.log-level-INFO  { color: oklch(0.72 0.10 200); }
+.log-level-WARN  { color: oklch(0.78 0.12 75); }
+.log-level-ERROR { color: var(--destructive); }
+.log-level-DEBUG { color: var(--muted-fg); }
+
+.log-message {
+  color: var(--foreground);
+  flex-shrink: 0;
+}
+
+.log-attrs {
+  color: var(--muted-fg);
+}
