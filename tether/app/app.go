@@ -79,7 +79,7 @@ func New(ctx context.Context, assets *tether.Asset) (http.Handler, []tether.Drai
 	valuestoreHandler := valuestore.New(app, assets)
 	groupsHandler := groups.New(app, assets)
 
-	// Freeze demo - FreezeOnDisconnect with SessionStore.
+	// Freeze demo - FreezeWithConnect with SessionStore.
 	freezeHandler := freeze.New(app, assets)
 
 	// Signal demos - WS and SSE variants.

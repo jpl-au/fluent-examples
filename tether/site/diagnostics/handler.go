@@ -100,6 +100,11 @@ func New(app tether.App, assets *tether.Asset) *tether.Handler[State] {
 			}),
 		),
 
+		// Keep the session alive after a panic so the diagnostic event
+		// appears in the feed. In production, leave OnPanic nil to
+		// destroy the session (the safe default).
+		OnPanic: func(_ *tether.StatefulSession[State], _ error) {},
+
 		OnConnect: func(sess *tether.StatefulSession[State]) {
 			slog.Info("diagnostics: connected", "id", sess.ID())
 			shared.TrackPresence(presence, sess.ID())
@@ -118,8 +123,9 @@ func Handle(_ tether.Session, s State, ev tether.Event) State {
 	switch ev.Action {
 	case "diag.trigger-panic":
 		// The framework recovers this panic and emits a
-		// HandlerPanic diagnostic - the event appears in the
-		// feed without crashing the session.
+		// HandlerPanic diagnostic. The session survives because
+		// OnPanic is set above. Without OnPanic, the session
+		// would be destroyed (the safe default).
 		panic("deliberate panic to demonstrate HandlerPanic diagnostic")
 	}
 	return s

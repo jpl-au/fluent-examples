@@ -28,9 +28,10 @@ type State struct {
 
 var freezePresence = shared.NewPresenceCountOnly()
 
-// New creates a handler with FreezeOnDisconnect enabled. On
-// disconnect the session is frozen (state persisted, memory
-// released). On reconnect the counter is restored from the store.
+// New creates a handler with FreezeWithConnect enabled. On disconnect
+// the session is frozen (state persisted, memory released). On
+// reconnect the counter is restored from the store and OnConnect
+// fires as the restore callback.
 func New(app tether.App, assets *tether.Asset) *tether.Handler[State] {
 	sessionStore := store.NewFileSessionStore("tmp/freeze-sessions")
 	diffStore := store.NewFileDiffStore("tmp/freeze-diffs")
@@ -60,7 +61,7 @@ func New(app tether.App, assets *tether.Asset) *tether.Handler[State] {
 			).Lang("en")
 		},
 
-		FreezeOnDisconnect: true,
+		Freeze: tether.FreezeWithConnect,
 		SessionStore:       sessionStore,
 		DiffStore:          diffStore,
 

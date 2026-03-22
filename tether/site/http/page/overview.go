@@ -70,7 +70,7 @@ func OverviewRender(_ state.State) node.Node {
 				toc.Item(toc.Link("/configuration/", "Configuration"), "tether.Value, WatchValue, configuration sync"),
 				toc.Item(toc.Link("/valuestore/", "Value Store"), "tether.Value, Store, Update, WatchValue"),
 				toc.Item(toc.Link("/groups/", "Groups"), "tether.Group, Broadcast, BroadcastOthers, OnJoin, OnLeave"),
-				toc.Item(toc.Link("/freeze/", "Freeze & Restore"), "FreezeOnDisconnect, SessionStore"),
+				toc.Item(toc.Link("/freeze/", "Freeze & Restore"), "FreezeMode, SessionStore"),
 			),
 		),
 

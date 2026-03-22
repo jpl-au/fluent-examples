@@ -20,7 +20,8 @@ func Render(s State) node.Node {
 			"Click a button to deliberately cause a framework-level failure. "+
 				"The framework recovers the error, emits a Diagnostic event on the handler's "+
 				"Diagnostics bus, and the event appears in the feed below in real time. "+
-				"Your session stays alive - handler panics are caught, not fatal.",
+				"This demo sets OnPanic to keep the session alive for observation. "+
+				"In production, leave OnPanic nil to destroy the session (the safe default).",
 			"Handler.Diagnostics · HandlerPanic", panel.WS|panel.SSE,
 			layout.Stack(
 				button.DangerAction("Trigger Handler Panic", "diag.trigger-panic"),
@@ -87,7 +88,7 @@ type kindEntry struct {
 var kinds = []kindEntry{
 	{
 		kind:    "handler_panic",
-		desc:    "Recovered panic inside Handle, Update, or a command callback. The session stays alive - the framework catches the panic and continues.",
+		desc:    "Recovered panic inside Handle, Update, or a command callback. By default the session is destroyed because state may be corrupted. Set OnPanic to keep the session alive (as this demo does).",
 		action:  "diag.trigger-panic",
 		linkTxt: "Trigger Handler Panic",
 	},
@@ -120,7 +121,7 @@ var kinds = []kindEntry{
 	},
 	{
 		kind:    "command_dropped",
-		desc:    "Command discarded because both the buffer and overflow goroutine cap were exhausted. Data was lost - unlike buffer_overflow, this is unrecoverable.",
+		desc:    "Command discarded because both the buffer and overflow goroutine cap were exhausted. By default the session is destroyed to prevent silent client drift. Set OnCommandDropped to override.",
 		trigger: "Requires extreme overload beyond buffer_overflow.",
 	},
 	{
