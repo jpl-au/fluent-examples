@@ -30,6 +30,8 @@ func Render(s State) node.Node {
 				configtable.Row("Heartbeat", configuredTimeouts.Heartbeat.String()),
 				configtable.Row("Retry", configuredTimeouts.Retry.String()),
 				configtable.Row("MaxRetry", configuredTimeouts.MaxRetry.String()),
+				configtable.Row("BackoffMultiplier", fmt.Sprintf("%.1f", configuredTimeouts.BackoffMultiplier)),
+				configtable.Row("DisableJitter", fmt.Sprintf("%t", configuredTimeouts.DisableJitter)),
 			),
 		),
 

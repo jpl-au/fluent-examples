@@ -65,14 +65,16 @@ var (
 		ContextTakeover: true,
 	}
 	configuredTimeouts = tether.Timeouts{
-		Idle:          5 * time.Minute,
-		MaxLifetime:   30 * time.Minute,
-		Reconnect:     15 * time.Second,
-		Pending:       20 * time.Second,
-		ShutdownGrace: 15 * time.Second,
-		Heartbeat:     25 * time.Second,
-		Retry:         2 * time.Second,
-		MaxRetry:      60 * time.Second,
+		Idle:              5 * time.Minute,
+		MaxLifetime:       30 * time.Minute,
+		Reconnect:         15 * time.Second,
+		Pending:           20 * time.Second,
+		ShutdownGrace:     15 * time.Second,
+		Heartbeat:         25 * time.Second,
+		Retry:             time.Second,
+		MaxRetry:          20 * time.Second,
+		BackoffMultiplier: 2.0,
+		DisableJitter:     false,
 	}
 	configuredLimits = tether.Limits{
 		MaxSessions:   100,
@@ -171,3 +173,4 @@ func New(app tether.App, assets *tether.Asset) *tether.Handler[State] {
 		},
 	})
 }
+

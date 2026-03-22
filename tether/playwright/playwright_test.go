@@ -25,6 +25,7 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"os"
+	"os/exec"
 	"testing"
 
 	tether "github.com/jpl-au/tether"
@@ -129,9 +130,20 @@ func newPage(t *testing.T, opts ...PageOption) (pw.Page, func()) {
 			"  go run github.com/playwright-community/playwright-go/cmd/playwright@latest install\n")
 	}
 
-	browser, err := playwright.Chromium.Launch(pw.BrowserTypeLaunchOptions{
+	launchOpts := pw.BrowserTypeLaunchOptions{
 		Headless: pw.Bool(true),
-	})
+		Args:     []string{"--ignore-certificate-errors"},
+	}
+	// Find a Chromium-based browser across platforms. The Channel
+	// option only works with Chrome installed at known vendor paths.
+	// Snap, Homebrew, and distro packages put the binary elsewhere,
+	// so we fall back to an explicit PATH lookup.
+	if path := findChromium(); path != "" {
+		launchOpts.ExecutablePath = pw.String(path)
+	} else {
+		launchOpts.Channel = pw.String("chrome")
+	}
+	browser, err := playwright.Chromium.Launch(launchOpts)
 	if err != nil {
 		playwright.Stop()
 		t.Fatalf("browser launch: %v", err)
@@ -187,4 +199,23 @@ func waitForConnected(t *testing.T, page pw.Page) {
 	if err := connected.WaitFor(); err != nil {
 		t.Fatalf("tether did not connect: %v", err)
 	}
+}
+
+// findChromium searches PATH for a Chromium-based browser. Returns
+// the absolute path if found, or empty string to fall back to
+// Playwright's built-in channel lookup. This handles snap, Homebrew,
+// distro packages, and other non-standard install locations.
+func findChromium() string {
+	for _, name := range []string{
+		"chromium",
+		"chromium-browser",
+		"google-chrome",
+		"google-chrome-stable",
+		"chrome",
+	} {
+		if path, err := exec.LookPath(name); err == nil {
+			return path
+		}
+	}
+	return ""
 }
