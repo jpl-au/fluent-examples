@@ -47,12 +47,16 @@ func TestUploadsFileUpload(t *testing.T) {
 
 	waitForConnected(t, page)
 
-	// Create a temporary file to upload.
-	dir := t.TempDir()
+	// Create a temporary file to upload. Use the working directory
+	// instead of t.TempDir() because snap-installed Chromium cannot
+	// read files from /tmp due to sandbox isolation.
+
+	dir, _ := os.Getwd()
 	path := filepath.Join(dir, "test-upload.txt")
 	if err := os.WriteFile(path, []byte("hello from playwright"), 0644); err != nil {
 		t.Fatalf("write temp file: %v", err)
 	}
+	t.Cleanup(func() { os.Remove(path) })
 
 	// Set the file on the input element.
 	input := page.Locator("#upload-input")
