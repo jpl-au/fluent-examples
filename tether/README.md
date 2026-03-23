@@ -9,6 +9,26 @@ PORT=3000 go run .   # or set a custom port
 
 Open multiple browser tabs to see real-time features in action.
 
+## Why so many handlers?
+
+This application creates a separate `tether.Handler` (or `tether.Stateless`)
+for every demo. That is a **deliberate teaching choice**, not an architectural
+recommendation.
+
+Each handler isolates a single feature - signals, uploads, groups, chat,
+etc. - so you can open one package, read one handler, and understand that
+feature without any other demo's state or events getting in the way. The
+wiring in `app/app.go` reflects this: it stitches together many independent
+demos into a single navigable site.
+
+**A real application would look different.** Most production apps need only
+one `tether.Handler` (or a small handful if distinct sections have genuinely
+different lifecycle requirements). You would define your state, events, and
+views in that single handler rather than splitting every concern into its
+own package. Think of this explorer as a reference catalogue - pick the
+feature you need, study it here, then integrate the pattern into your own
+application.
+
 ## Demos
 
 ### HTTP (stateless)

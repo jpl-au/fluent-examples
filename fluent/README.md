@@ -2,6 +2,11 @@
 
 A server-rendered contact manager demonstrating [Fluent](https://github.com/jpl-au/fluent) with plain HTTP - no HTMX, no WebSocket, no framework. Pure Go, pure HTML.
 
+This is a **teaching example** - a deliberately simple application designed
+to show how Fluent's API works. The contact manager is a toy domain chosen
+because it exercises routing, forms, and CRUD without domain complexity
+getting in the way.
+
 ## What it demonstrates
 
 - **Fluent API** - HTML5 elements built with method chaining, no templates

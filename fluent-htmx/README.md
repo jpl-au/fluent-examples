@@ -2,6 +2,10 @@
 
 The same contact manager as the [Fluent example](../fluent/), refactored to use [Fluent-HTMX](https://github.com/jpl-au/fluent-htmx) for partial page updates. Navigation and form submissions swap the content area via HTMX instead of triggering full page reloads.
 
+This is a **teaching example** showing both HTMX handler patterns so you
+can see each approach clearly. A real application would typically settle on
+one pattern rather than mixing both.
+
 ## What's different from the Fluent version
 
 - **Navigation** uses `hx-get` + `hx-target="#content"` + `hx-push-url` instead of plain `<a>` links

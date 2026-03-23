@@ -5,6 +5,12 @@ standalone Go module demonstrating one framework area. The first three
 examples build on the same contact manager application, each layering a
 different concern.
 
+These are **teaching examples**, not production templates. Code is
+deliberately structured to showcase how individual features work in
+isolation. Where a real application would consolidate, these examples
+keep things separate so you can study one concept at a time without
+unrelated code getting in the way.
+
 | Directory | Framework | Description |
 |-----------|-----------|-------------|
 | [fluent](fluent/) | [fluent](https://github.com/jpl-au/fluent) | Server-rendered contact manager - pure Go, pure HTML |

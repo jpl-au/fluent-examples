@@ -2,6 +2,11 @@
 
 The same contact manager as the [Fluent example](../fluent/), enhanced with [Fluent-JIT](https://github.com/jpl-au/fluent-jit) optimisation strategies. Same functionality, same UI - the JIT wrappers are the only code change.
 
+This is a **teaching example** that applies every JIT strategy to a single
+app so you can compare them side by side. A real application would choose
+one or two strategies based on its rendering profile rather than using all
+three.
+
 ## JIT Strategies Demonstrated
 
 ### Compile - pre-render static portions
