@@ -100,6 +100,12 @@ func TestGroupsBroadcast(t *testing.T) {
 		t.Fatalf("click join: %v", err)
 	}
 
+	// Wait for the join to complete before sending a message.
+	status := page.Locator("[data-tether-key='room-status']")
+	if err := expect(status).ToContainText("alpha"); err != nil {
+		t.Fatalf("join did not complete: %v", err)
+	}
+
 	input := page.Locator("#message-input")
 	if err := input.Fill("hello room"); err != nil {
 		t.Fatalf("fill: %v", err)

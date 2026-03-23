@@ -3,9 +3,12 @@
 // application. Both write files to a directory on disk - simple,
 // dependency-free, and easy to inspect during development.
 //
-// These implementations are intentionally minimal. Production
-// applications would typically use Redis, SQLite, or another
-// external store suited to their deployment.
+// This package exists to demonstrate how to implement the store
+// interfaces yourself. For a ready-made filesystem store, use
+// github.com/jpl-au/tether-store/fs instead.
+//
+// Production applications would typically use Redis, SQLite, or
+// another external store suited to their deployment.
 package store
 
 import (

@@ -70,7 +70,7 @@ func (g Group) Render() node.Node {
 	).Class("nested-group")
 }
 
-// counterButtons renders −/+ buttons that carry both their own count
+// counterButtons renders -/+ buttons that carry both their own count
 // and the sibling's count so neither is lost on stateless round-trips.
 // Actions are bare names - bind.Prefix handles namespacing.
 func counterButtons(count, sibling string) node.Node {

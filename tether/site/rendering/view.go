@@ -25,7 +25,7 @@ func Render(s State) node.Node {
 
 	return cpage.New(
 		panel.Card("Dynamic Keys",
-			"Click + and − to change the counter. Each element has a unique key (via Dynamic) so the framework updates only the text that changed rather than replacing everything on the page. This keeps transitions smooth and avoids unnecessary DOM work.",
+			"Click + and - to change the counter. Each element has a unique key (via Dynamic) so the framework updates only the text that changed rather than replacing everything on the page. This keeps transitions smooth and avoids unnecessary DOM work.",
 			"Dynamic", panel.AllTransports,
 			layout.Row(
 				button.DecrementAction("rendering.decrement",
@@ -62,7 +62,7 @@ func Render(s State) node.Node {
 
 		panel.Card("Nested Components",
 			"Two independent counters nested inside a parent group. Each counter manages "+
-				"its own state - click + and − on either one independently. The parent's "+
+				"its own state - click + and - on either one independently. The parent's "+
 				"Reset All button reaches into both children and zeros them, showing how a "+
 				"parent component can intercept actions and modify child state. The combined "+
 				"total demonstrates the parent observing child state during render.",

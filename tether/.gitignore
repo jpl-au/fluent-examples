@@ -1,2 +1,4 @@
 tmp/
 .tether-data/
+output.html
+playwright/out.log

@@ -48,7 +48,7 @@ func TestSignalsIncrement(t *testing.T) {
 
 	// After clicking, the server pushes the new count as a signal
 	// and the client updates the text via BindText.
-	counter := page.Locator(".demo:first-child .result-text")
+	counter := page.Locator(".demo:first-child [data-tether-bind-text='signals.counter']")
 	if err := expect(counter).ToHaveText("2"); err != nil {
 		text, _ := counter.TextContent()
 		t.Errorf("counter text = %q, want %q", text, "2")
@@ -235,7 +235,7 @@ func TestSignalsResetAll(t *testing.T) {
 	}
 
 	// Verify state is built up - counter should be 2, panel visible.
-	counter := page.Locator(".demo:first-child .result-text")
+	counter := page.Locator(".demo:first-child [data-tether-bind-text='signals.counter']")
 	if err := expect(counter).ToHaveText("2"); err != nil {
 		t.Fatalf("counter should be 2 before reset: %v", err)
 	}

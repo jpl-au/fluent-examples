@@ -53,7 +53,7 @@ func TestComponentsLikesIncrement(t *testing.T) {
 	}
 }
 
-// TestComponentsLikesDecrement verifies the − button decreases the
+// TestComponentsLikesDecrement verifies the - button decreases the
 // count and floors at zero.
 func TestComponentsLikesDecrement(t *testing.T) {
 	srv := startApp(t, serverMode())
@@ -69,7 +69,7 @@ func TestComponentsLikesDecrement(t *testing.T) {
 
 	section := page.Locator("[data-tether-key='likes-section']")
 	plus := section.GetByText("+")
-	minus := section.GetByText("−")
+	minus := section.GetByText("-")
 
 	// Increment twice, then decrement once.
 	if err := plus.Click(); err != nil {
@@ -79,7 +79,7 @@ func TestComponentsLikesDecrement(t *testing.T) {
 		t.Fatalf("click +: %v", err)
 	}
 	if err := minus.Click(); err != nil {
-		t.Fatalf("click −: %v", err)
+		t.Fatalf("click -: %v", err)
 	}
 
 	count := section.Locator("text=/^Count:/")
@@ -90,10 +90,10 @@ func TestComponentsLikesDecrement(t *testing.T) {
 
 	// Decrement to zero - should not go negative.
 	if err := minus.Click(); err != nil {
-		t.Fatalf("click −: %v", err)
+		t.Fatalf("click -: %v", err)
 	}
 	if err := minus.Click(); err != nil {
-		t.Fatalf("click − again: %v", err)
+		t.Fatalf("click - again: %v", err)
 	}
 
 	if err := expect(count).ToHaveText("Count: 0"); err != nil {

@@ -20,7 +20,7 @@ func Render(s State) node.Node {
 	counterStr := strconv.Itoa(s.Counter)
 	return cpage.New(
 		panel.Card("Counter Without Dynamic Keys",
-			"Click + and − to change the counter. This page has no Dynamic keys, "+
+			"Click + and - to change the counter. This page has no Dynamic keys, "+
 				"so the differ finds nothing to patch. The framework falls back to a "+
 				"full-page morph - it sends the entire rendered HTML and the client-side "+
 				"idiomorph library diffs the whole DOM. Check the server logs: you will "+

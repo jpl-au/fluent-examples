@@ -173,4 +173,3 @@ func New(app tether.App, assets *tether.Asset) *tether.Handler[State] {
 		},
 	})
 }
-

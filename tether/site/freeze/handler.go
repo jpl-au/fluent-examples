@@ -61,9 +61,9 @@ func New(app tether.App, assets *tether.Asset) *tether.Handler[State] {
 			).Lang("en")
 		},
 
-		Freeze: tether.FreezeWithConnect,
-		SessionStore:       sessionStore,
-		DiffStore:          diffStore,
+		Freeze:       tether.FreezeWithConnect,
+		SessionStore: sessionStore,
+		DiffStore:    diffStore,
 
 		Watchers: shared.Watchers[State](freezePresence,
 			func(n int, s State) State { s.OnlineCount = n; return s },
