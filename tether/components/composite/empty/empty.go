@@ -16,7 +16,7 @@ import (
 func State(title, message string, link node.Node) node.Node {
 	children := []node.Node{
 		h2.New().Class("empty-title").Text(title),
-		p.New().Class("empty-text").Text(message),
+		p.Text(message).Class("empty-text"),
 	}
 	if link != nil {
 		children = append(children, link)

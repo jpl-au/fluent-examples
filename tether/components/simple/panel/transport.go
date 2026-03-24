@@ -23,7 +23,7 @@ const (
 func badges(api string, t Transport) node.Node {
 	var items []node.Node
 	if api != "" {
-		items = append(items, span.New().Class("api-label").Text(api))
+		items = append(items, span.Text(api).Class("api-label"))
 	}
 	items = append(items,
 		transportBadge("HTTP", t&HTTP != 0),
@@ -48,5 +48,5 @@ func transportBadge(label string, active bool) node.Node {
 	if !active {
 		class += " transport-off"
 	}
-	return span.New().Class(class).Text(label)
+	return span.Text(label).Class(class)
 }

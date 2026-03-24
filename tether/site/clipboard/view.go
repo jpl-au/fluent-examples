@@ -20,7 +20,7 @@ func Render(_ State) node.Node {
 				"bind.CopyToClipboard runs entirely on the client - no server round-trip.",
 			"bind.CopyToClipboard", panel.HTTP,
 			layout.Stack(
-				span.New().ID("copy-source").Class("result-block").Text("tether-secret-key-abc123"),
+				span.Text("tether-secret-key-abc123").ID("copy-source").Class("result-block"),
 				button.Primary("Copy", bind.CopyToClipboard("#copy-source")),
 			),
 		),

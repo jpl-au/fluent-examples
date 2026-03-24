@@ -27,8 +27,8 @@ func Bubble(user, text, timestamp string, own bool) node.Node {
 	}
 	return div.New(
 		div.New(
-			span.New().Class("chat-bubble-user").Text(user),
-			span.New().Class("chat-bubble-time").Text(timestamp),
+			span.Text(user).Class("chat-bubble-user"),
+			span.Text(timestamp).Class("chat-bubble-time"),
 		).Class("chat-bubble-header"),
 		div.New().Class("chat-bubble-body").Text(text),
 	).Class(class)
@@ -37,6 +37,6 @@ func Bubble(user, text, timestamp string, own bool) node.Node {
 // Empty renders a centred placeholder when the feed has no messages.
 func Empty(hint string) *div.Element {
 	return div.New(
-		p.New().Class("hint").Text(hint),
+		p.Text(hint).Class("hint"),
 	).Class("chat-empty")
 }

@@ -31,7 +31,7 @@ func Render(items []Item) node.Node {
 // zone renders a drop target with the items that belong to it.
 func zone(id, title string, items []Item) node.Node {
 	var children []node.Node
-	children = append(children, span.New().Class("demo-title").Text(title))
+	children = append(children, span.Text(title).Class("demo-title"))
 
 	for _, item := range items {
 		if item.Zone != id {
@@ -41,7 +41,7 @@ func zone(id, title string, items []Item) node.Node {
 	}
 
 	if len(children) == 1 {
-		children = append(children, span.New().Class("hint").Text("Drop items here"))
+		children = append(children, span.Text("Drop items here").Class("hint"))
 	}
 
 	return bind.Apply(

@@ -39,7 +39,7 @@ func Render(s State) node.Node {
 // lastCombo renders the last triggered hotkey combo.
 func lastCombo(combo string) node.Node {
 	if combo == "" {
-		return span.New().Class("hint").Text("No hotkey triggered yet.").Dynamic("combo")
+		return span.Text("No hotkey triggered yet.").Class("hint").Dynamic("combo")
 	}
-	return span.New().Class("result-block").Text("Last hotkey: " + combo).Dynamic("combo")
+	return span.Text("Last hotkey: " + combo).Class("result-block").Dynamic("combo")
 }

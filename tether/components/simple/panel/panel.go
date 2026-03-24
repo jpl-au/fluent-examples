@@ -21,7 +21,7 @@ func Card(title, description, api string, transport Transport, children ...node.
 		).Class("demo-header"),
 	}
 	if description != "" {
-		nodes = append(nodes, p.New().Class("demo-description").Text(description))
+		nodes = append(nodes, p.Text(description).Class("demo-description"))
 	}
 	nodes = append(nodes, div.New(children...).Class("demo-content"))
 	return div.New(nodes...).Class("demo")
@@ -35,17 +35,17 @@ func Signal(children ...node.Node) *div.Element {
 
 // SignalText renders a signal panel with a single text message.
 func SignalText(s string) *p.Element {
-	return p.New().Class("signal-panel").Text(s)
+	return p.Text(s).Class("signal-panel")
 }
 
 // SignalSuccess renders a signal panel with success styling.
 func SignalSuccess(s string) *p.Element {
-	return p.New().Class("signal-panel result-success").Text(s)
+	return p.Text(s).Class("signal-panel result-success")
 }
 
 // SignalMuted renders a signal panel with muted styling.
 func SignalMuted(s string) *p.Element {
-	return p.New().Class("signal-panel result-muted").Text(s)
+	return p.Text(s).Class("signal-panel result-muted")
 }
 
 // SignalFocusTrap renders a signal panel configured as a focus trap

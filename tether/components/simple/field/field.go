@@ -49,5 +49,5 @@ func Inline(children ...node.Node) *form.Element {
 
 // Error renders a validation error message below a form field.
 func Error(s string) node.Node {
-	return p.New().Class("form-error").Text(s)
+	return p.Text(s).Class("form-error")
 }

@@ -49,8 +49,8 @@ func Render(b *store.Board, viewers *Viewers) func(State) node.Node {
 func landing() node.Node {
 	return div.New(
 		div.New(
-			h1.New().Class("landing-title").Text("Kanban Board"),
-			p.New().Class("landing-desc").Text("A collaborative board powered by Tether. Enter your name to get started."),
+			h1.Text("Kanban Board").Class("landing-title"),
+			p.Text("A collaborative board powered by Tether. Enter your name to get started.").Class("landing-desc"),
 			bind.Apply(
 				field.Inline(
 					field.Text("name", "Your name"),

@@ -133,12 +133,12 @@ func sidebarNav(section Section, currentPage string) node.Node {
 	var items []node.Node
 	for _, sg := range sidebar {
 		items = append(items, li.New(
-			span.New().Class("nav-group").Text(sg.heading),
+			span.Text(sg.heading).Class("nav-group"),
 		))
 		for _, sub := range sg.subgroups {
 			if sub.heading != "" {
 				items = append(items, li.New(
-					span.New().Class("nav-divider").Text(sub.heading),
+					span.Text(sub.heading).Class("nav-divider"),
 				))
 			}
 			for _, item := range sub.items {

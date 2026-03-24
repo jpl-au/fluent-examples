@@ -9,7 +9,7 @@ import (
 // Row creates a single label-value pair inside a config table.
 func Row(label, value string) node.Node {
 	return div.New(
-		span.New().Class("config-label").Text(label),
-		span.New().Class("config-value").Text(value),
+		span.Text(label).Class("config-label"),
+		span.Text(value).Class("config-value"),
 	).Class("config-row")
 }

@@ -23,11 +23,11 @@ func New(c store.Card, viewers ...string) node.Node {
 		div.New(
 			bind.Apply(
 				div.New(
-					span.New().Class("card-title").Text(c.Title),
+					span.Text(c.Title).Class("card-title"),
 					desc(c.Description),
 					div.New(
-						span.New().Class("card-author").Text(c.CreatedBy),
-						span.New().Class("card-time").Text(store.TimeAgo(c.CreatedAt)),
+						span.Text(c.CreatedBy).Class("card-author"),
+						span.Text(store.TimeAgo(c.CreatedAt)).Class("card-time"),
 					).Class("card-meta"),
 					viewing(viewers),
 				).Class("card-body"),
@@ -48,7 +48,7 @@ func desc(s string) node.Node {
 	if len(s) > 80 {
 		s = s[:77] + "..."
 	}
-	return p.New().Class("card-desc").Text(s)
+	return p.Text(s).Class("card-desc")
 }
 
 // viewing renders a small indicator showing who is viewing this card.
@@ -57,7 +57,7 @@ func viewing(names []string) node.Node {
 		return nil
 	}
 	if len(names) == 1 {
-		return span.New().Class("card-viewing").Text(names[0] + " is viewing this")
+		return span.Text(names[0] + " is viewing this").Class("card-viewing")
 	}
-	return span.New().Class("card-viewing").Text(strings.Join(names, ", ") + " are viewing this")
+	return span.Text(strings.Join(names, ", ") + " are viewing this").Class("card-viewing")
 }

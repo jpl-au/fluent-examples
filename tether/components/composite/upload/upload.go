@@ -12,18 +12,18 @@ import (
 // ItemWithTime renders an upload list entry showing name, size, and timestamp.
 func ItemWithTime(name, size, time string) node.Node {
 	return li.New(
-		span.New().Class("upload-name").Text(name),
-		span.New().Class("upload-size").Text(size),
-		span.New().Class("upload-time").Text(time),
+		span.Text(name).Class("upload-name"),
+		span.Text(size).Class("upload-size"),
+		span.Text(time).Class("upload-time"),
 	).Class("upload-item")
 }
 
 // ItemWithType renders an upload list entry showing name, size, and content type.
 func ItemWithType(name, size, contentType string) node.Node {
 	return li.New(
-		span.New().Class("upload-name").Text(name),
-		span.New().Class("upload-size").Text(size),
-		span.New().Class("upload-type").Text(contentType),
+		span.Text(name).Class("upload-name"),
+		span.Text(size).Class("upload-size"),
+		span.Text(contentType).Class("upload-type"),
 	).Class("upload-item")
 }
 

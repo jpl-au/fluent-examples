@@ -37,7 +37,7 @@ func New(c store.Card) node.Node {
 	header := div.New(
 		back,
 		div.New(
-			span.New().Class("detail-title").Text(title),
+			span.Text(title).Class("detail-title"),
 			columnBadge(c.Column, isNew),
 		).Class("detail-title-row"),
 		overflow(c, isNew),
@@ -77,14 +77,14 @@ func activity(events []store.Event) node.Node {
 	for i := len(events) - 1; i >= 0; i-- {
 		ev := events[i]
 		items[len(events)-1-i] = div.New(
-			span.New().Class("activity-user").Text(ev.User),
-			span.New().Class("activity-action").Text(ev.Action),
-			span.New().Class("activity-time").Text(ev.Created.Format("15:04")),
+			span.Text(ev.User).Class("activity-user"),
+			span.Text(ev.Action).Class("activity-action"),
+			span.Text(ev.Created.Format("15:04")).Class("activity-time"),
 		).Class("activity-item")
 	}
 
 	return div.New(
-		span.New().Class("activity-title").Text("Activity"),
+		span.Text("Activity").Class("activity-title"),
 		div.New(items...).Class("activity-list"),
 	).Class("activity-section")
 }
@@ -96,14 +96,14 @@ func overflow(c store.Card, isNew bool) node.Node {
 	}
 
 	toggle := bind.Apply(
-		span.New().Class("overflow-trigger").Text("\u22EF"),
+		span.Text("\u22EF").Class("overflow-trigger"),
 		bind.ToggleClass("overflow-open"),
 		bind.ToggleTarget(".overflow-menu"),
 	)
 
 	menu := div.New(
 		bind.Apply(
-			span.New().Class("overflow-item overflow-danger").Text("Delete card"),
+			span.Text("Delete card").Class("overflow-item overflow-danger"),
 			bind.OnClick("card.delete"),
 			bind.EventData("id", c.ID),
 			bind.Confirm("Delete this card?"),

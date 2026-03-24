@@ -9,10 +9,10 @@ import (
 
 // Value renders a prominent display for a string value.
 func Value(s string) node.Node {
-	return span.New().Class("counter-display").Text(s)
+	return span.Text(s).Class("counter-display")
 }
 
 // Valuef renders a prominent display with formatted text.
 func Valuef(format string, args ...any) node.Node {
-	return span.New().Class("counter-display").Textf(format, args...)
+	return span.Textf(format, args...).Class("counter-display")
 }

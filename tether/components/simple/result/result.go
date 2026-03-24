@@ -36,5 +36,5 @@ func Blue(s string) node.Node {
 
 // Label renders a small muted heading above a result block.
 func Label(s string) node.Node {
-	return span.New().Class("result-label").Text(s)
+	return span.Text(s).Class("result-label")
 }

@@ -20,8 +20,8 @@ func List(items ...node.Node) node.Node {
 // description, and an optional trigger element (button, link, or text).
 func Item(kind, desc string, trigger node.Node) node.Node {
 	children := []node.Node{
-		span.New().Class("diag-kind").Text(kind),
-		p.New().Class("diag-desc").Text(desc),
+		span.Text(kind).Class("diag-kind"),
+		p.Text(desc).Class("diag-desc"),
 	}
 	if trigger != nil {
 		children = append(children, trigger)
@@ -31,7 +31,7 @@ func Item(kind, desc string, trigger node.Node) node.Node {
 
 // Trigger renders plain-text instructions for triggering a diagnostic.
 func Trigger(s string) node.Node {
-	return p.New().Class("diag-trigger").Text(s)
+	return p.Text(s).Class("diag-trigger")
 }
 
 // EventList creates a container for live diagnostic events. Returns

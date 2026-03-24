@@ -27,13 +27,13 @@ func Shell(name string, onlineCount int, actions node.Node, content node.Node) n
 // and action nodes.
 func header(name string, onlineCount int, actions node.Node) node.Node {
 	badge := bind.Apply(
-		span.New().Class("badge badge-green").Text(fmt.Sprintf("%d online", onlineCount)),
+		span.Text(fmt.Sprintf("%d online", onlineCount)).Class("badge badge-green"),
 		bind.BindText("online_count"),
 	)
 
 	left := div.New(
-		h1.New().Text("Kanban Board"),
-		span.New().Class("header-user").Text(name),
+		h1.Text("Kanban Board"),
+		span.Text(name).Class("header-user"),
 		div.New(badge).Class("header-meta"),
 	).Class("header-left")
 

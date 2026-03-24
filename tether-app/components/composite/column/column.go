@@ -14,8 +14,8 @@ import (
 // New renders a column with its title, card count, and card children.
 func New(title string, count int, cards ...node.Node) node.Node {
 	hdr := div.New(
-		h2.New().Class("column-title").Text(title),
-		span.New().Class("badge badge-count").Text(fmt.Sprintf("%d", count)),
+		h2.Text(title).Class("column-title"),
+		span.Text(fmt.Sprintf("%d", count)).Class("badge badge-count"),
 	).Class("column-header")
 
 	body := div.New(cards...).Class("column-body")
@@ -26,6 +26,6 @@ func New(title string, count int, cards ...node.Node) node.Node {
 // Empty renders a placeholder when a column has no cards.
 func Empty() node.Node {
 	return div.New(
-		span.New().Class("column-empty").Text("No cards"),
+		span.Text("No cards").Class("column-empty"),
 	).Class("column-placeholder")
 }

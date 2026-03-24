@@ -19,10 +19,10 @@ func Activity(items ...node.Node) node.Node {
 func ActivityItem(user, action, time string) node.Node {
 	return div.New(
 		div.New(
-			span.New().Class("activity-user").Text(user),
-			span.New().Class("activity-time").Text(time),
+			span.Text(user).Class("activity-user"),
+			span.Text(time).Class("activity-time"),
 		).Class("activity-header"),
-		span.New().Class("activity-action").Text(action),
+		span.Text(action).Class("activity-action"),
 	).Class("activity-item")
 }
 
@@ -39,7 +39,7 @@ func Messages(items ...node.Node) node.Node {
 // MessageItem creates a message feed entry with user and text.
 func MessageItem(user, text string) node.Node {
 	return li.New(
-		span.New().Class("msg-user").Text(user),
-		span.New().Class("msg-text").Text(text),
+		span.Text(user).Class("msg-user"),
+		span.Text(text).Class("msg-text"),
 	).Class("msg-item")
 }

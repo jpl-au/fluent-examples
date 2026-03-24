@@ -21,7 +21,7 @@ func List(items ...node.Node) node.Node {
 func Item(link node.Node, features string) node.Node {
 	return li.New(
 		link,
-		span.New().Class("toc-features").Text(features),
+		span.Text(features).Class("toc-features"),
 	).Class("toc-item")
 }
 

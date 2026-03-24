@@ -7,16 +7,16 @@ import "github.com/jpl-au/fluent/html5/span"
 
 // Green renders a green status badge.
 func Green(text string) *span.Element {
-	return span.New().Class("badge badge-green").Text(text)
+	return span.Text(text).Class("badge badge-green")
 }
 
 // GreenDynamic renders a green status badge with a Tether Dynamic key
 // so the differ can track it across re-renders.
 func GreenDynamic(key, text string) *span.Element {
-	return span.New().Class("badge badge-green").Text(text).Dynamic(key)
+	return span.Text(text).Class("badge badge-green").Dynamic(key)
 }
 
 // Indigo renders an indigo status badge.
 func Indigo(text string) *span.Element {
-	return span.New().Class("badge badge-indigo").Text(text)
+	return span.Text(text).Class("badge badge-indigo")
 }

@@ -15,5 +15,5 @@ func New(items ...node.Node) node.Node {
 
 // Empty renders a placeholder message when a list has no items.
 func Empty(text string) node.Node {
-	return p.New().Class("hint").Text(text)
+	return p.Text(text).Class("hint")
 }
