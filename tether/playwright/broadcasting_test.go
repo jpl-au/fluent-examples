@@ -96,6 +96,33 @@ func TestBroadcastingCrossSession(t *testing.T) {
 	}
 }
 
+// TestBroadcastingPresence opens two tabs and verifies each sees the
+// other in the "Who's Here" presence card via tether.Presence.
+func TestBroadcastingPresence(t *testing.T) {
+	srv := startApp(t, serverMode())
+
+	page1, cleanup1 := newPage(t)
+	defer cleanup1()
+	page2, cleanup2 := newPage(t)
+	defer cleanup2()
+
+	if _, err := page1.Goto(srv + "/broadcasting/"); err != nil {
+		t.Fatalf("page1 goto: %v", err)
+	}
+	waitForConnected(t, page1)
+
+	if _, err := page2.Goto(srv + "/broadcasting/"); err != nil {
+		t.Fatalf("page2 goto: %v", err)
+	}
+	waitForConnected(t, page2)
+
+	// Page1 should see page2 in the "Also here" presence list.
+	whoHere := page1.GetByText("Also here:")
+	if err := expect(whoHere).ToBeVisible(); err != nil {
+		t.Errorf("page1 did not see other user in presence: %v", err)
+	}
+}
+
 // TestBroadcastingMessageCounter sends a message and verifies the
 // shared message counter increments.
 func TestBroadcastingMessageCounter(t *testing.T) {

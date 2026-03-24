@@ -2,9 +2,11 @@ package broadcasting
 
 import (
 	"strconv"
+	"strings"
 
 	"github.com/jpl-au/fluent/html5/span"
 	"github.com/jpl-au/fluent/node"
+	tether "github.com/jpl-au/tether"
 	"github.com/jpl-au/tether/bind"
 
 	"github.com/jpl-au/fluent-examples/tether/components/composite/feed"
@@ -18,8 +20,17 @@ import (
 
 // Render builds the broadcasting page with three demo cards:
 // cross-session events, message counter, and async subscribers.
-func Render(s State) node.Node {
+func Render(s State, who *tether.Presence[string]) node.Node {
 	return page.New(
+		panel.Card(
+			"Who's Here",
+			"tether.Presence tracks per-session metadata and makes it available to all sessions. "+
+				"Open multiple tabs to see each session appear. Presence.Each excludes the current session "+
+				"so you don't see yourself in the list.",
+			"tether.Presence · Presence.Each", panel.WS|panel.SSE,
+			whoIsHere(who, s.SessionID),
+		),
+
 		panel.Card(
 			"Cross-Session Events",
 			"Type a message and click Send. The sender sees their own message immediately (returned from Handle); other sessions receive it via tether.WatchBus with automatic sender filtering. bus.Emit publishes to everyone except the sender, preventing double-apply.",
@@ -53,6 +64,18 @@ func Render(s State) node.Node {
 			hint.Text("Async subscriber logs to the server console via slog.Info."),
 		),
 	)
+}
+
+// whoIsHere renders the list of users on this page via Presence.Each.
+func whoIsHere(who *tether.Presence[string], sessionID string) node.Node {
+	var names []string
+	who.Each(sessionID, func(_ string, name string) {
+		names = append(names, name)
+	})
+	if len(names) == 0 {
+		return hint.Text("No other users on this page. Open another tab to see presence.")
+	}
+	return span.Text("Also here: " + strings.Join(names, ", ")).Dynamic("who-here")
 }
 
 // messageList renders broadcast messages or a placeholder.

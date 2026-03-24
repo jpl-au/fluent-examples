@@ -27,6 +27,8 @@ type State struct {
 	MessageCount int
 	// OnlineCount tracks connected sessions for the badge.
 	OnlineCount int
+	// SessionID is this session's ID for presence exclusion.
+	SessionID string
 }
 
 // Message is a broadcast message sent between sessions via the bus.
@@ -64,6 +66,10 @@ func Setup(ctx context.Context) {
 	})
 }
 
+// who tracks which users are on the broadcasting page using
+// tether.Presence. Each session's short ID is the metadata.
+var who = tether.NewPresence[string]()
+
 var broadcastPresence = shared.NewPresenceCountOnly()
 
 // New creates a handler demonstrating cross-session broadcasting
@@ -78,7 +84,7 @@ func New(app tether.App, assets *tether.Asset) *tether.Handler[State] {
 			return State{OnlineCount: broadcastPresence.OnlineCount.Load()}
 		},
 		Render: func(s State) node.Node {
-			return layout.Shell(layout.SectionLive, "/broadcasting/", s.OnlineCount, Render(s))
+			return layout.Shell(layout.SectionLive, "/broadcasting/", s.OnlineCount, Render(s, who))
 		},
 		Handle: Handle,
 
@@ -111,10 +117,16 @@ func New(app tether.App, assets *tether.Asset) *tether.Handler[State] {
 		OnConnect: func(sess *tether.StatefulSession[State]) {
 			slog.Info("broadcasting: connected", "id", sess.ID())
 			shared.TrackPresence(broadcastPresence, sess.ID())
+			who.Set(sess.ID(), "User "+sess.ID()[:6])
+			sess.Update(func(s State) State {
+				s.SessionID = sess.ID()
+				return s
+			})
 		},
 		OnDisconnect: func(sess *tether.StatefulSession[State]) {
 			slog.Info("broadcasting: disconnected", "id", sess.ID())
 			shared.UntrackPresence(broadcastPresence, sess.ID())
+			who.Clear(sess.ID())
 		},
 	})
 }
