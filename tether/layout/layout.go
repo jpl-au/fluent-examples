@@ -67,6 +67,7 @@ var sidebar = []sidebarGroup{
 			{"/navigation", "Navigation"},
 			{"/middleware", "Middleware"},
 			{"/morph", "Full-Page Morph"},
+			{"/clipboard", "Clipboard"},
 		}},
 	}},
 	{"Signals & Directives", []sectionGroup{
@@ -94,6 +95,8 @@ var sidebar = []sidebarGroup{
 			{"/valuestore/", "Value Store"},
 			{"/groups/", "Groups"},
 			{"/freeze/", "Freeze & Restore"},
+			{"/hotkey/", "Hotkeys"},
+			{"/dragdrop/", "Drag and Drop"},
 		}},
 	}},
 	{"Observability", []sectionGroup{

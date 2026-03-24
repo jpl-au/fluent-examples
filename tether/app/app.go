@@ -16,13 +16,16 @@ import (
 	"github.com/jpl-au/fluent-examples/tether/middleware"
 	"github.com/jpl-au/fluent-examples/tether/site/broadcasting"
 	"github.com/jpl-au/fluent-examples/tether/site/chat"
+	"github.com/jpl-au/fluent-examples/tether/site/clipboard"
 	"github.com/jpl-au/fluent-examples/tether/site/components"
 	"github.com/jpl-au/fluent-examples/tether/site/configuration"
 	"github.com/jpl-au/fluent-examples/tether/site/diagnostics"
+	"github.com/jpl-au/fluent-examples/tether/site/dragdrop"
 	"github.com/jpl-au/fluent-examples/tether/site/errors"
 	"github.com/jpl-au/fluent-examples/tether/site/events"
 	"github.com/jpl-au/fluent-examples/tether/site/freeze"
 	"github.com/jpl-au/fluent-examples/tether/site/groups"
+	"github.com/jpl-au/fluent-examples/tether/site/hotkey"
 	httpsite "github.com/jpl-au/fluent-examples/tether/site/http"
 	"github.com/jpl-au/fluent-examples/tether/site/live"
 	"github.com/jpl-au/fluent-examples/tether/site/morph"
@@ -67,6 +70,7 @@ func New(ctx context.Context, assets *tether.Asset) (http.Handler, []tether.Drai
 	renderingHandler := rendering.New(app, assets)
 	morphHandler := morph.New(app, assets)
 	middlewareHandler := mwsite.New(app, assets)
+	clipboardHandler := clipboard.New(app, assets)
 
 	// WebSocket features (tether.Handler).
 	notificationsHandler := notifications.New(app, assets)
@@ -78,6 +82,10 @@ func New(ctx context.Context, assets *tether.Asset) (http.Handler, []tether.Drai
 	configurationHandler := configuration.New(app, assets)
 	valuestoreHandler := valuestore.New(app, assets)
 	groupsHandler := groups.New(app, assets)
+
+	// Hotkey and drag-and-drop demos.
+	hotkeyHandler := hotkey.New(app, assets)
+	dragdropHandler := dragdrop.New(app, assets)
 
 	// Freeze demo - FreezeWithConnect with SessionStore.
 	freezeHandler := freeze.New(app, assets)
@@ -138,6 +146,9 @@ func New(ctx context.Context, assets *tether.Asset) (http.Handler, []tether.Drai
 	mux.Handle("/realtime/", realtimeHandler)
 	mux.Handle("/diagnostics/", diagnosticsHandler)
 	mux.Handle("/freeze/", freezeHandler)
+	mux.Handle("/clipboard", clipboardHandler)
+	mux.Handle("/hotkey/", hotkeyHandler)
+	mux.Handle("/dragdrop/", dragdropHandler)
 	mux.Handle("/sw/", swHandler)
 
 	// HTTP section as the catch-all (must be registered last).
@@ -149,7 +160,8 @@ func New(ctx context.Context, assets *tether.Asset) (http.Handler, []tether.Drai
 		configurationHandler, valuestoreHandler, groupsHandler,
 		signalsWSHandler, signalsSSEHandler,
 		liveWSHandler, liveSSEHandler,
-		realtimeHandler, diagnosticsHandler, freezeHandler, swHandler,
+		realtimeHandler, diagnosticsHandler, freezeHandler,
+		hotkeyHandler, dragdropHandler, swHandler,
 	}
 
 	return mux, drainables

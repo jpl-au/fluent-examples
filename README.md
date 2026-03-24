@@ -17,6 +17,7 @@ unrelated code getting in the way.
 | [fluent-jit](fluent-jit/) | [fluent-jit](https://github.com/jpl-au/fluent-jit) | Same contact manager with JIT optimisation strategies |
 | [fluent-htmx](fluent-htmx/) | [fluent-htmx](https://github.com/jpl-au/fluent-htmx) | Same contact manager with HTMX partial page updates |
 | [tether](tether/) | [tether](https://github.com/jpl-au/tether) | Reactive server-driven UI - Feature Explorer |
+| [tether-app](tether-app/) | [tether](https://github.com/jpl-au/tether) | Collaborative kanban board - real-world single-handler app |
 
 ## Prerequisites
 
@@ -27,7 +28,7 @@ unrelated code getting in the way.
 Each example is a standalone module. To run any example:
 
 ```bash
-cd fluent        # or fluent-jit, fluent-htmx, tether
+cd fluent        # or fluent-jit, fluent-htmx, tether, tether-app
 go run .         # starts on :8080 by default
 ```
 
