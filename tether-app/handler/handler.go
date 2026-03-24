@@ -61,28 +61,16 @@ func New(board *store.Board, assets *tether.Asset) *tether.Handler[State] {
 		Timeouts: tether.Timeouts{Idle: 10 * time.Minute},
 
 		OnConnect: func(sess *tether.StatefulSession[State]) {
-			slog.Info("connected", "id", sess.ID()[:8])
+			slog.Info("connected", "id", sess.ID()[:8], "members", group.Len())
 			sess.Signal("online_count", group.Len())
 			sess.Update(func(s State) State {
 				s.SessionID = sess.ID()
-				s.OnlineCount = group.Len()
-				return s
-			})
-			// Update all other sessions with the new count.
-			group.BroadcastOthers(sess, func(_ *tether.StatefulSession[State], s State) State {
-				s.OnlineCount = group.Len()
 				return s
 			})
 		},
 		OnDisconnect: func(sess *tether.StatefulSession[State]) {
 			slog.Info("disconnected", "id", sess.ID()[:8])
 			viewers.Clear(sess.ID())
-			// Remaining sessions get the updated count.
-			group.Broadcast(func(s *tether.StatefulSession[State], st State) State {
-				st.OnlineCount = group.Len()
-				s.Signal("online_count", group.Len())
-				return st
-			})
 		},
 	})
 }
