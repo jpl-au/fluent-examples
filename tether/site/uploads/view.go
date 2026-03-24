@@ -3,7 +3,6 @@ package uploads
 import (
 	"fmt"
 
-	"github.com/jpl-au/fluent/html5/div"
 	"github.com/jpl-au/fluent/node"
 	"github.com/jpl-au/tether/bind"
 
@@ -69,10 +68,10 @@ func uploadList(files []FileEntry) node.Node {
 	}
 	nodes := make([]node.Node, len(files))
 	for i, f := range files {
-		nodes[i] = div.New(
+		nodes[i] = layout.Row(
 			upload.ItemWithTime(f.Name, formatSize(f.Size), f.Time.Format("15:04:05")),
 			button.SmallAction("Download", "uploads.download", bind.EventData("id", f.ID)),
-		).Class("layout-row")
+		)
 	}
 	return layout.Container(list.New(nodes...)).Dynamic("uploads")
 }
