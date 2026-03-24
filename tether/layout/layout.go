@@ -150,8 +150,8 @@ func sidebarNav(section Section, currentPage string) node.Node {
 
 	return nav.New(
 		div.New(
-			h1.New().Text("Tether"),
-			span.New().Text("Feature Explorer"),
+			h1.Static("Tether"),
+			span.Static("Feature Explorer"),
 		).Class("sidebar-brand"),
 		ul.New(items...).Class("sidebar-nav"),
 		sidebarScrollScript(),
@@ -188,7 +188,7 @@ func navLink(currentSection, linkSection Section, item navItem, currentPage stri
 // header builds the page header with an optional online count badge.
 func header(section Section, currentPage string, onlineCount int) node.Node {
 	title := pageTitle(currentPage)
-	headerNode := h1.New().Text(title)
+	headerNode := h1.Text(title)
 
 	if section.Live() {
 		return div.New(

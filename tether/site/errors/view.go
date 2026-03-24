@@ -17,7 +17,7 @@ func Render(_ State) node.Node {
 			"The component below deliberately panics during render. tether.Catch catches the panic and shows the fallback content instead, so one broken component does not take down the rest of the page.",
 			"tether.Catch", panel.AllTransports,
 			tether.Catch(func() node.Node {
-				return layout.Container(p.New().Text("This component panics during render."), triggerPanic())
+				return layout.Container(p.Static("This component panics during render."), triggerPanic())
 			}, panel.SignalSuccess("Caught by error boundary - component recovered gracefully.")),
 		),
 	)

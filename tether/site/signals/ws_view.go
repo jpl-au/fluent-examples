@@ -94,7 +94,7 @@ func RenderWS(s State) node.Node {
 			layout.Stack(
 				button.Primary("Toggle Highlight", bind.ToggleSignal("signals.highlight")),
 				bind.Apply(panel.ToggleDemo(
-					p.New().Text("This box gets the 'highlighted' class when the signal is true."),
+					p.Static("This box gets the 'highlighted' class when the signal is true."),
 				), bind.BindClass("highlighted", "signals.highlight")),
 			),
 		),
@@ -178,7 +178,7 @@ func RenderWS(s State) node.Node {
 			"This element is marked permanent - even when the server re-renders the page and the differ patches the DOM, this subtree is never touched. Essential for embedded third-party widgets.",
 			"bind.Permanent", panel.AllTransports,
 			bind.Apply(panel.Signal(
-				p.New().Text("This element is never replaced by the differ."),
+				p.Static("This element is never replaced by the differ."),
 			), bind.Permanent()),
 		),
 
@@ -187,7 +187,7 @@ func RenderWS(s State) node.Node {
 			"This element has a JavaScript hook named 'tooltip' attached. When the element is mounted into the DOM, the hook's mounted() callback runs. Hooks also fire on updated() and destroyed().",
 			"bind.Hook", panel.AllTransports,
 			bind.Apply(panel.HookTarget(
-				p.New().Text("Hover over this element to see the tooltip."),
+				p.Static("Hover over this element to see the tooltip."),
 			).SetData("tooltip", "Hello from the tooltip hook!"), bind.Hook("tooltip")),
 		),
 
