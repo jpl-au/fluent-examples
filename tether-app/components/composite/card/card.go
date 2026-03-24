@@ -1,7 +1,7 @@
 // Package card renders an individual kanban card within a column.
 // Each card is draggable (for moving between columns) and clickable
 // (for opening the detail view). Shows the title, description
-// snippet, and who created it.
+// snippet, creator, and relative timestamp.
 package card
 
 import (
@@ -24,7 +24,10 @@ func New(c store.Card) node.Node {
 				div.New(
 					span.New().Class("card-title").Text(c.Title),
 					desc(c.Description),
-					span.New().Class("card-author").Text(c.CreatedBy),
+					div.New(
+						span.New().Class("card-author").Text(c.CreatedBy),
+						span.New().Class("card-time").Text(store.TimeAgo(c.CreatedAt)),
+					).Class("card-meta"),
 				).Class("card-body"),
 				bind.OnClick("card.select"),
 				bind.EventData("id", c.ID),

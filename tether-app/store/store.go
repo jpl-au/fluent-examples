@@ -51,6 +51,7 @@ type Card struct {
 	Description string
 	Column      Column
 	CreatedBy   string
+	CreatedAt   time.Time
 	Activity    []Event
 }
 
@@ -64,12 +65,13 @@ type Board struct {
 // New creates a board seeded with example cards.
 func New() *Board {
 	b := &Board{cards: make(map[string]*Card)}
-	b.add(Todo, "Set up CI pipeline", "Configure GitHub Actions for automated builds and tests.", "System")
-	b.add(Todo, "Write API documentation", "Document all public endpoints with request and response examples.", "System")
-	b.add(InProgress, "Design landing page", "Create mockups for the marketing site hero section.", "System")
-	b.add(InProgress, "Implement user auth", "Add session-based authentication with login and registration flows.", "System")
-	b.add(Done, "Project kickoff", "Align on goals, timeline, and responsibilities.", "System")
-	b.add(Done, "Choose tech stack", "Evaluate options and commit to Go, Tether, and Fluent.", "System")
+	now := time.Now()
+	b.addAt(Todo, "Set up CI pipeline", "Configure GitHub Actions for automated builds and tests.", "System", now.Add(-2*time.Hour))
+	b.addAt(Todo, "Write API documentation", "Document all public endpoints with request and response examples.", "System", now.Add(-90*time.Minute))
+	b.addAt(InProgress, "Design landing page", "Create mockups for the marketing site hero section.", "System", now.Add(-5*time.Hour))
+	b.addAt(InProgress, "Implement user auth", "Add session-based authentication with login and registration flows.", "System", now.Add(-4*time.Hour))
+	b.addAt(Done, "Project kickoff", "Align on goals, timeline, and responsibilities.", "System", now.Add(-24*time.Hour))
+	b.addAt(Done, "Choose tech stack", "Evaluate options and commit to Go, Tether, and Fluent.", "System", now.Add(-20*time.Hour))
 	return b
 }
 
@@ -102,6 +104,7 @@ func (b *Board) Card(id string) (Card, bool) {
 func (b *Board) Create(title, desc, user string) Card {
 	b.mu.Lock()
 	defer b.mu.Unlock()
+	now := time.Now()
 	id := newID()
 	c := &Card{
 		ID:          id,
@@ -109,8 +112,9 @@ func (b *Board) Create(title, desc, user string) Card {
 		Description: desc,
 		Column:      Todo,
 		CreatedBy:   user,
+		CreatedAt:   now,
 		Activity: []Event{
-			{User: user, Action: "created this card", Created: time.Now()},
+			{User: user, Action: "created this card", Created: now},
 		},
 	}
 	b.cards[id] = c
@@ -190,13 +194,40 @@ func (b *Board) Delete(id string) bool {
 	return true
 }
 
+// TimeAgo returns a human-readable relative time string.
+func TimeAgo(t time.Time) string {
+	d := time.Since(t)
+	switch {
+	case d < time.Minute:
+		return "just now"
+	case d < time.Hour:
+		m := int(d.Minutes())
+		if m == 1 {
+			return "1 min ago"
+		}
+		return fmt.Sprintf("%d mins ago", m)
+	case d < 24*time.Hour:
+		h := int(d.Hours())
+		if h == 1 {
+			return "1 hour ago"
+		}
+		return fmt.Sprintf("%d hours ago", h)
+	default:
+		days := int(d.Hours() / 24)
+		if days == 1 {
+			return "yesterday"
+		}
+		return fmt.Sprintf("%d days ago", days)
+	}
+}
+
 // newID generates a short random identifier for cards.
 func newID() string {
 	return rand.Text()[:12]
 }
 
-// add inserts a seeded card without locking (used during construction).
-func (b *Board) add(col Column, title, desc, user string) {
+// addAt inserts a seeded card without locking (used during construction).
+func (b *Board) addAt(col Column, title, desc, user string, at time.Time) {
 	id := newID()
 	b.cards[id] = &Card{
 		ID:          id,
@@ -204,8 +235,9 @@ func (b *Board) add(col Column, title, desc, user string) {
 		Description: desc,
 		Column:      col,
 		CreatedBy:   user,
+		CreatedAt:   at,
 		Activity: []Event{
-			{User: user, Action: "created this card", Created: time.Now()},
+			{User: user, Action: "created this card", Created: at},
 		},
 	}
 	b.order[col] = append(b.order[col], id)

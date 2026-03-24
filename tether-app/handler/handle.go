@@ -1,6 +1,8 @@
 package handler
 
 import (
+	"fmt"
+
 	"github.com/jpl-au/tether"
 
 	"github.com/jpl-au/fluent-examples/tether-app/store"
@@ -39,18 +41,23 @@ func Handle(board *store.Board, group *tether.Group[State]) func(tether.Session,
 				sess.ReplaceURL("/card/" + c.ID)
 				s.View = "detail"
 				s.SelectedID = c.ID
+				notify(group, sess, fmt.Sprintf("%s created \"%s\"", s.Name, title))
 			} else {
 				board.Update(id, title, desc, s.Name)
 				sess.ReplaceURL("/")
 				s.View = "board"
 				s.SelectedID = ""
+				notify(group, sess, fmt.Sprintf("%s updated \"%s\"", s.Name, title))
 			}
 			refresh(group)
 
 		case "card.move":
 			id, _ := ev.Get("id")
 			col, _ := ev.Int("column")
-			board.Move(id, store.Column(col), s.Name)
+			if c, ok := board.Card(id); ok {
+				board.Move(id, store.Column(col), s.Name)
+				notify(group, sess, fmt.Sprintf("%s moved \"%s\" to %s", s.Name, c.Title, store.Column(col)))
+			}
 			refresh(group)
 
 		case "card.select":
@@ -66,7 +73,10 @@ func Handle(board *store.Board, group *tether.Group[State]) func(tether.Session,
 
 		case "card.delete":
 			id, _ := ev.Get("id")
-			board.Delete(id)
+			if c, ok := board.Card(id); ok {
+				board.Delete(id)
+				notify(group, sess, fmt.Sprintf("%s deleted \"%s\"", s.Name, c.Title))
+			}
 			s.View = "board"
 			s.SelectedID = ""
 			sess.ReplaceURL("/")
@@ -76,11 +86,18 @@ func Handle(board *store.Board, group *tether.Group[State]) func(tether.Session,
 	}
 }
 
-// refresh triggers a re-render on every connected session. Because
-// the render function reads from the shared store, all sessions pick
-// up the latest board state.
+// refresh triggers a re-render on every connected session.
 func refresh(group *tether.Group[State]) {
 	group.Broadcast(func(_ *tether.StatefulSession[State], s State) State {
+		return s
+	})
+}
+
+// notify sends a toast to every session except the one that caused
+// the action. Named users see what others are doing in real time.
+func notify(group *tether.Group[State], sender tether.Session, msg string) {
+	group.BroadcastOthers(sender, func(sess *tether.StatefulSession[State], s State) State {
+		sess.Toast(msg)
 		return s
 	})
 }
