@@ -1,11 +1,3 @@
-// Package handler provides HTTP request handlers for the contact
-// manager. Each handler follows the PRG (Post-Redirect-Get) pattern:
-// GET handlers render pages, POST handlers mutate state and redirect.
-//
-// This file demonstrates all three JIT strategies across different
-// handlers, using both the Global API (string-keyed registry) and the
-// Instance API (fine-grained control) to show the full range of
-// fluent-jit usage.
 package handler
 
 import (

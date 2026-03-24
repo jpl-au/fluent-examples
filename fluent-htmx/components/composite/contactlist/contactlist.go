@@ -37,6 +37,9 @@ func Item(c store.Contact) node.Node {
 		noteLabel = "1 note"
 	}
 
+	// Progressive enhancement: Href provides a standard link for
+	// non-JS clients; HxGet upgrades it to swap just the content
+	// partial when htmx is available.
 	href := "/contacts/" + c.ID
 	nameLink := a.Text(c.Name).Href(href).Class("contact-name")
 	htmx.New(nameLink).HxGet(href).HxTarget("#content").HxPushURL(href).HxSwap(swap.InnerHTML)

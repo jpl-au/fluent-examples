@@ -66,7 +66,10 @@ func Document(pageTitle string, headerActions node.Node, content ...node.Node) n
 	return document(pageTitle, headerActions, nil, content...)
 }
 
-// document builds the full HTML document node tree.
+// document builds the full HTML document node tree. Scripts are
+// appended as the last children of body so the DOM is fully parsed
+// before any JavaScript executes, avoiding the need for defer/async
+// attributes or DOMContentLoaded listeners.
 func document(pageTitle string, headerActions node.Node, scripts []string, content ...node.Node) node.Node {
 	children := []node.Node{Shell(pageTitle, headerActions, content...)}
 	for _, src := range scripts {

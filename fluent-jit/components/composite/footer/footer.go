@@ -13,9 +13,9 @@ import (
 func New() node.Node {
 	return el.New(
 		a.New().Href("/").Text("Home").Class("footer-link"),
-		span.Static("\u00b7").Class("footer-sep"),
+		span.Static("\u00b7").Class("footer-sep"), // middle dot separator (U+00B7)
 		a.New().Href("/ws").Text("WebSocket Demo").Class("footer-link"),
-		span.Static("\u00b7").Class("footer-sep"),
+		span.Static("\u00b7").Class("footer-sep"), // middle dot separator (U+00B7)
 		a.New().Href("/sse").Text("SSE Demo").Class("footer-link"),
 	).Class("footer")
 }

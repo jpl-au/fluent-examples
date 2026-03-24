@@ -27,6 +27,9 @@ type Note struct {
 	Created time.Time
 }
 
+// Package-level state. The contacts map is guarded by mu (read-lock
+// for queries, write-lock for mutations). The atomic counters are
+// independent of the mutex and safe to call without holding it.
 var (
 	mu       sync.RWMutex
 	contacts = map[string]Contact{}
@@ -35,14 +38,20 @@ var (
 	noteSeq    atomic.Int64
 )
 
+// nextContactID returns a unique contact identifier by atomically
+// incrementing the contact sequence counter.
 func nextContactID() string {
 	return fmt.Sprintf("c%d", contactSeq.Add(1))
 }
 
+// nextNoteID returns a unique note identifier by atomically
+// incrementing the note sequence counter.
 func nextNoteID() string {
 	return fmt.Sprintf("n%d", noteSeq.Add(1))
 }
 
+// init seeds the store with demo contacts and notes so the
+// application has data to display immediately on first launch.
 func init() {
 	alice := Contact{
 		ID:    nextContactID(),

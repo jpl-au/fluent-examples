@@ -13,6 +13,7 @@ import (
 
 // New builds the bottom navigation bar with links to the live demos.
 func New() node.Node {
+	// U+00B7 middle dot used as a visual separator between links.
 	return el.New(
 		a.New().Href("/").Text("Home").Class("footer-link"),
 		span.Static("\u00b7").Class("footer-sep"),

@@ -31,6 +31,9 @@ func New(contactID string, notes []store.Note) node.Node {
 // Item renders a single note with content, timestamp, and a delete
 // button. The delete form uses HTMX to swap the content in place.
 func Item(contactID string, n store.Note) node.Node {
+	// Progressive enhancement: form.Post provides a standard form
+	// submission for non-JS clients; HxPost upgrades it to swap just
+	// the content partial when htmx is available.
 	action := "/contacts/" + contactID + "/notes/" + n.ID + "/delete"
 	f := form.Post(action)
 	htmx.New(f).HxPost(action).HxTarget("#content").HxSwap(swap.InnerHTML)

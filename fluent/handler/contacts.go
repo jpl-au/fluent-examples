@@ -1,6 +1,3 @@
-// Package handler provides HTTP request handlers for the contact
-// manager. Each handler follows the PRG (Post-Redirect-Get) pattern:
-// GET handlers render pages, POST handlers mutate state and redirect.
 package handler
 
 import (

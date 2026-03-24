@@ -1,11 +1,3 @@
-// Package handler provides HTTP request handlers for the contact
-// manager. Each GET handler checks htmx.HxRequest(r) to decide
-// whether to return a full page or just the content partial. POST
-// handlers use htmx.Handle(r, func(){}) to return updated partials
-// instead of redirecting - HTMX swaps the content in place.
-//
-// Partial responses include an out-of-band header swap so the page
-// title and header actions update alongside the content.
 package handler
 
 import (

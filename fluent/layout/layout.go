@@ -32,7 +32,9 @@ func PageWithScripts(w http.ResponseWriter, t string, actions node.Node, scripts
 	doc(t, actions, scripts, content...).Render(w)
 }
 
-// doc builds the full HTML document node tree.
+// doc builds the full HTML document node tree. Scripts are appended
+// as the last children of <body> so that the DOM is fully parsed and
+// ready before any JavaScript executes.
 func doc(t string, actions node.Node, scripts []string, content ...node.Node) node.Node {
 	children := []node.Node{Shell(t, actions, content...)}
 	for _, src := range scripts {

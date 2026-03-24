@@ -10,8 +10,3 @@ require (
 )
 
 require github.com/klauspost/compress v1.17.9 // indirect
-
-replace (
-	github.com/jpl-au/fluent => ../../fluent
-	github.com/jpl-au/fluent-jit => ../../fluent-jit
-)

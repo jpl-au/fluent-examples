@@ -27,6 +27,8 @@ type Note struct {
 	Created time.Time
 }
 
+// mu guards the contacts map for concurrent access. The sequence
+// counters use atomic operations and do not require the mutex.
 var (
 	mu       sync.RWMutex
 	contacts = map[string]Contact{}
@@ -35,14 +37,18 @@ var (
 	noteSeq    atomic.Int64
 )
 
+// nextContactID returns a unique contact identifier (e.g. "c1", "c2").
 func nextContactID() string {
 	return fmt.Sprintf("c%d", contactSeq.Add(1))
 }
 
+// nextNoteID returns a unique note identifier (e.g. "n1", "n2").
 func nextNoteID() string {
 	return fmt.Sprintf("n%d", noteSeq.Add(1))
 }
 
+// init seeds the store with demo contacts so the application has
+// data to display on first launch.
 func init() {
 	alice := Contact{
 		ID:    nextContactID(),
