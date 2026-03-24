@@ -18,6 +18,8 @@ func Handle(board *store.Board, group *tether.Group[State]) func(tether.Session,
 				s.Name = name
 				s.View = "board"
 				sess.ReplaceURL("/")
+				board.Claim(name)
+				refresh(group)
 			}
 
 		case "card.new":

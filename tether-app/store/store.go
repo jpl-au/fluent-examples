@@ -159,6 +159,24 @@ func (b *Board) Update(id, title, desc, user string) bool {
 	return true
 }
 
+// Claim assigns all cards with no real owner to the given user.
+// Called when the first person joins so the seed data feels like
+// theirs rather than belonging to "System".
+func (b *Board) Claim(user string) {
+	b.mu.Lock()
+	defer b.mu.Unlock()
+	for _, c := range b.cards {
+		if c.CreatedBy == "System" {
+			c.CreatedBy = user
+			c.Activity = append(c.Activity, Event{
+				User:    user,
+				Action:  "claimed this card",
+				Created: time.Now(),
+			})
+		}
+	}
+}
+
 // Delete removes a card from the board.
 func (b *Board) Delete(id string) bool {
 	b.mu.Lock()
