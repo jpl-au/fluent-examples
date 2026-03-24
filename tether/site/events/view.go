@@ -4,6 +4,7 @@ import (
 	"strconv"
 	"time"
 
+	"github.com/jpl-au/fluent/html5/div"
 	"github.com/jpl-au/fluent/html5/dropdown"
 	"github.com/jpl-au/fluent/html5/form"
 	"github.com/jpl-au/fluent/html5/option"
@@ -196,6 +197,24 @@ func Render(s State) node.Node {
 		panel.Card("Viewport Trigger", "Scroll to the bottom of the list - each time the sentinel enters the viewport the server loads five more items. This is the infinite scroll pattern: bind.Viewport on the trailing sentinel triggers automatic pagination. The current page is carried in EventData so the stateless handler knows which batch to append.", "bind.Viewport · bind.EventData", panel.AllTransports,
 			viewportList(s.ViewportPage),
 		),
+
+		panel.Card("Paste Event", "Paste text into the input below. The pasted content is sent to the server via bind.OnPaste and displayed in the result. The pasted text arrives in ev.Value().", "bind.OnPaste", panel.AllTransports,
+			layout.Stack(
+				bind.Apply(field.Text("paste-input", "Paste something here..."), bind.OnPaste("events.paste")),
+				pasteResult(s.PasteResult),
+			),
+		),
+
+		panel.Card("Context Menu", "Right-click the box below. The browser's default context menu is suppressed via bind.PreventDefault and the event is sent to the server instead.", "bind.Event · bind.PreventDefault", panel.AllTransports,
+			layout.Stack(
+				bind.Apply(
+					div.New(result.Block("Right-click me")),
+					bind.Event("contextmenu", "events.contextmenu"),
+					bind.PreventDefault(),
+				),
+				contextMenuResult(s.ContextMenuResult),
+			),
+		),
 	)
 }
 
@@ -297,6 +316,22 @@ func colourResult(val string) node.Node {
 func resetResult(val string) node.Node {
 	if val == "" {
 		return layout.Container()
+	}
+	return result.Success(val)
+}
+
+// pasteResult renders the paste demo outcome.
+func pasteResult(val string) node.Node {
+	if val == "" {
+		return hint.Text("Paste into the input to see the server response.")
+	}
+	return result.Success(val)
+}
+
+// contextMenuResult renders the context menu demo outcome.
+func contextMenuResult(val string) node.Node {
+	if val == "" {
+		return hint.Text("Right-click the box above.")
 	}
 	return result.Success(val)
 }

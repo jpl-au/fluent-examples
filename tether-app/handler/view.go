@@ -83,7 +83,7 @@ func boardView(b *store.Board, viewers *Viewers, sessionID string) node.Node {
 	return board.New(cols...)
 }
 
-// columnView wraps a column component as a drop target.
+// columnView wraps a column component as a sortable drop zone.
 func columnView(col store.Column, cards []node.Node) node.Node {
 	var content node.Node
 	if len(cards) == 0 {
@@ -94,7 +94,7 @@ func columnView(col store.Column, cards []node.Node) node.Node {
 
 	return bind.Apply(
 		div.New(content).Class("drop-zone"),
-		bind.DropTarget("card.move"),
+		bind.Sortable("card.move"),
 		bind.EventData("column", strconv.Itoa(int(col))),
 	).Dynamic("col-" + strconv.Itoa(int(col)))
 }

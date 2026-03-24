@@ -145,6 +145,39 @@ func (b *Board) Move(id string, col Column, user string) bool {
 	return true
 }
 
+// MoveAt relocates a card to a column at a specific index. An index
+// of -1 appends to the end. Also handles within-column reordering.
+func (b *Board) MoveAt(id string, col Column, idx int, user string) bool {
+	b.mu.Lock()
+	defer b.mu.Unlock()
+	c, ok := b.cards[id]
+	if !ok {
+		return false
+	}
+	old := c.Column
+	b.order[old] = remove(b.order[old], id)
+	c.Column = col
+
+	order := b.order[col]
+	switch {
+	case idx < 0 || idx >= len(order):
+		b.order[col] = append(order, id)
+	default:
+		b.order[col] = append(order[:idx], append([]string{id}, order[idx:]...)...)
+	}
+
+	action := fmt.Sprintf("moved from %s to %s", old, col)
+	if old == col {
+		action = fmt.Sprintf("reordered in %s", col)
+	}
+	c.Activity = append(c.Activity, Event{
+		User:    user,
+		Action:  action,
+		Created: time.Now(),
+	})
+	return true
+}
+
 // Update modifies a card's title and description.
 func (b *Board) Update(id, title, desc, user string) bool {
 	b.mu.Lock()

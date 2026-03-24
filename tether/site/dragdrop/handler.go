@@ -47,16 +47,41 @@ func snapshot() []Item {
 	return out
 }
 
-// moveItem moves an item to the target zone.
-func moveItem(id, zone string) {
+// moveItem moves an item to the target zone at the given index.
+// An index of -1 appends to the end.
+func moveItem(id, zone string, idx int) {
 	board.mu.Lock()
 	defer board.mu.Unlock()
+
+	// Remove from current position.
+	var item Item
+	found := false
 	for i := range board.items {
 		if board.items[i].ID == id {
-			board.items[i].Zone = zone
-			return
+			item = board.items[i]
+			board.items = append(board.items[:i], board.items[i+1:]...)
+			found = true
+			break
 		}
 	}
+	if !found {
+		return
+	}
+	item.Zone = zone
+
+	// Insert at the target index among items in the same zone.
+	pos := 0
+	zoneIdx := 0
+	for pos < len(board.items) {
+		if board.items[pos].Zone == zone {
+			if zoneIdx == idx {
+				break
+			}
+			zoneIdx++
+		}
+		pos++
+	}
+	board.items = append(board.items[:pos], append([]Item{item}, board.items[pos:]...)...)
 }
 
 // State is the per-session state.
@@ -117,9 +142,12 @@ func Handle(_ tether.Session, s State, ev tether.Event) State {
 	case "item.drop":
 		id, _ := ev.Get("id")
 		zone, _ := ev.Get("zone")
+		idx, idxErr := ev.Int("index")
+		if idxErr != nil {
+			idx = -1
+		}
 		if id != "" && zone != "" {
-			moveItem(id, zone)
-			// Broadcast to all sessions so every tab sees the move.
+			moveItem(id, zone, idx)
 			ddGroup.Broadcast(func(_ *tether.StatefulSession[State], s State) State {
 				return s
 			})

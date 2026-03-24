@@ -39,6 +39,8 @@ type State struct {
 	ResetResult       string
 	FocusBlurResult   string
 	RawDataResult     string
+	PasteResult       string
+	ContextMenuResult string
 }
 
 // New creates a stateless page handler for the events demo.
@@ -144,6 +146,10 @@ func Handle(sess tether.Session, s State, ev tether.Event) State {
 	case "events.viewport":
 		page, _ := ev.Int("page")
 		s.ViewportPage = page + 1
+	case "events.paste":
+		s.PasteResult = fmt.Sprintf("Pasted: %q", ev.Value())
+	case "events.contextmenu":
+		s.ContextMenuResult = "Context menu intercepted!"
 	}
 	return s
 }

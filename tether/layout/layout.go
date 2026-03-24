@@ -97,6 +97,7 @@ var sidebar = []sidebarGroup{
 			{"/freeze/", "Freeze & Restore"},
 			{"/hotkey/", "Hotkeys"},
 			{"/dragdrop/", "Drag and Drop"},
+			{"/scroll/", "Scroll"},
 		}},
 	}},
 	{"Observability", []sectionGroup{

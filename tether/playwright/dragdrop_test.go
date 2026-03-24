@@ -121,7 +121,7 @@ func TestDragDropDataTransfer(t *testing.T) {
 		t.Fatalf("evaluate dragstart: %v", err)
 	}
 
-	data, ok := result.(map[string]interface{})
+	data, ok := result.(map[string]any)
 	if !ok {
 		t.Fatalf("unexpected result type: %T", result)
 	}

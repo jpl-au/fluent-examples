@@ -159,3 +159,64 @@ func TestEventsKeydown(t *testing.T) {
 		t.Errorf("result = %q, want to contain 'Enter'", text)
 	}
 }
+
+// TestEventsPaste dispatches a paste event and verifies the server
+// receives the pasted text.
+func TestEventsPaste(t *testing.T) {
+	srv := startApp(t, serverMode())
+	page, cleanup := newPage(t)
+	defer cleanup()
+
+	_, err := page.Goto(srv + "/events")
+	if err != nil {
+		t.Fatalf("goto: %v", err)
+	}
+
+	// Dispatch a paste event with text via JS since Playwright
+	// doesn't have a native paste API.
+	_, err = page.Evaluate(`() => {
+		var el = document.querySelector('[data-tether-paste="events.paste"]');
+		if (!el) return;
+		var dt = new DataTransfer();
+		dt.setData('text', 'hello from clipboard');
+		var ev = new ClipboardEvent('paste', {clipboardData: dt, bubbles: true});
+		el.dispatchEvent(ev);
+	}`)
+	if err != nil {
+		t.Fatalf("dispatch paste: %v", err)
+	}
+
+	result := page.GetByText("hello from clipboard")
+	if err := expect(result).ToBeVisible(); err != nil {
+		t.Errorf("paste result not visible: %v", err)
+	}
+}
+
+// TestEventsContextMenu right-clicks the context menu target and
+// verifies the server receives the event (browser default suppressed).
+func TestEventsContextMenu(t *testing.T) {
+	srv := startApp(t, serverMode())
+	page, cleanup := newPage(t)
+	defer cleanup()
+
+	_, err := page.Goto(srv + "/events")
+	if err != nil {
+		t.Fatalf("goto: %v", err)
+	}
+
+	// Dispatch a contextmenu event via JS. Playwright's right-click
+	// may not trigger the DOM event consistently on all platforms.
+	_, err = page.Evaluate(`() => {
+		var el = document.querySelector('[data-tether-contextmenu]');
+		if (!el) return;
+		el.dispatchEvent(new MouseEvent('contextmenu', {bubbles: true}));
+	}`)
+	if err != nil {
+		t.Fatalf("dispatch contextmenu: %v", err)
+	}
+
+	result := page.GetByText("Context menu intercepted!")
+	if err := expect(result).ToBeVisible(); err != nil {
+		t.Errorf("context menu result not visible: %v", err)
+	}
+}

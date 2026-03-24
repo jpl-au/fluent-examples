@@ -56,8 +56,12 @@ func Handle(board *store.Board, group *tether.Group[State], viewers *Viewers) fu
 		case "card.move":
 			id, _ := ev.Get("id")
 			col, _ := ev.Int("column")
+			idx, idxErr := ev.Int("index")
+			if idxErr != nil {
+				idx = -1
+			}
 			if c, ok := board.Card(id); ok {
-				board.Move(id, store.Column(col), s.Name)
+				board.MoveAt(id, store.Column(col), idx, s.Name)
 				notify(group, sess, fmt.Sprintf("%s moved \"%s\" to %s", s.Name, c.Title, store.Column(col)))
 			}
 			refresh(group)
