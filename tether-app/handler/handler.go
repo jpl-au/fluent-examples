@@ -20,15 +20,10 @@ import (
 	"github.com/jpl-au/fluent-examples/tether-app/store"
 )
 
-// online tracks the number of connected sessions. The header badge
-// binds to the "online_count" signal for reactive updates.
-var online *tether.Value[int]
-
 // New creates the kanban board handler. A single handler serves all
 // connected browsers; board state is shared via the store and
 // synchronised across sessions with Group.Broadcast.
 func New(board *store.Board, assets *tether.Asset) *tether.Handler[State] {
-	online = tether.NewValue(0)
 	group := tether.NewGroup[State]()
 	viewers := NewViewers()
 
@@ -42,7 +37,7 @@ func New(board *store.Board, assets *tether.Asset) *tether.Handler[State] {
 		Fallback: sse.Upgrade(),
 
 		InitialState: func(_ *http.Request) State {
-			return State{View: "board", OnlineCount: online.Load()}
+			return State{View: "board", OnlineCount: group.Len()}
 		},
 		Render:     Render(board, viewers),
 		Handle:     Handle(board, group, viewers),
@@ -61,29 +56,33 @@ func New(board *store.Board, assets *tether.Asset) *tether.Handler[State] {
 		},
 
 		Groups: []*tether.Group[State]{group},
-		Watchers: []tether.Watcher[State]{
-			tether.WatchValue(online, func(n int, s State) State {
-				s.OnlineCount = n
-				return s
-			}),
-		},
 
 		// Generous idle timeout for a demo app.
 		Timeouts: tether.Timeouts{Idle: 10 * time.Minute},
 
 		OnConnect: func(sess *tether.StatefulSession[State]) {
 			slog.Info("connected", "id", sess.ID()[:8])
-			online.Update(func(n int) int { return n + 1 })
-			sess.Signal("online_count", online.Load())
+			sess.Signal("online_count", group.Len())
 			sess.Update(func(s State) State {
 				s.SessionID = sess.ID()
+				s.OnlineCount = group.Len()
+				return s
+			})
+			// Update all other sessions with the new count.
+			group.BroadcastOthers(sess, func(_ *tether.StatefulSession[State], s State) State {
+				s.OnlineCount = group.Len()
 				return s
 			})
 		},
 		OnDisconnect: func(sess *tether.StatefulSession[State]) {
 			slog.Info("disconnected", "id", sess.ID()[:8])
-			online.Update(func(n int) int { return n - 1 })
 			viewers.Clear(sess.ID())
+			// Remaining sessions get the updated count.
+			group.Broadcast(func(s *tether.StatefulSession[State], st State) State {
+				st.OnlineCount = group.Len()
+				s.Signal("online_count", group.Len())
+				return st
+			})
 		},
 	})
 }
