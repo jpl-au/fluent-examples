@@ -1,0 +1,110 @@
+package handler
+
+import (
+	"strconv"
+
+	"github.com/jpl-au/fluent/html5/div"
+	"github.com/jpl-au/fluent/html5/h1"
+	"github.com/jpl-au/fluent/html5/p"
+	"github.com/jpl-au/fluent/node"
+	"github.com/jpl-au/tether/bind"
+
+	"github.com/jpl-au/fluent-examples/tether-app/components/composite/board"
+	ccard "github.com/jpl-au/fluent-examples/tether-app/components/composite/card"
+	"github.com/jpl-au/fluent-examples/tether-app/components/composite/column"
+	"github.com/jpl-au/fluent-examples/tether-app/components/composite/detail"
+	"github.com/jpl-au/fluent-examples/tether-app/components/simple/button"
+	"github.com/jpl-au/fluent-examples/tether-app/components/simple/field"
+	"github.com/jpl-au/fluent-examples/tether-app/layout"
+	"github.com/jpl-au/fluent-examples/tether-app/store"
+)
+
+// Render returns the top-level render function. It closes over the
+// board store so the view always reads the latest shared state.
+func Render(b *store.Board) func(State) node.Node {
+	return func(s State) node.Node {
+		// Show landing page until the user sets a name.
+		if s.Name == "" {
+			return landing()
+		}
+
+		var content node.Node
+		if s.View == "detail" {
+			if c, ok := b.Card(s.SelectedID); ok {
+				content = detail.New(c)
+			} else {
+				content = boardView(b)
+			}
+		} else {
+			content = boardView(b)
+		}
+
+		return layout.Shell(s.Name, s.OnlineCount, addCardForm(), content)
+	}
+}
+
+// landing renders the name entry page shown on first visit. The
+// hidden draggable marker ensures tether-drag-and-drop.js is
+// auto-included in the initial page load so DnD works immediately
+// when the board appears after naming.
+func landing() node.Node {
+	return div.New(
+		div.New(
+			h1.New().Class("landing-title").Text("Kanban Board"),
+			p.New().Class("landing-desc").Text("A collaborative board powered by Tether. Enter your name to get started."),
+			bind.Apply(
+				field.Inline(
+					field.Text("name", "Your name"),
+					button.Submit("Join"),
+				),
+				bind.OnSubmit("name.set"),
+				bind.AutoFocus(),
+			),
+		).Class("landing-card"),
+		// Hidden marker so the DnD extension JS loads on initial render.
+		bind.Apply(div.New().Class("sr-only"), bind.Draggable()),
+	).Class("landing").Dynamic("landing")
+}
+
+// boardView renders the three-column kanban grid. Each column is a
+// drop target; each card is draggable.
+func boardView(b *store.Board) node.Node {
+	var cols []node.Node
+	for _, col := range store.Columns() {
+		cards := b.Cards(col)
+		var cardNodes []node.Node
+		for _, c := range cards {
+			cardNodes = append(cardNodes, ccard.New(c))
+		}
+		cols = append(cols, columnView(col, cardNodes))
+	}
+	return board.New(cols...)
+}
+
+// columnView wraps a column component as a drop target.
+func columnView(col store.Column, cards []node.Node) node.Node {
+	var content node.Node
+	if len(cards) == 0 {
+		content = column.New(col.String(), 0, column.Empty())
+	} else {
+		content = column.New(col.String(), len(cards), cards...)
+	}
+
+	return bind.Apply(
+		div.New(content).Class("drop-zone"),
+		bind.DropTarget("card.move"),
+		bind.EventData("column", strconv.Itoa(int(col))),
+	).Dynamic("col-" + strconv.Itoa(int(col)))
+}
+
+// addCardForm renders the inline form in the header for creating cards.
+func addCardForm() node.Node {
+	return bind.Apply(
+		field.Inline(
+			field.Text("title", "New card title..."),
+			button.Submit("Add Card"),
+		),
+		bind.OnSubmit("card.create"),
+		bind.Reset(),
+	)
+}

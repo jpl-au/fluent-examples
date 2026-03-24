@@ -1,0 +1,544 @@
+/* Kanban Board - tether-app
+ *
+ * Flat dark theme. System sans-serif for UI text, monospace for
+ * technical elements only. Minimal decoration, borders as primary
+ * visual separators.
+ */
+
+@property --shimmer-angle {
+  syntax: "<angle>";
+  initial-value: 0deg;
+  inherits: false;
+}
+
+/* ------------------------------------------------------------------ */
+/* Design tokens                                                      */
+/* ------------------------------------------------------------------ */
+
+:root {
+  --bg:          #111113;
+  --bg-raised:   #18181b;
+  --bg-inset:    #0e0e10;
+  --fg:          #e4e4e7;
+  --fg-muted:    #71717a;
+  --fg-dim:      #52525b;
+
+  --accent:      #e85050;
+  --accent-dim:  #c44040;
+
+  --success:     #4ade80;
+  --success-dim: #22543d;
+
+  --blue:        #60a5fa;
+  --blue-dim:    #1e3a5f;
+
+  --border:      #27272a;
+  --border-hover:#3f3f46;
+  --input-border:#3f3f46;
+  --ring:        #52525b;
+
+  --radius:      6px;
+  --sans:        ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont,
+                 "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --mono:        ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas,
+                 "Liberation Mono", monospace;
+}
+
+/* ------------------------------------------------------------------ */
+/* Reset                                                              */
+/* ------------------------------------------------------------------ */
+
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  font-family: var(--sans);
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--fg);
+  background: var(--bg);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body { min-height: 100vh; }
+
+a {
+  color: var(--fg);
+  text-decoration: none;
+}
+
+/* ------------------------------------------------------------------ */
+/* Landing page                                                       */
+/* ------------------------------------------------------------------ */
+
+.landing {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  padding: 2rem;
+}
+
+.landing-card {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  max-width: 22rem;
+  width: 100%;
+}
+
+.landing-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: var(--fg);
+}
+
+.landing-desc {
+  font-size: 0.875rem;
+  color: var(--fg-muted);
+  line-height: 1.6;
+}
+
+/* ------------------------------------------------------------------ */
+/* Shell                                                              */
+/* ------------------------------------------------------------------ */
+
+.shell {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  overflow: hidden;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 3.25rem;
+  padding: 0 1.25rem;
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+}
+
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.header h1 {
+  font-size: 0.875rem;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  color: var(--fg);
+}
+
+.header-user {
+  font-size: 0.75rem;
+  color: var(--fg-muted);
+  padding-left: 0.75rem;
+  border-left: 1px solid var(--border);
+}
+
+.header-meta {
+  display: flex;
+  align-items: center;
+}
+
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.content {
+  flex: 1;
+  overflow: hidden;
+  padding: 1rem;
+}
+
+/* ------------------------------------------------------------------ */
+/* Board                                                              */
+/* ------------------------------------------------------------------ */
+
+.board {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+  height: 100%;
+}
+
+/* ------------------------------------------------------------------ */
+/* Column                                                             */
+/* ------------------------------------------------------------------ */
+
+.drop-zone {
+  height: 100%;
+}
+
+.column {
+  display: flex;
+  flex-direction: column;
+  background: var(--bg-raised);
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  height: 100%;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.column-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+}
+
+.column-title {
+  font-size: 0.6875rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--fg-muted);
+}
+
+.column-body {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding: 0.75rem;
+  overflow-y: auto;
+  flex: 1;
+}
+
+.column-placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
+  padding: 2rem 0.75rem;
+}
+
+.column-empty {
+  font-size: 0.8125rem;
+  color: var(--fg-dim);
+}
+
+/* ------------------------------------------------------------------ */
+/* Card                                                               */
+/* ------------------------------------------------------------------ */
+
+.card {
+  position: relative;
+  background: var(--bg);
+  border-radius: calc(var(--radius) - 1px);
+  border: 1px solid var(--border);
+  transition: border-color 120ms, opacity 120ms;
+  cursor: grab;
+}
+
+.card:active {
+  cursor: grabbing;
+}
+
+/* Rotating conic-gradient border shimmer on hover. The pseudo-element
+   draws a gradient behind the card, masked to show only the 1px edge.
+   The animation runs continuously while hovered. */
+.card::before {
+  content: "";
+  position: absolute;
+  inset: -1px;
+  border-radius: inherit;
+  background: conic-gradient(
+    from var(--shimmer-angle),
+    transparent 0%,
+    transparent 30%,
+    var(--blue) 38%,
+    #818cf8 42%,
+    var(--blue) 46%,
+    transparent 54%,
+    transparent 100%
+  );
+  -webkit-mask:
+    linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
+  mask:
+    linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  padding: 1px;
+  opacity: 0;
+  transition: opacity 200ms;
+  pointer-events: none;
+}
+
+.card:hover::before {
+  opacity: 1;
+  animation: shimmer 2.5s linear infinite;
+}
+
+.card:hover {
+  border-color: transparent;
+}
+
+@keyframes shimmer {
+  from { --shimmer-angle: 0deg; }
+  to   { --shimmer-angle: 360deg; }
+}
+
+.card-body {
+  padding: 0.625rem 0.75rem;
+}
+
+.card-title {
+  display: block;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: var(--fg);
+  line-height: 1.4;
+}
+
+.card-desc {
+  font-size: 0.75rem;
+  color: var(--fg-dim);
+  line-height: 1.5;
+  margin-top: 0.125rem;
+}
+
+/* ------------------------------------------------------------------ */
+/* Drag and drop feedback                                             */
+/* ------------------------------------------------------------------ */
+
+.tether-dragging {
+  opacity: 0.4;
+}
+
+.tether-drag-over .column {
+  border-color: var(--blue);
+  background: var(--blue-dim);
+}
+
+/* ------------------------------------------------------------------ */
+/* Detail                                                             */
+/* ------------------------------------------------------------------ */
+
+.detail {
+  max-width: 32rem;
+  padding: 0.5rem 0;
+}
+
+.detail-header {
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+  margin-bottom: 1.25rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.detail-title {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--fg);
+}
+
+.detail-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.detail-actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 0.75rem;
+  border-top: 1px solid var(--border);
+}
+
+.detail-actions-left {
+  display: flex;
+  gap: 0.375rem;
+}
+
+/* ------------------------------------------------------------------ */
+/* Badges                                                             */
+/* ------------------------------------------------------------------ */
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 1px 6px;
+  border-radius: 3px;
+  font-family: var(--mono);
+  font-size: 0.6875rem;
+  font-weight: 500;
+  letter-spacing: 0.01em;
+}
+
+.badge-green {
+  background: var(--success-dim);
+  color: var(--success);
+}
+
+.badge-blue {
+  background: var(--blue-dim);
+  color: var(--blue);
+}
+
+.badge-muted {
+  background: #27272a;
+  color: var(--fg-muted);
+}
+
+.badge-count {
+  background: transparent;
+  color: var(--fg-dim);
+  font-size: 0.6875rem;
+  font-weight: 400;
+}
+
+/* ------------------------------------------------------------------ */
+/* Buttons                                                            */
+/* ------------------------------------------------------------------ */
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.3125rem 0.75rem;
+  border-radius: calc(var(--radius) - 1px);
+  font-family: var(--sans);
+  font-size: 0.8125rem;
+  font-weight: 500;
+  line-height: 1.5;
+  border: 1px solid var(--border);
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background 100ms, border-color 100ms;
+}
+
+.btn:focus-visible {
+  outline: 1px solid var(--ring);
+  outline-offset: 1px;
+}
+
+.btn-primary {
+  background: var(--fg);
+  color: var(--bg);
+  border-color: var(--fg);
+}
+
+.btn-primary:hover {
+  background: #d4d4d8;
+  border-color: #d4d4d8;
+}
+
+.btn-secondary {
+  background: transparent;
+  color: var(--fg-muted);
+  border-color: var(--border);
+}
+
+.btn-secondary:hover {
+  color: var(--fg);
+  border-color: var(--border-hover);
+}
+
+.btn-danger {
+  background: transparent;
+  color: var(--accent);
+  border-color: var(--accent-dim);
+}
+
+.btn-danger:hover {
+  background: rgba(232, 80, 80, 0.08);
+}
+
+.btn-sm {
+  padding: 0.1875rem 0.5rem;
+  font-size: 0.75rem;
+}
+
+/* ------------------------------------------------------------------ */
+/* Forms                                                              */
+/* ------------------------------------------------------------------ */
+
+.input {
+  display: block;
+  max-width: 24rem;
+  width: 100%;
+  padding: 0.3125rem 0.625rem;
+  border: 1px solid var(--border);
+  border-radius: calc(var(--radius) - 1px);
+  font-family: var(--sans);
+  font-size: 0.8125rem;
+  line-height: 1.5;
+  color: var(--fg);
+  background: var(--bg-inset);
+  transition: border-color 100ms;
+}
+
+.input:focus {
+  border-color: var(--fg-dim);
+  outline: none;
+}
+
+.input::placeholder {
+  color: var(--fg-dim);
+}
+
+.textarea {
+  min-height: 5rem;
+  resize: vertical;
+  font-family: var(--sans);
+}
+
+.label {
+  display: block;
+  font-size: 0.6875rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--fg-muted);
+  margin-bottom: 0.25rem;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+}
+
+.form-inline {
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+}
+
+.form-inline .input {
+  max-width: 14rem;
+}
+
+/* ------------------------------------------------------------------ */
+/* Utility                                                            */
+/* ------------------------------------------------------------------ */
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
