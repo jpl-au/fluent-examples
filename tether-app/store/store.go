@@ -4,9 +4,10 @@
 package store
 
 import (
+	"crypto/rand"
 	"fmt"
 	"sync"
-	"sync/atomic"
+	"time"
 )
 
 // Column identifies a kanban swimlane.
@@ -36,12 +37,21 @@ func (c Column) String() string {
 // Columns returns all column values in display order.
 func Columns() []Column { return []Column{Todo, InProgress, Done} }
 
+// Event records a single action taken on a card.
+type Event struct {
+	User    string
+	Action  string
+	Created time.Time
+}
+
 // Card is a single kanban card.
 type Card struct {
 	ID          string
 	Title       string
 	Description string
 	Column      Column
+	CreatedBy   string
+	Activity    []Event
 }
 
 // Board holds the shared kanban state.
@@ -49,18 +59,17 @@ type Board struct {
 	mu    sync.RWMutex
 	cards map[string]*Card
 	order [columnCount][]string // card IDs per column, in display order
-	seq   atomic.Int64
 }
 
 // New creates a board seeded with example cards.
 func New() *Board {
 	b := &Board{cards: make(map[string]*Card)}
-	b.add(Todo, "Set up CI pipeline", "Configure GitHub Actions for automated builds and tests.")
-	b.add(Todo, "Write API documentation", "Document all public endpoints with request and response examples.")
-	b.add(InProgress, "Design landing page", "Create mockups for the marketing site hero section.")
-	b.add(InProgress, "Implement user auth", "Add session-based authentication with login and registration flows.")
-	b.add(Done, "Project kickoff", "Align on goals, timeline, and responsibilities.")
-	b.add(Done, "Choose tech stack", "Evaluate options and commit to Go, Tether, and Fluent.")
+	b.add(Todo, "Set up CI pipeline", "Configure GitHub Actions for automated builds and tests.", "System")
+	b.add(Todo, "Write API documentation", "Document all public endpoints with request and response examples.", "System")
+	b.add(InProgress, "Design landing page", "Create mockups for the marketing site hero section.", "System")
+	b.add(InProgress, "Implement user auth", "Add session-based authentication with login and registration flows.", "System")
+	b.add(Done, "Project kickoff", "Align on goals, timeline, and responsibilities.", "System")
+	b.add(Done, "Choose tech stack", "Evaluate options and commit to Go, Tether, and Fluent.", "System")
 	return b
 }
 
@@ -90,18 +99,27 @@ func (b *Board) Card(id string) (Card, bool) {
 }
 
 // Create adds a new card to the To Do column and returns it.
-func (b *Board) Create(title, desc string) Card {
+func (b *Board) Create(title, desc, user string) Card {
 	b.mu.Lock()
 	defer b.mu.Unlock()
-	id := fmt.Sprintf("card-%d", b.seq.Add(1))
-	c := &Card{ID: id, Title: title, Description: desc, Column: Todo}
+	id := newID()
+	c := &Card{
+		ID:          id,
+		Title:       title,
+		Description: desc,
+		Column:      Todo,
+		CreatedBy:   user,
+		Activity: []Event{
+			{User: user, Action: "created this card", Created: time.Now()},
+		},
+	}
 	b.cards[id] = c
 	b.order[Todo] = append(b.order[Todo], id)
 	return *c
 }
 
 // Move relocates a card to a different column.
-func (b *Board) Move(id string, col Column) bool {
+func (b *Board) Move(id string, col Column, user string) bool {
 	b.mu.Lock()
 	defer b.mu.Unlock()
 	c, ok := b.cards[id]
@@ -109,14 +127,22 @@ func (b *Board) Move(id string, col Column) bool {
 		return false
 	}
 	old := c.Column
+	if old == col {
+		return false
+	}
 	b.order[old] = remove(b.order[old], id)
 	c.Column = col
 	b.order[col] = append(b.order[col], id)
+	c.Activity = append(c.Activity, Event{
+		User:    user,
+		Action:  fmt.Sprintf("moved from %s to %s", old, col),
+		Created: time.Now(),
+	})
 	return true
 }
 
 // Update modifies a card's title and description.
-func (b *Board) Update(id, title, desc string) bool {
+func (b *Board) Update(id, title, desc, user string) bool {
 	b.mu.Lock()
 	defer b.mu.Unlock()
 	c, ok := b.cards[id]
@@ -125,6 +151,11 @@ func (b *Board) Update(id, title, desc string) bool {
 	}
 	c.Title = title
 	c.Description = desc
+	c.Activity = append(c.Activity, Event{
+		User:    user,
+		Action:  "updated this card",
+		Created: time.Now(),
+	})
 	return true
 }
 
@@ -141,10 +172,24 @@ func (b *Board) Delete(id string) bool {
 	return true
 }
 
+// newID generates a short random identifier for cards.
+func newID() string {
+	return rand.Text()[:12]
+}
+
 // add inserts a seeded card without locking (used during construction).
-func (b *Board) add(col Column, title, desc string) {
-	id := fmt.Sprintf("card-%d", b.seq.Add(1))
-	b.cards[id] = &Card{ID: id, Title: title, Description: desc, Column: col}
+func (b *Board) add(col Column, title, desc, user string) {
+	id := newID()
+	b.cards[id] = &Card{
+		ID:          id,
+		Title:       title,
+		Description: desc,
+		Column:      col,
+		CreatedBy:   user,
+		Activity: []Event{
+			{User: user, Action: "created this card", Created: time.Now()},
+		},
+	}
 	b.order[col] = append(b.order[col], id)
 }
 

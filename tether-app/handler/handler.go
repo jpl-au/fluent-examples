@@ -3,6 +3,8 @@ package handler
 import (
 	"log/slog"
 	"net/http"
+	"strings"
+	"time"
 
 	"github.com/jpl-au/fluent/html5/body"
 	"github.com/jpl-au/fluent/html5/head"
@@ -41,8 +43,9 @@ func New(board *store.Board, assets *tether.Asset) *tether.Handler[State] {
 		InitialState: func(_ *http.Request) State {
 			return State{View: "board", OnlineCount: online.Load()}
 		},
-		Render: Render(board),
-		Handle: Handle(board, group),
+		Render:     Render(board),
+		Handle:     Handle(board, group),
+		OnNavigate: navigate(board),
 
 		Layout: func(_ State, content node.Node) node.Node {
 			return html.New(
@@ -64,6 +67,9 @@ func New(board *store.Board, assets *tether.Asset) *tether.Handler[State] {
 			}),
 		},
 
+		// Generous idle timeout for a demo app.
+		Timeouts: tether.Timeouts{Idle: 10 * time.Minute},
+
 		OnConnect: func(sess *tether.StatefulSession[State]) {
 			slog.Info("connected", "id", sess.ID()[:8])
 			online.Update(func(n int) int { return n + 1 })
@@ -74,4 +80,30 @@ func New(board *store.Board, assets *tether.Asset) *tether.Handler[State] {
 			online.Update(func(n int) int { return n - 1 })
 		},
 	})
+}
+
+// navigate handles URL-driven state. When the browser navigates to
+// /card/<id>, the detail view opens. When it navigates to /, the
+// board view shows. This runs on initial page load and on
+// back/forward navigation.
+func navigate(board *store.Board) func(tether.Session, State, tether.Params) State {
+	return func(_ tether.Session, s State, p tether.Params) State {
+		path := p.Path
+		if after, ok := strings.CutPrefix(path, "/card/"); ok {
+			id := after
+			if _, ok := board.Card(id); ok {
+				s.View = "detail"
+				s.SelectedID = id
+				return s
+			}
+		}
+		if path == "/new" {
+			s.View = "detail"
+			s.SelectedID = ""
+			return s
+		}
+		s.View = "board"
+		s.SelectedID = ""
+		return s
+	}
 }

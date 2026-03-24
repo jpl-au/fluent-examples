@@ -24,15 +24,15 @@ import (
 func New(c store.Card) node.Node {
 	isNew := c.ID == ""
 
-	title := "New Card"
-	if !isNew {
-		title = c.Title
-	}
-
 	back := bind.Apply(
 		a.New().Class("detail-back").Add(span.Text("\u2190 Back to Board")),
 		bind.OnClick("card.back"),
 	)
+
+	title := "New Card"
+	if !isNew {
+		title = c.Title
+	}
 
 	header := div.New(
 		back,
@@ -61,11 +61,32 @@ func New(c store.Card) node.Node {
 		bind.OnSubmit("card.save"),
 	)
 
-	return div.New(header, f).Class("detail").Dynamic("detail")
+	return div.New(header, f, activity(c.Activity)).Class("detail").Dynamic("detail")
 }
 
-// overflow renders the three-dot menu for existing cards. Contains
-// the delete action. Hidden for new cards.
+// activity renders the card's event log. Hidden for new cards.
+func activity(events []store.Event) node.Node {
+	if len(events) == 0 {
+		return nil
+	}
+
+	items := make([]node.Node, len(events))
+	for i := len(events) - 1; i >= 0; i-- {
+		ev := events[i]
+		items[len(events)-1-i] = div.New(
+			span.New().Class("activity-user").Text(ev.User),
+			span.New().Class("activity-action").Text(ev.Action),
+			span.New().Class("activity-time").Text(ev.Created.Format("15:04")),
+		).Class("activity-item")
+	}
+
+	return div.New(
+		span.New().Class("activity-title").Text("Activity"),
+		div.New(items...).Class("activity-list"),
+	).Class("activity-section")
+}
+
+// overflow renders the three-dot menu for existing cards.
 func overflow(c store.Card, isNew bool) node.Node {
 	if isNew {
 		return nil

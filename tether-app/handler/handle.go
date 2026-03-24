@@ -10,18 +10,20 @@ import (
 // applied to the shared store and then broadcast to every session
 // via Group.Broadcast so all browsers stay in sync.
 func Handle(board *store.Board, group *tether.Group[State]) func(tether.Session, State, tether.Event) State {
-	return func(_ tether.Session, s State, ev tether.Event) State {
+	return func(sess tether.Session, s State, ev tether.Event) State {
 		switch ev.Action {
 		case "name.set":
 			name, _ := ev.Get("name")
 			if name != "" {
 				s.Name = name
 				s.View = "board"
+				sess.ReplaceURL("/")
 			}
 
 		case "card.new":
 			s.View = "detail"
 			s.SelectedID = ""
+			sess.ReplaceURL("/new")
 
 		case "card.save":
 			id, _ := ev.Get("id")
@@ -31,35 +33,41 @@ func Handle(board *store.Board, group *tether.Group[State]) func(tether.Session,
 				return s
 			}
 			if id == "" {
-				c := board.Create(title, desc)
-				id = c.ID
+				c := board.Create(title, desc, s.Name)
+				sess.ReplaceURL("/card/" + c.ID)
+				s.View = "detail"
+				s.SelectedID = c.ID
 			} else {
-				board.Update(id, title, desc)
+				board.Update(id, title, desc, s.Name)
+				sess.ReplaceURL("/")
+				s.View = "board"
+				s.SelectedID = ""
 			}
-			s.View = "board"
-			s.SelectedID = ""
 			refresh(group)
 
 		case "card.move":
 			id, _ := ev.Get("id")
 			col, _ := ev.Int("column")
-			board.Move(id, store.Column(col))
+			board.Move(id, store.Column(col), s.Name)
 			refresh(group)
 
 		case "card.select":
 			id, _ := ev.Get("id")
 			s.View = "detail"
 			s.SelectedID = id
+			sess.ReplaceURL("/card/" + id)
 
 		case "card.back":
 			s.View = "board"
 			s.SelectedID = ""
+			sess.ReplaceURL("/")
 
 		case "card.delete":
 			id, _ := ev.Get("id")
 			board.Delete(id)
 			s.View = "board"
 			s.SelectedID = ""
+			sess.ReplaceURL("/")
 			refresh(group)
 		}
 		return s
