@@ -30,6 +30,7 @@ var online *tether.Value[int]
 func New(board *store.Board, assets *tether.Asset) *tether.Handler[State] {
 	online = tether.NewValue(0)
 	group := tether.NewGroup[State]()
+	viewers := NewViewers()
 
 	return tether.Stateful(tether.App{
 		DevMode: true,
@@ -43,8 +44,8 @@ func New(board *store.Board, assets *tether.Asset) *tether.Handler[State] {
 		InitialState: func(_ *http.Request) State {
 			return State{View: "board", OnlineCount: online.Load()}
 		},
-		Render:     Render(board),
-		Handle:     Handle(board, group),
+		Render:     Render(board, viewers),
+		Handle:     Handle(board, group, viewers),
 		OnNavigate: navigate(board),
 
 		Layout: func(_ State, content node.Node) node.Node {
@@ -74,10 +75,15 @@ func New(board *store.Board, assets *tether.Asset) *tether.Handler[State] {
 			slog.Info("connected", "id", sess.ID()[:8])
 			online.Update(func(n int) int { return n + 1 })
 			sess.Signal("online_count", online.Load())
+			sess.Update(func(s State) State {
+				s.SessionID = sess.ID()
+				return s
+			})
 		},
 		OnDisconnect: func(sess *tether.StatefulSession[State]) {
 			slog.Info("disconnected", "id", sess.ID()[:8])
 			online.Update(func(n int) int { return n - 1 })
+			viewers.Clear(sess.ID())
 		},
 	})
 }

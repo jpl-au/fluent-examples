@@ -4,6 +4,8 @@ package handler
 // data itself lives in the shared store; this struct tracks only
 // the session's view state and reactive values.
 type State struct {
+	// SessionID identifies this session for viewer tracking.
+	SessionID string
 	// Name is the user's display name, set on the landing page.
 	// When empty, the landing page is shown instead of the board.
 	Name string

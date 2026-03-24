@@ -21,7 +21,7 @@ import (
 
 // Render returns the top-level render function. It closes over the
 // board store so the view always reads the latest shared state.
-func Render(b *store.Board) func(State) node.Node {
+func Render(b *store.Board, viewers *Viewers) func(State) node.Node {
 	return func(s State) node.Node {
 		if s.Name == "" {
 			return landing()
@@ -31,15 +31,14 @@ func Render(b *store.Board) func(State) node.Node {
 		switch s.View {
 		case "detail":
 			if s.SelectedID == "" {
-				// New card - empty form, same component.
 				content = detail.New(store.Card{})
 			} else if c, ok := b.Card(s.SelectedID); ok {
 				content = detail.New(c)
 			} else {
-				content = boardView(b)
+				content = boardView(b, viewers, s.SessionID)
 			}
 		default:
-			content = boardView(b)
+			content = boardView(b, viewers, s.SessionID)
 		}
 
 		return layout.Shell(s.Name, s.OnlineCount, addButton(), content)
@@ -67,13 +66,14 @@ func landing() node.Node {
 }
 
 // boardView renders the three-column kanban grid.
-func boardView(b *store.Board) node.Node {
+func boardView(b *store.Board, viewers *Viewers, sessionID string) node.Node {
 	var cols []node.Node
 	for _, col := range store.Columns() {
 		cards := b.Cards(col)
 		var cardNodes []node.Node
 		for _, c := range cards {
-			cardNodes = append(cardNodes, ccard.New(c))
+			viewing := viewers.For(c.ID, sessionID)
+			cardNodes = append(cardNodes, ccard.New(c, viewing...))
 		}
 		cols = append(cols, columnView(col, cardNodes))
 	}

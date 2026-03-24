@@ -11,7 +11,7 @@ import (
 // Handle processes all kanban board events. Board mutations are
 // applied to the shared store and then broadcast to every session
 // via Group.Broadcast so all browsers stay in sync.
-func Handle(board *store.Board, group *tether.Group[State]) func(tether.Session, State, tether.Event) State {
+func Handle(board *store.Board, group *tether.Group[State], viewers *Viewers) func(tether.Session, State, tether.Event) State {
 	return func(sess tether.Session, s State, ev tether.Event) State {
 		switch ev.Action {
 		case "name.set":
@@ -27,7 +27,9 @@ func Handle(board *store.Board, group *tether.Group[State]) func(tether.Session,
 		case "card.new":
 			s.View = "detail"
 			s.SelectedID = ""
+			viewers.Clear(sess.ID())
 			sess.ReplaceURL("/new")
+			refresh(group)
 
 		case "card.save":
 			id, _ := ev.Get("id")
@@ -64,12 +66,16 @@ func Handle(board *store.Board, group *tether.Group[State]) func(tether.Session,
 			id, _ := ev.Get("id")
 			s.View = "detail"
 			s.SelectedID = id
+			viewers.Set(sess.ID(), id, s.Name)
 			sess.ReplaceURL("/card/" + id)
+			refresh(group)
 
 		case "card.back":
 			s.View = "board"
 			s.SelectedID = ""
+			viewers.Clear(sess.ID())
 			sess.ReplaceURL("/")
+			refresh(group)
 
 		case "card.delete":
 			id, _ := ev.Get("id")
