@@ -98,18 +98,22 @@ func TestPreserveScroll(t *testing.T) {
 	}
 
 	// Scroll to bottom of the list.
-	if _, err := list.Evaluate("el => { el.scrollTop = el.scrollHeight; return el.scrollTop; }", nil); err != nil {
+	scrollInfo, err := list.Evaluate("el => { el.scrollTop = el.scrollHeight; return {scrollTop: el.scrollTop, scrollHeight: el.scrollHeight, clientHeight: el.clientHeight}; }", nil)
+	if err != nil {
 		t.Fatalf("scroll list: %v", err)
 	}
+	info := scrollInfo.(map[string]any)
+	t.Logf("Scroll Info: %+v", info)
 
 	// Read scroll position before adding items.
 	beforeRaw, err := list.Evaluate("el => el.scrollTop", nil)
 	if err != nil {
 		t.Fatalf("read scrollTop: %v", err)
 	}
-	before, _ := beforeRaw.(float64)
+	t.Logf("beforeRaw: %v (%T)", beforeRaw, beforeRaw)
+	before := jsNumber(beforeRaw)
 	if before == 0 {
-		t.Fatal("scrollTop should be non-zero after scrolling")
+		t.Fatalf("scrollTop should be non-zero after scrolling (info: %+v, beforeRaw: %v %T)", info, beforeRaw, beforeRaw)
 	}
 
 	// Add items (triggers re-render).
@@ -129,7 +133,7 @@ func TestPreserveScroll(t *testing.T) {
 	if err != nil {
 		t.Fatalf("read scrollTop after: %v", err)
 	}
-	after, _ := afterRaw.(float64)
+	after := jsNumber(afterRaw)
 
 	// The scroll position should be preserved (not reset to 0).
 	if after == 0 {

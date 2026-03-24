@@ -201,6 +201,23 @@ func waitForConnected(t *testing.T, page pw.Page) {
 	}
 }
 
+// jsNumber converts a value returned by Playwright's Evaluate into a
+// float64. JS numbers arrive as either int or float64 depending on
+// whether they have a fractional part. This helper handles both so
+// callers don't need type switches at every call site.
+func jsNumber(v any) float64 {
+	switch n := v.(type) {
+	case float64:
+		return n
+	case int:
+		return float64(n)
+	case int64:
+		return float64(n)
+	default:
+		return 0
+	}
+}
+
 // findChromium searches PATH for a Chromium-based browser. Returns
 // the absolute path if found, or empty string to fall back to
 // Playwright's built-in channel lookup. This handles snap, Homebrew,
