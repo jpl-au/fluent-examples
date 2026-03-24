@@ -39,9 +39,10 @@ func TestDragDropPageRenders(t *testing.T) {
 	}
 }
 
-// TestDragDropMoveItem drags an item from Zone A to Zone B using
-// Playwright's drag-and-drop API and verifies the item appears in
-// the target zone after the server processes the drop event.
+// TestDragDropMoveItem drags an item from Zone A to Zone B and
+// verifies the item appears in the target AND is gone from the
+// source. The second check catches the bug where dataTransfer is
+// empty and the server silently does nothing.
 func TestDragDropMoveItem(t *testing.T) {
 	srv := startApp(t, serverMode())
 	page, cleanup := newPage(t)
@@ -54,29 +55,84 @@ func TestDragDropMoveItem(t *testing.T) {
 
 	waitForConnected(t, page)
 
-	// Alpha starts in Zone A (left zone).
+	sourceZone := page.Locator("[data-tether-data-zone='left']")
+	targetZone := page.Locator("[data-tether-data-zone='right']")
+
+	// Alpha (id=1) starts in Zone A.
 	source := page.Locator("[data-tether-data-id='1']")
 	if err := expect(source).ToBeVisible(); err != nil {
 		t.Fatalf("source item not visible: %v", err)
 	}
 
-	// Drop target is Zone B (right zone).
-	target := page.Locator("[data-tether-data-zone='right']")
-	if err := expect(target).ToBeVisible(); err != nil {
-		t.Fatalf("target zone not visible: %v", err)
+	// Verify Alpha is in Zone A before the drag.
+	alphaInA := sourceZone.Locator("[data-tether-data-id='1']")
+	if err := expect(alphaInA).ToBeVisible(); err != nil {
+		t.Fatalf("Alpha should start in Zone A: %v", err)
 	}
 
 	// Perform drag and drop.
-	if err := source.DragTo(target); err != nil {
+	if err := source.DragTo(targetZone); err != nil {
 		t.Fatalf("drag to: %v", err)
 	}
 
-	// After the drop, the server moves the item and broadcasts.
-	// Alpha should now be inside Zone B. Verify by checking the
-	// item is a child of the right zone.
-	movedItem := target.Locator("[data-tether-data-id='1']")
-	if err := expect(movedItem).ToBeVisible(); err != nil {
+	// Alpha should now be in Zone B.
+	alphaInB := targetZone.Locator("[data-tether-data-id='1']")
+	if err := expect(alphaInB).ToBeVisible(); err != nil {
 		t.Errorf("Alpha not found in Zone B after drag: %v", err)
+	}
+
+	// Alpha should be GONE from Zone A. This is the critical check -
+	// without it, a no-op server response (empty dataTransfer) would
+	// pass because the item stays in its original zone.
+	alphaStillInA := sourceZone.Locator("[data-tether-data-id='1']")
+	if err := expect(alphaStillInA).Not().ToBeVisible(); err != nil {
+		t.Errorf("Alpha should no longer be in Zone A: %v", err)
+	}
+}
+
+// TestDragDropDataTransfer verifies the DnD JS correctly populates
+// dataTransfer during dragstart. This tests the actual event handler
+// code path rather than relying on Playwright's DragTo simulation.
+func TestDragDropDataTransfer(t *testing.T) {
+	srv := startApp(t, serverMode())
+	page, cleanup := newPage(t)
+	defer cleanup()
+
+	_, err := page.Goto(srv + "/dragdrop/")
+	if err != nil {
+		t.Fatalf("goto: %v", err)
+	}
+
+	waitForConnected(t, page)
+
+	// Dispatch a real dragstart event via JS and read back what the
+	// DnD extension wrote to dataTransfer.
+	result, err := page.Evaluate(`() => {
+		var source = document.querySelector('[data-tether-data-id="1"]');
+		if (!source) return {error: "source not found"};
+		var dt = new DataTransfer();
+		var ev = new DragEvent('dragstart', {dataTransfer: dt, bubbles: true});
+		source.dispatchEvent(ev);
+		var raw = dt.getData('application/tether');
+		if (!raw) return {error: "dataTransfer empty"};
+		return JSON.parse(raw);
+	}`)
+	if err != nil {
+		t.Fatalf("evaluate dragstart: %v", err)
+	}
+
+	data, ok := result.(map[string]interface{})
+	if !ok {
+		t.Fatalf("unexpected result type: %T", result)
+	}
+
+	if errMsg, has := data["error"]; has {
+		t.Fatalf("dragstart failed: %s", errMsg)
+	}
+
+	id, _ := data["id"].(string)
+	if id != "1" {
+		t.Errorf("dataTransfer id = %q, want %q", id, "1")
 	}
 }
 
@@ -89,7 +145,6 @@ func TestDragDropCrossSession(t *testing.T) {
 	receiver, cleanupReceiver := newPage(t)
 	defer cleanupReceiver()
 
-	// Open both pages and wait for connections.
 	if _, err := sender.Goto(srv + "/dragdrop/"); err != nil {
 		t.Fatalf("sender goto: %v", err)
 	}
@@ -107,10 +162,17 @@ func TestDragDropCrossSession(t *testing.T) {
 		t.Fatalf("drag to: %v", err)
 	}
 
-	// Verify the receiver also sees Bravo in Zone B.
+	// Verify the receiver sees Bravo in Zone B.
 	receiverTarget := receiver.Locator("[data-tether-data-zone='right']")
 	movedItem := receiverTarget.Locator("[data-tether-data-id='2']")
 	if err := expect(movedItem).ToBeVisible(); err != nil {
 		t.Errorf("receiver did not see Bravo in Zone B: %v", err)
+	}
+
+	// Verify the receiver sees Bravo gone from Zone A.
+	receiverSource := receiver.Locator("[data-tether-data-zone='left']")
+	bravoStillInA := receiverSource.Locator("[data-tether-data-id='2']")
+	if err := expect(bravoStillInA).Not().ToBeVisible(); err != nil {
+		t.Errorf("receiver should not see Bravo in Zone A: %v", err)
 	}
 }
