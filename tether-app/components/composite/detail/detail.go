@@ -4,6 +4,8 @@
 package detail
 
 import (
+	"time"
+
 	"github.com/jpl-au/fluent/html5/a"
 	"github.com/jpl-au/fluent/html5/div"
 	"github.com/jpl-au/fluent/html5/form"
@@ -59,6 +61,8 @@ func New(c store.Card) node.Node {
 			).Class("detail-actions"),
 		).Class("detail-form"),
 		bind.OnSubmit("card.save"),
+		bind.OnInput("card.typing"),
+		bind.Debounce(500*time.Millisecond),
 	)
 
 	return bind.Apply(

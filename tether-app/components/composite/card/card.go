@@ -16,9 +16,18 @@ import (
 	"github.com/jpl-au/fluent-examples/tether-app/store"
 )
 
-// New renders a draggable kanban card. The viewers parameter lists
-// other users currently viewing this card (empty when nobody is).
-func New(c store.Card, viewers ...string) node.Node {
+// CardViewers holds presence information for a card on the board.
+type CardViewers struct {
+	Viewing []string
+	Typing  []string
+}
+
+// New renders a draggable kanban card with optional presence info.
+func New(c store.Card, v ...CardViewers) node.Node {
+	var cv CardViewers
+	if len(v) > 0 {
+		cv = v[0]
+	}
 	return bind.Apply(
 		div.New(
 			bind.Apply(
@@ -29,7 +38,7 @@ func New(c store.Card, viewers ...string) node.Node {
 						span.Text(c.CreatedBy).Class("card-author"),
 						span.Text(store.TimeAgo(c.CreatedAt)).Class("card-time"),
 					).Class("card-meta"),
-					viewing(viewers),
+					presence(cv),
 				).Class("card-body"),
 				bind.OnClick("card.select"),
 				bind.EventData("id", c.ID),
@@ -51,13 +60,20 @@ func desc(s string) node.Node {
 	return p.Text(s).Class("card-desc")
 }
 
-// viewing renders a small indicator showing who is viewing this card.
-func viewing(names []string) node.Node {
-	if len(names) == 0 {
-		return nil
+// presence renders typing or viewing indicators on the card.
+// Typing takes priority over viewing since it's more specific.
+func presence(cv CardViewers) node.Node {
+	if len(cv.Typing) > 0 {
+		if len(cv.Typing) == 1 {
+			return span.Text(cv.Typing[0] + " is editing...").Class("card-typing")
+		}
+		return span.Text(strings.Join(cv.Typing, ", ") + " are editing...").Class("card-typing")
 	}
-	if len(names) == 1 {
-		return span.Text(names[0] + " is viewing this").Class("card-viewing")
+	if len(cv.Viewing) > 0 {
+		if len(cv.Viewing) == 1 {
+			return span.Text(cv.Viewing[0] + " is viewing this").Class("card-viewing")
+		}
+		return span.Text(strings.Join(cv.Viewing, ", ") + " are viewing this").Class("card-viewing")
 	}
-	return span.Text(strings.Join(names, ", ") + " are viewing this").Class("card-viewing")
+	return nil
 }

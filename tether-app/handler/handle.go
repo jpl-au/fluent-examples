@@ -62,6 +62,10 @@ func Handle(board *store.Board, group *tether.Group[State], viewers *Viewers) fu
 			}
 			refresh(group)
 
+		case "card.typing":
+			viewers.SetTyping(sess.ID())
+			refresh(group)
+
 		case "card.select":
 			id, _ := ev.Get("id")
 			s.View = "detail"

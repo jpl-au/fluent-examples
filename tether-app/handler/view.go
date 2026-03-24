@@ -72,8 +72,11 @@ func boardView(b *store.Board, viewers *Viewers, sessionID string) node.Node {
 		cards := b.Cards(col)
 		var cardNodes []node.Node
 		for _, c := range cards {
-			viewing := viewers.For(c.ID, sessionID)
-			cardNodes = append(cardNodes, ccard.New(c, viewing...))
+			cv := ccard.CardViewers{
+				Viewing: viewers.For(c.ID, sessionID),
+				Typing:  viewers.Typing(c.ID, sessionID),
+			}
+			cardNodes = append(cardNodes, ccard.New(c, cv))
 		}
 		cols = append(cols, columnView(col, cardNodes))
 	}
