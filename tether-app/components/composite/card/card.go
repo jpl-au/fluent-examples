@@ -56,5 +56,8 @@ func viewing(names []string) node.Node {
 	if len(names) == 0 {
 		return nil
 	}
-	return span.New().Class("card-viewing").Text(strings.Join(names, ", ") + " viewing")
+	if len(names) == 1 {
+		return span.New().Class("card-viewing").Text(names[0] + " is viewing this")
+	}
+	return span.New().Class("card-viewing").Text(strings.Join(names, ", ") + " are viewing this")
 }
