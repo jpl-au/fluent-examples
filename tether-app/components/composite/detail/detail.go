@@ -61,7 +61,10 @@ func New(c store.Card) node.Node {
 		bind.OnSubmit("card.save"),
 	)
 
-	return div.New(header, f, activity(c.Activity)).Class("detail").Dynamic("detail")
+	return bind.Apply(
+		div.New(header, f, activity(c.Activity)).Class("detail"),
+		bind.Hotkey("escape", "card.back"),
+	).Dynamic("detail")
 }
 
 // activity renders the card's event log. Hidden for new cards.
