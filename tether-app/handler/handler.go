@@ -20,10 +20,16 @@ import (
 	"github.com/jpl-au/fluent-examples/tether-app/store"
 )
 
+// online tracks connected sessions reactively. WatchValue pushes
+// updates to all sessions when the count changes - no manual
+// broadcasting needed.
+var online *tether.Value[int]
+
 // New creates the kanban board handler. A single handler serves all
 // connected browsers; board state is shared via the store and
 // synchronised across sessions with Group.Broadcast.
 func New(board *store.Board, assets *tether.Asset) *tether.Handler[State] {
+	online = tether.NewValue(0)
 	group := tether.NewGroup[State]()
 	viewers := NewViewers()
 
@@ -37,7 +43,7 @@ func New(board *store.Board, assets *tether.Asset) *tether.Handler[State] {
 		Fallback: sse.Upgrade(),
 
 		InitialState: func(_ *http.Request) State {
-			return State{View: "board", OnlineCount: group.Len()}
+			return State{View: "board", OnlineCount: online.Load()}
 		},
 		Render:     Render(board, viewers),
 		Handle:     Handle(board, group, viewers),
@@ -56,13 +62,20 @@ func New(board *store.Board, assets *tether.Asset) *tether.Handler[State] {
 		},
 
 		Groups: []*tether.Group[State]{group},
+		Watchers: []tether.Watcher[State]{
+			tether.WatchValue(online, func(n int, s State) State {
+				s.OnlineCount = n
+				return s
+			}),
+		},
 
 		// Generous idle timeout for a demo app.
 		Timeouts: tether.Timeouts{Idle: 10 * time.Minute},
 
 		OnConnect: func(sess *tether.StatefulSession[State]) {
-			slog.Info("connected", "id", sess.ID()[:8], "members", group.Len())
-			sess.Signal("online_count", group.Len())
+			slog.Info("connected", "id", sess.ID()[:8])
+			online.Store(group.Len())
+			sess.Signal("online_count", online.Load())
 			sess.Update(func(s State) State {
 				s.SessionID = sess.ID()
 				return s
@@ -70,6 +83,7 @@ func New(board *store.Board, assets *tether.Asset) *tether.Handler[State] {
 		},
 		OnDisconnect: func(sess *tether.StatefulSession[State]) {
 			slog.Info("disconnected", "id", sess.ID()[:8])
+			online.Store(group.Len())
 			viewers.Clear(sess.ID())
 		},
 	})
