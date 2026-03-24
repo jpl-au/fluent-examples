@@ -20,16 +20,10 @@ import (
 	"github.com/jpl-au/fluent-examples/tether-app/store"
 )
 
-// online tracks connected sessions reactively. WatchValue pushes
-// updates to all sessions when the count changes - no manual
-// broadcasting needed.
-var online *tether.Value[int]
-
 // New creates the kanban board handler. A single handler serves all
 // connected browsers; board state is shared via the store and
 // synchronised across sessions with Group.Broadcast.
 func New(board *store.Board, assets *tether.Asset) *tether.Handler[State] {
-	online = tether.NewValue(0)
 	group := tether.NewGroup[State]()
 	viewers := NewViewers()
 
@@ -43,7 +37,7 @@ func New(board *store.Board, assets *tether.Asset) *tether.Handler[State] {
 		Fallback: sse.Upgrade(),
 
 		InitialState: func(_ *http.Request) State {
-			return State{View: "board", OnlineCount: online.Load()}
+			return State{View: "board", OnlineCount: group.Count().Load()}
 		},
 		Render:     Render(board, viewers),
 		Handle:     Handle(board, group, viewers),
@@ -63,7 +57,7 @@ func New(board *store.Board, assets *tether.Asset) *tether.Handler[State] {
 
 		Groups: []*tether.Group[State]{group},
 		Watchers: []tether.Watcher[State]{
-			tether.WatchValue(online, func(n int, s State) State {
+			tether.WatchValue(group.Count(), func(n int, s State) State {
 				s.OnlineCount = n
 				return s
 			}),
@@ -74,8 +68,7 @@ func New(board *store.Board, assets *tether.Asset) *tether.Handler[State] {
 
 		OnConnect: func(sess *tether.StatefulSession[State]) {
 			slog.Info("connected", "id", sess.ID()[:8])
-			online.Update(func(n int) int { return n + 1 })
-			sess.Signal("online_count", online.Load())
+			sess.Signal("online_count", group.Count().Load())
 			sess.Update(func(s State) State {
 				s.SessionID = sess.ID()
 				return s
@@ -83,24 +76,19 @@ func New(board *store.Board, assets *tether.Asset) *tether.Handler[State] {
 		},
 		OnDisconnect: func(sess *tether.StatefulSession[State]) {
 			slog.Info("disconnected", "id", sess.ID()[:8])
-			online.Update(func(n int) int { return n - 1 })
 			viewers.Clear(sess.ID())
 		},
 	})
 }
 
-// navigate handles URL-driven state. When the browser navigates to
-// /card/<id>, the detail view opens. When it navigates to /, the
-// board view shows. This runs on initial page load and on
-// back/forward navigation.
+// navigate handles URL-driven state.
 func navigate(board *store.Board) func(tether.Session, State, tether.Params) State {
 	return func(_ tether.Session, s State, p tether.Params) State {
 		path := p.Path
 		if after, ok := strings.CutPrefix(path, "/card/"); ok {
-			id := after
-			if _, ok := board.Card(id); ok {
+			if _, ok := board.Card(after); ok {
 				s.View = "detail"
-				s.SelectedID = id
+				s.SelectedID = after
 				return s
 			}
 		}
