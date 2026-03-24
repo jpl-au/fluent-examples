@@ -1,89 +1,67 @@
 package handler
 
 import (
-	"sync"
 	"time"
+
+	tether "github.com/jpl-au/tether"
 )
 
-// Viewers tracks which card each session is currently viewing and
-// whether they are actively typing.
-type Viewers struct {
-	mu     sync.RWMutex
-	cards  map[string]string    // sessionID → cardID
-	names  map[string]string    // sessionID → user name
-	typing map[string]time.Time // sessionID → last typing timestamp
-}
-
-// NewViewers creates an empty viewer tracker.
-func NewViewers() *Viewers {
-	return &Viewers{
-		cards:  make(map[string]string),
-		names:  make(map[string]string),
-		typing: make(map[string]time.Time),
-	}
-}
-
-// Set marks a session as viewing a card.
-func (v *Viewers) Set(sessionID, cardID, name string) {
-	v.mu.Lock()
-	defer v.mu.Unlock()
-	v.cards[sessionID] = cardID
-	v.names[sessionID] = name
-	delete(v.typing, sessionID)
-}
-
-// Clear removes a session's viewing state.
-func (v *Viewers) Clear(sessionID string) {
-	v.mu.Lock()
-	defer v.mu.Unlock()
-	delete(v.cards, sessionID)
-	delete(v.names, sessionID)
-	delete(v.typing, sessionID)
-}
-
-// SetTyping marks a session as actively typing on their current card.
-// Expires after typingTimeout so stale indicators clear automatically.
-func (v *Viewers) SetTyping(sessionID string) {
-	v.mu.Lock()
-	defer v.mu.Unlock()
-	v.typing[sessionID] = time.Now()
+// ViewInfo tracks what a session is doing on the board.
+type ViewInfo struct {
+	CardID string
+	Name   string
+	Typing time.Time // zero means not typing
 }
 
 // typingTimeout is how long a typing indicator persists after the
 // last keystroke before it's considered stale.
 const typingTimeout = 3 * time.Second
 
-// For returns the names of users currently viewing the given card,
-// excluding the specified session (so you don't see your own name).
-func (v *Viewers) For(cardID, excludeSession string) []string {
-	v.mu.RLock()
-	defer v.mu.RUnlock()
-	var out []string
-	for sid, cid := range v.cards {
-		if cid == cardID && sid != excludeSession {
-			if name := v.names[sid]; name != "" {
-				out = append(out, name)
-			}
-		}
+// viewers wraps tether.Presence[ViewInfo] with helper methods for
+// querying viewing and typing state per card.
+type viewers struct {
+	*tether.Presence[ViewInfo]
+}
+
+// newViewers creates a viewer tracker backed by tether.Presence.
+func newViewers() *viewers {
+	return &viewers{tether.NewPresence[ViewInfo]()}
+}
+
+// View marks a session as viewing a card.
+func (v *viewers) View(sessionID, cardID, name string) {
+	v.Set(sessionID, ViewInfo{CardID: cardID, Name: name})
+}
+
+// SetTyping marks a session as actively typing on their current card.
+func (v *viewers) SetTyping(sessionID string) {
+	if info, ok := v.Get(sessionID); ok {
+		info.Typing = time.Now()
+		v.Set(sessionID, info)
 	}
+}
+
+// ViewingCard returns the names of users viewing a card, excluding
+// the given session.
+func (v *viewers) ViewingCard(cardID, exclude string) []string {
+	var out []string
+	v.Each(exclude, func(_ string, info ViewInfo) {
+		if info.CardID == cardID {
+			out = append(out, info.Name)
+		}
+	})
 	return out
 }
 
-// Typing returns the names of users actively typing on the given
-// card, excluding the specified session.
-func (v *Viewers) Typing(cardID, excludeSession string) []string {
-	v.mu.RLock()
-	defer v.mu.RUnlock()
+// TypingOnCard returns the names of users actively typing on a card,
+// excluding the given session.
+func (v *viewers) TypingOnCard(cardID, exclude string) []string {
 	now := time.Now()
 	var out []string
-	for sid, cid := range v.cards {
-		if cid == cardID && sid != excludeSession {
-			if t, ok := v.typing[sid]; ok && now.Sub(t) < typingTimeout {
-				if name := v.names[sid]; name != "" {
-					out = append(out, name)
-				}
-			}
+	v.Each(exclude, func(_ string, info ViewInfo) {
+		if info.CardID == cardID && !info.Typing.IsZero() && now.Sub(info.Typing) < typingTimeout {
+			out = append(out, info.Name)
 		}
-	}
+	})
 	return out
 }

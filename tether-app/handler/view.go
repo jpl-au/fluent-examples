@@ -21,7 +21,7 @@ import (
 
 // Render returns the top-level render function. It closes over the
 // board store so the view always reads the latest shared state.
-func Render(b *store.Board, viewers *Viewers) func(State) node.Node {
+func Render(b *store.Board, viewers *viewers) func(State) node.Node {
 	return func(s State) node.Node {
 		if s.Name == "" {
 			return landing()
@@ -66,15 +66,15 @@ func landing() node.Node {
 }
 
 // boardView renders the three-column kanban grid.
-func boardView(b *store.Board, viewers *Viewers, sessionID string) node.Node {
+func boardView(b *store.Board, viewers *viewers, sessionID string) node.Node {
 	var cols []node.Node
 	for _, col := range store.Columns() {
 		cards := b.Cards(col)
 		var cardNodes []node.Node
 		for _, c := range cards {
 			cv := ccard.CardViewers{
-				Viewing: viewers.For(c.ID, sessionID),
-				Typing:  viewers.Typing(c.ID, sessionID),
+				Viewing: viewers.ViewingCard(c.ID, sessionID),
+				Typing:  viewers.TypingOnCard(c.ID, sessionID),
 			}
 			cardNodes = append(cardNodes, ccard.New(c, cv))
 		}

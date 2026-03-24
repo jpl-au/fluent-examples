@@ -25,7 +25,7 @@ import (
 // synchronised across sessions with Group.Broadcast.
 func New(board *store.Board, assets *tether.Asset) *tether.Handler[State] {
 	group := tether.NewGroup[State]()
-	viewers := NewViewers()
+	viewers := newViewers()
 
 	return tether.Stateful(tether.App{
 		DevMode: true,
@@ -76,7 +76,7 @@ func New(board *store.Board, assets *tether.Asset) *tether.Handler[State] {
 		},
 		OnDisconnect: func(sess *tether.StatefulSession[State]) {
 			slog.Info("disconnected", "id", sess.ID()[:8])
-			viewers.Clear(sess.ID())
+			viewers.Presence.Clear(sess.ID())
 		},
 	})
 }
