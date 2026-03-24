@@ -102,7 +102,10 @@ func TestPreserveScroll(t *testing.T) {
 	if err != nil {
 		t.Fatalf("scroll list: %v", err)
 	}
-	info := scrollInfo.(map[string]any)
+	info, ok := scrollInfo.(map[string]any)
+	if !ok {
+		t.Fatalf("expected map from Evaluate, got %T", scrollInfo)
+	}
 	t.Logf("Scroll Info: %+v", info)
 
 	// Read scroll position before adding items.
