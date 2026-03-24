@@ -23,30 +23,30 @@ import (
 // board store so the view always reads the latest shared state.
 func Render(b *store.Board) func(State) node.Node {
 	return func(s State) node.Node {
-		// Show landing page until the user sets a name.
 		if s.Name == "" {
 			return landing()
 		}
 
 		var content node.Node
-		if s.View == "detail" {
-			if c, ok := b.Card(s.SelectedID); ok {
+		switch s.View {
+		case "detail":
+			if s.SelectedID == "" {
+				// New card - empty form, same component.
+				content = detail.New(store.Card{})
+			} else if c, ok := b.Card(s.SelectedID); ok {
 				content = detail.New(c)
 			} else {
 				content = boardView(b)
 			}
-		} else {
+		default:
 			content = boardView(b)
 		}
 
-		return layout.Shell(s.Name, s.OnlineCount, addCardForm(), content)
+		return layout.Shell(s.Name, s.OnlineCount, addButton(), content)
 	}
 }
 
-// landing renders the name entry page shown on first visit. The
-// hidden draggable marker ensures tether-drag-and-drop.js is
-// auto-included in the initial page load so DnD works immediately
-// when the board appears after naming.
+// landing renders the name entry page shown on first visit.
 func landing() node.Node {
 	return div.New(
 		div.New(
@@ -66,8 +66,7 @@ func landing() node.Node {
 	).Class("landing").Dynamic("landing")
 }
 
-// boardView renders the three-column kanban grid. Each column is a
-// drop target; each card is draggable.
+// boardView renders the three-column kanban grid.
 func boardView(b *store.Board) node.Node {
 	var cols []node.Node
 	for _, col := range store.Columns() {
@@ -97,14 +96,7 @@ func columnView(col store.Column, cards []node.Node) node.Node {
 	).Dynamic("col-" + strconv.Itoa(int(col)))
 }
 
-// addCardForm renders the inline form in the header for creating cards.
-func addCardForm() node.Node {
-	return bind.Apply(
-		field.Inline(
-			field.Text("title", "New card title..."),
-			button.Submit("Add Card"),
-		),
-		bind.OnSubmit("card.create"),
-		bind.Reset(),
-	)
+// addButton renders the header action to create a new card.
+func addButton() node.Node {
+	return button.PrimaryAction("Add Card", "card.new")
 }

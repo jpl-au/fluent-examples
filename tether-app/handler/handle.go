@@ -19,12 +19,25 @@ func Handle(board *store.Board, group *tether.Group[State]) func(tether.Session,
 				s.View = "board"
 			}
 
-		case "card.create":
+		case "card.new":
+			s.View = "detail"
+			s.SelectedID = ""
+
+		case "card.save":
+			id, _ := ev.Get("id")
 			title, _ := ev.Get("title")
+			desc, _ := ev.Get("description")
 			if title == "" {
 				return s
 			}
-			board.Create(title, "")
+			if id == "" {
+				c := board.Create(title, desc)
+				id = c.ID
+			} else {
+				board.Update(id, title, desc)
+			}
+			s.View = "board"
+			s.SelectedID = ""
 			refresh(group)
 
 		case "card.move":
@@ -41,15 +54,6 @@ func Handle(board *store.Board, group *tether.Group[State]) func(tether.Session,
 		case "card.back":
 			s.View = "board"
 			s.SelectedID = ""
-
-		case "card.update":
-			id, _ := ev.Get("id")
-			title, _ := ev.Get("title")
-			desc, _ := ev.Get("description")
-			board.Update(id, title, desc)
-			s.View = "board"
-			s.SelectedID = ""
-			refresh(group)
 
 		case "card.delete":
 			id, _ := ev.Get("id")
