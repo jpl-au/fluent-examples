@@ -74,7 +74,7 @@ func New(board *store.Board, assets *tether.Asset) *tether.Handler[State] {
 
 		OnConnect: func(sess *tether.StatefulSession[State]) {
 			slog.Info("connected", "id", sess.ID()[:8])
-			online.Store(group.Len())
+			online.Update(func(n int) int { return n + 1 })
 			sess.Signal("online_count", online.Load())
 			sess.Update(func(s State) State {
 				s.SessionID = sess.ID()
@@ -83,7 +83,7 @@ func New(board *store.Board, assets *tether.Asset) *tether.Handler[State] {
 		},
 		OnDisconnect: func(sess *tether.StatefulSession[State]) {
 			slog.Info("disconnected", "id", sess.ID()[:8])
-			online.Store(group.Len())
+			online.Update(func(n int) int { return n - 1 })
 			viewers.Clear(sess.ID())
 		},
 	})
