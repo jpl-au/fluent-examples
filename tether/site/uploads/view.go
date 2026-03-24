@@ -3,6 +3,7 @@ package uploads
 import (
 	"fmt"
 
+	"github.com/jpl-au/fluent/html5/div"
 	"github.com/jpl-au/fluent/node"
 	"github.com/jpl-au/tether/bind"
 
@@ -37,8 +38,9 @@ func Render(s State) node.Node {
 
 		panel.Card(
 			"Uploaded Files",
-			"The upload handler appends each file to the session state via sess.Update(), which triggers an immediate re-render - the list updates without a page reload.",
-			"sess.Update", panel.WS|panel.SSE,
+			"The upload handler appends each file to the session state via sess.Update(), which triggers an immediate re-render - the list updates without a page reload. "+
+				"Click Download to retrieve the file via sess.Download - the browser fetches it over normal HTTP.",
+			"sess.Update · sess.Download", panel.WS|panel.SSE,
 			layout.Stack(
 				uploadList(s.Uploads),
 				button.SmallAction("Clear List", "uploads.clear"),
@@ -67,7 +69,10 @@ func uploadList(files []FileEntry) node.Node {
 	}
 	nodes := make([]node.Node, len(files))
 	for i, f := range files {
-		nodes[i] = upload.ItemWithTime(f.Name, formatSize(f.Size), f.Time.Format("15:04:05"))
+		nodes[i] = div.New(
+			upload.ItemWithTime(f.Name, formatSize(f.Size), f.Time.Format("15:04:05")),
+			button.SmallAction("Download", "uploads.download", bind.EventData("id", f.ID)),
+		).Class("layout-row")
 	}
 	return layout.Container(list.New(nodes...)).Dynamic("uploads")
 }

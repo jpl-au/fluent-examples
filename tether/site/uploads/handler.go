@@ -1,8 +1,11 @@
 package uploads
 
 import (
+	"fmt"
+	"io"
 	"log/slog"
 	"net/http"
+	"sync"
 	"time"
 
 	"github.com/jpl-au/fluent/html5/body"
@@ -27,15 +30,53 @@ type State struct {
 	OnlineCount int
 }
 
-// FileEntry records metadata for an uploaded file, displayed in the
-// uploads demo list.
+// FileEntry records an uploaded file with its data so it can be
+// downloaded again.
 type FileEntry struct {
-	// Name is the original filename from the upload.
-	Name string
-	// Size is the file size in bytes.
-	Size int64
-	// Time is when the upload was received.
-	Time time.Time
+	ID          string
+	Name        string
+	ContentType string
+	Size        int64
+	Time        time.Time
+	Data        []byte
+}
+
+// fileStore holds uploaded files keyed by ID so they can be served
+// back for download. Shared across sessions.
+var fileStore = struct {
+	mu    sync.RWMutex
+	files map[string]FileEntry
+	seq   int
+}{files: make(map[string]FileEntry)}
+
+func storeFile(f FileEntry) string {
+	fileStore.mu.Lock()
+	defer fileStore.mu.Unlock()
+	fileStore.seq++
+	f.ID = fmt.Sprintf("f%d", fileStore.seq)
+	fileStore.files[f.ID] = f
+	return f.ID
+}
+
+func loadFile(id string) (FileEntry, bool) {
+	fileStore.mu.RLock()
+	defer fileStore.mu.RUnlock()
+	f, ok := fileStore.files[id]
+	return f, ok
+}
+
+// ServeFile is an HTTP handler that serves uploaded files for download.
+// Mount it at /uploads/files/ so sess.Download can reference them.
+func ServeFile(w http.ResponseWriter, r *http.Request) {
+	id := r.URL.Query().Get("id")
+	f, ok := loadFile(id)
+	if !ok {
+		http.NotFound(w, r)
+		return
+	}
+	w.Header().Set("Content-Disposition", fmt.Sprintf(`attachment; filename=%q`, f.Name))
+	w.Header().Set("Content-Type", f.ContentType)
+	w.Write(f.Data)
 }
 
 var uploadPresence = shared.NewPresenceCountOnly()
@@ -96,10 +137,28 @@ func New(app tether.App, assets *tether.Asset) *tether.Handler[State] {
 func handleUpload(sess *tether.StatefulSession[State], upload tether.Upload) error {
 	slog.Info("upload received", "action", upload.Action, "name", upload.Name, "size", upload.Size)
 
+	f, err := upload.Open()
+	if err != nil {
+		return err
+	}
+	defer f.Close()
+	data, err := io.ReadAll(f)
+	if err != nil {
+		return err
+	}
+
+	entry := FileEntry{
+		Name:        upload.Name,
+		ContentType: upload.ContentType,
+		Size:        upload.Size,
+		Time:        time.Now(),
+		Data:        data,
+	}
+	id := storeFile(entry)
+	entry.ID = id
+
 	sess.Update(func(s State) State {
-		s.Uploads = append(s.Uploads, FileEntry{
-			Name: upload.Name, Size: upload.Size, Time: time.Now(),
-		})
+		s.Uploads = append(s.Uploads, entry)
 		return s
 	})
 
@@ -108,10 +167,13 @@ func handleUpload(sess *tether.StatefulSession[State], upload tether.Upload) err
 }
 
 // Handle processes events on the uploads page.
-func Handle(_ tether.Session, s State, ev tether.Event) State {
+func Handle(sess tether.Session, s State, ev tether.Event) State {
 	switch ev.Action {
 	case "uploads.clear":
 		s.Uploads = nil
+	case "uploads.download":
+		id, _ := ev.Get("id")
+		sess.Download("/uploads/files/?id=" + id)
 	}
 	return s
 }

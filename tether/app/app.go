@@ -131,6 +131,7 @@ func New(ctx context.Context, assets *tether.Asset) (http.Handler, []tether.Drai
 	mux.Handle("/navigation/", navigationHandler)
 	mux.Handle("/rendering", renderingHandler)
 	mux.Handle("/notifications/", notificationsHandler)
+	mux.HandleFunc("GET /uploads/files/", uploads.ServeFile)
 	mux.Handle("/uploads/", uploadsHandler)
 	mux.Handle("/broadcasting/", broadcastingHandler)
 	mux.Handle("/components/", componentsHandler)

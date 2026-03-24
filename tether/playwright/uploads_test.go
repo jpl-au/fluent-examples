@@ -76,3 +76,57 @@ func TestUploadsFileUpload(t *testing.T) {
 		t.Errorf("uploaded file not in list: %v", err)
 	}
 }
+
+// TestUploadsDownload uploads a file and then clicks the Download
+// button, verifying that sess.Download triggers a file download via
+// normal HTTP. The download event is intercepted by Playwright to
+// confirm the file was received.
+func TestUploadsDownload(t *testing.T) {
+	srv := startApp(t, serverMode())
+	page, cleanup := newPage(t)
+	defer cleanup()
+
+	_, err := page.Goto(srv + "/uploads/")
+	if err != nil {
+		t.Fatalf("goto: %v", err)
+	}
+
+	waitForConnected(t, page)
+
+	// Upload a file first.
+	dir, _ := os.Getwd()
+	path := filepath.Join(dir, "test-download.txt")
+	if err := os.WriteFile(path, []byte("download test content"), 0644); err != nil {
+		t.Fatalf("write temp file: %v", err)
+	}
+	t.Cleanup(func() { os.Remove(path) })
+
+	input := page.Locator("#upload-input")
+	if err := input.SetInputFiles(path); err != nil {
+		t.Fatalf("set input files: %v", err)
+	}
+
+	uploadBtn := page.GetByRole("button", pw.PageGetByRoleOptions{Name: "Upload"})
+	if err := uploadBtn.Click(); err != nil {
+		t.Fatalf("click upload: %v", err)
+	}
+
+	// Wait for the file to appear in the list.
+	list := page.Locator("[data-tether-key='uploads']")
+	if err := expect(list).ToContainText("test-download.txt"); err != nil {
+		t.Fatalf("uploaded file not in list: %v", err)
+	}
+
+	// Click the Download button and expect a download event.
+	download, err := page.ExpectDownload(func() error {
+		dlBtn := page.GetByRole("button", pw.PageGetByRoleOptions{Name: "Download"})
+		return dlBtn.Click()
+	})
+	if err != nil {
+		t.Fatalf("expected download: %v", err)
+	}
+
+	if download.SuggestedFilename() != "test-download.txt" {
+		t.Errorf("filename = %q, want test-download.txt", download.SuggestedFilename())
+	}
+}
