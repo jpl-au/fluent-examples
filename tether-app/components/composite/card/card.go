@@ -60,20 +60,43 @@ func desc(s string) node.Node {
 	return p.Text(s).Class("card-desc")
 }
 
-// presence renders typing or viewing indicators on the card.
-// Typing takes priority over viewing since it's more specific.
+// presence renders typing and viewing indicators on the card.
+// Users who are typing are excluded from the viewing list to avoid
+// showing both "editing" and "viewing" for the same person.
 func presence(cv CardViewers) node.Node {
+	// Build a set of typing names for exclusion.
+	typingSet := make(map[string]bool, len(cv.Typing))
+	for _, n := range cv.Typing {
+		typingSet[n] = true
+	}
+
+	// Viewers who are NOT typing.
+	var viewOnly []string
+	for _, n := range cv.Viewing {
+		if !typingSet[n] {
+			viewOnly = append(viewOnly, n)
+		}
+	}
+
+	if len(cv.Typing) == 0 && len(viewOnly) == 0 {
+		return nil
+	}
+
+	var nodes []node.Node
 	if len(cv.Typing) > 0 {
 		if len(cv.Typing) == 1 {
-			return span.Text(cv.Typing[0] + " is editing...").Class("card-typing")
+			nodes = append(nodes, span.Text(cv.Typing[0]+" is editing...").Class("card-typing"))
+		} else {
+			nodes = append(nodes, span.Text(strings.Join(cv.Typing, ", ")+" are editing...").Class("card-typing"))
 		}
-		return span.Text(strings.Join(cv.Typing, ", ") + " are editing...").Class("card-typing")
 	}
-	if len(cv.Viewing) > 0 {
-		if len(cv.Viewing) == 1 {
-			return span.Text(cv.Viewing[0] + " is viewing this").Class("card-viewing")
+	if len(viewOnly) > 0 {
+		if len(viewOnly) == 1 {
+			nodes = append(nodes, span.Text(viewOnly[0]+" is viewing this").Class("card-viewing"))
+		} else {
+			nodes = append(nodes, span.Text(strings.Join(viewOnly, ", ")+" are viewing this").Class("card-viewing"))
 		}
-		return span.Text(strings.Join(cv.Viewing, ", ") + " are viewing this").Class("card-viewing")
 	}
-	return nil
+
+	return div.New(nodes...).Class("card-presence")
 }
