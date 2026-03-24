@@ -1,8 +1,6 @@
 package handler
 
 import (
-	"log/slog"
-
 	"github.com/jpl-au/tether"
 
 	"github.com/jpl-au/fluent-examples/tether-app/store"
@@ -31,15 +29,8 @@ func Handle(board *store.Board, group *tether.Group[State]) func(tether.Session,
 
 		case "card.move":
 			id, _ := ev.Get("id")
-			col, colErr := ev.Int("column")
-			slog.Info("card.move",
-				"id", id,
-				"column", col,
-				"column_err", colErr,
-				"data", ev.Data,
-			)
-			moved := board.Move(id, store.Column(col))
-			slog.Info("card.move result", "moved", moved)
+			col, _ := ev.Int("column")
+			board.Move(id, store.Column(col))
 			refresh(group)
 
 		case "card.select":
