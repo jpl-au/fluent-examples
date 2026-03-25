@@ -10,12 +10,11 @@ import (
 	"github.com/jpl-au/fluent/html5/h1"
 	"github.com/jpl-au/fluent/html5/span"
 	"github.com/jpl-au/fluent/node"
-	"github.com/jpl-au/tether/bind"
 )
 
 // Shell wraps content in the app chrome: a header bar and scrollable
-// content area. The online count badge updates reactively via a
-// signal binding.
+// content area. The online count updates via re-render when
+// Group.Count() changes through WatchValue.
 func Shell(name string, onlineCount int, actions node.Node, content node.Node) node.Node {
 	return div.New(
 		header(name, onlineCount, actions),
@@ -26,10 +25,7 @@ func Shell(name string, onlineCount int, actions node.Node, content node.Node) n
 // header builds the top bar with app title, user name, online badge,
 // and action nodes.
 func header(name string, onlineCount int, actions node.Node) node.Node {
-	badge := bind.Apply(
-		span.Text(fmt.Sprintf("%d online", onlineCount)).Class("badge badge-green"),
-		bind.BindText("online_count"),
-	)
+	badge := span.Text(fmt.Sprintf("%d online", onlineCount)).Class("badge badge-green")
 
 	left := div.New(
 		h1.Text("Kanban Board"),

@@ -68,7 +68,6 @@ func New(board *store.Board, assets *tether.Asset) *tether.Handler[State] {
 
 		OnConnect: func(sess *tether.StatefulSession[State]) {
 			slog.Info("connected", "id", sess.ID()[:8])
-			sess.Signal("online_count", group.Count().Load())
 			sess.Update(func(s State) State {
 				s.SessionID = sess.ID()
 				return s
