@@ -713,6 +713,18 @@ a {
 /* Utility                                                            */
 /* ------------------------------------------------------------------ */
 
+.empty-state {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+}
+
+.empty-board {
+  color: var(--fg-muted);
+  font-size: 0.9375rem;
+}
+
 .sr-only {
   position: absolute;
   width: 1px;

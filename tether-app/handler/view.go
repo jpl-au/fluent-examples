@@ -54,7 +54,7 @@ func landing() node.Node {
 			bind.Apply(
 				field.Inline(
 					field.Text("name", "Your name"),
-					button.Submit("Join"),
+					button.Submit("Sign In"),
 				),
 				bind.OnSubmit("name.set"),
 				bind.AutoFocus(),
@@ -65,11 +65,16 @@ func landing() node.Node {
 	).Class("landing").Dynamic("landing")
 }
 
-// boardView renders the three-column kanban grid.
+// boardView renders the three-column kanban grid, or an empty state
+// prompt when all columns are empty.
 func boardView(b *store.Board, viewers *viewers, sessionID string) node.Node {
+	empty := true
 	var cols []node.Node
 	for _, col := range store.Columns() {
 		cards := b.Cards(col)
+		if len(cards) > 0 {
+			empty = false
+		}
 		var cardNodes []node.Node
 		for _, c := range cards {
 			cv := ccard.CardViewers{
@@ -79,6 +84,11 @@ func boardView(b *store.Board, viewers *viewers, sessionID string) node.Node {
 			cardNodes = append(cardNodes, ccard.New(c, cv))
 		}
 		cols = append(cols, columnView(col, cardNodes))
+	}
+	if empty {
+		return div.New(
+			p.Text("No cards yet. Click Add Card to get started.").Class("empty-board"),
+		).Class("empty-state").Dynamic("board")
 	}
 	return board.New(cols...)
 }
