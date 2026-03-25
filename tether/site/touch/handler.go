@@ -16,7 +16,7 @@ import (
 
 // State holds per-request state for the touch demo.
 type State struct {
-	SwipeResult    string
+	SwipeResult     string
 	LongPressResult string
 }
 

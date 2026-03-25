@@ -12,9 +12,13 @@ import (
 type Transport uint8
 
 const (
+	// HTTP indicates HTTP transport support.
 	HTTP Transport = 1 << iota
+	// WS indicates WebSocket transport support.
 	WS
+	// SSE indicates Server-Sent Events transport support.
 	SSE
+	// AllTransports combines all three transports.
 	AllTransports = HTTP | WS | SSE
 )
 

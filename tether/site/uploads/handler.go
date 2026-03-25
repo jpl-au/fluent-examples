@@ -76,7 +76,9 @@ func ServeFile(w http.ResponseWriter, r *http.Request) {
 	}
 	w.Header().Set("Content-Disposition", fmt.Sprintf(`attachment; filename=%q`, f.Name))
 	w.Header().Set("Content-Type", f.ContentType)
-	w.Write(f.Data)
+	if _, err := w.Write(f.Data); err != nil {
+		slog.Warn("uploads: write failed", "id", id, "error", err)
+	}
 }
 
 var uploadPresence = shared.NewPresenceCountOnly()

@@ -23,7 +23,10 @@ func main() {
 	ctx, stop := signal.NotifyContext(context.Background(), syscall.SIGINT, syscall.SIGTERM)
 	defer stop()
 
-	staticFS, _ := fs.Sub(staticEmbed, "static")
+	staticFS, err := fs.Sub(staticEmbed, "static")
+	if err != nil {
+		log.Fatal(err)
+	}
 	assets := &tether.Asset{
 		FS:       staticFS,
 		Prefix:   "/static/",

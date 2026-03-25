@@ -8,6 +8,7 @@ package app
 import (
 	"context"
 	"encoding/json"
+	"log/slog"
 	"net/http"
 
 	"github.com/jpl-au/chain"
@@ -37,9 +38,9 @@ import (
 	"github.com/jpl-au/fluent-examples/tether/site/scroll"
 	"github.com/jpl-au/fluent-examples/tether/site/selection"
 	"github.com/jpl-au/fluent-examples/tether/site/signals"
-	"github.com/jpl-au/fluent-examples/tether/site/touch"
 	swsite "github.com/jpl-au/fluent-examples/tether/site/sw"
 	swhandler "github.com/jpl-au/fluent-examples/tether/site/sw/handler"
+	"github.com/jpl-au/fluent-examples/tether/site/touch"
 	"github.com/jpl-au/fluent-examples/tether/site/uploads"
 	filteredupload "github.com/jpl-au/fluent-examples/tether/site/uploads/filtered"
 	"github.com/jpl-au/fluent-examples/tether/site/valuestore"
@@ -127,7 +128,9 @@ func New(ctx context.Context, assets *tether.Asset) (http.Handler, []tether.Drai
 
 	mux.HandleFunc("GET /health", func(w http.ResponseWriter, _ *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
-		json.NewEncoder(w).Encode(signalsWSHandler.Health())
+		if err := json.NewEncoder(w).Encode(signalsWSHandler.Health()); err != nil {
+			slog.Warn("health: encode failed", "error", err)
+		}
 	})
 
 	mux.Handle("/events", eventsHandler)

@@ -72,7 +72,7 @@ func (s Shoutbox) Handle(sess tether.Session, ev tether.Event) tether.Component 
 			Time: time.Now(),
 		})
 		// Add to the sender's own feed immediately.
-		s.Messages = appendShout(s.Messages, Shout{
+		s.Messages = prependShout(s.Messages, Shout{
 			User: "you",
 			Text: text,
 			Time: time.Now(),
@@ -95,9 +95,9 @@ func shoutFeed(messages []Shout) node.Node {
 	return chat.Feed(bubbles...).Dynamic("shout-feed")
 }
 
-// appendShout prepends a message to the feed and trims it to
+// prependShout prepends a message to the feed and trims it to
 // maxShouts so the list doesn't grow without bound.
-func appendShout(msgs []Shout, m Shout) []Shout {
+func prependShout(msgs []Shout, m Shout) []Shout {
 	msgs = append([]Shout{m}, msgs...)
 	if len(msgs) > maxShouts {
 		msgs = msgs[:maxShouts]

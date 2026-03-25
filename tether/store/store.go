@@ -19,6 +19,15 @@ import (
 	"time"
 )
 
+// shortID returns the first six characters of an ID for logging,
+// or the full ID if it is shorter than six characters.
+func shortID(id string) string {
+	if len(id) < 6 {
+		return id
+	}
+	return id[:6]
+}
+
 // FileSessionStore persists session state to the filesystem. Each
 // session is stored as a single file named by its ID. The TTL
 // parameter from Save is logged but not enforced - the framework
@@ -46,7 +55,7 @@ func (s *FileSessionStore) path(id string) string {
 // Save writes session data to a file. The TTL is logged for
 // observability but not enforced by the filesystem store.
 func (s *FileSessionStore) Save(_ context.Context, id string, data []byte, ttl time.Duration) error {
-	slog.Debug("session store: save", "id", id[:6], "bytes", len(data), "ttl", ttl)
+	slog.Debug("session store: save", "id", shortID(id), "bytes", len(data), "ttl", ttl)
 	return os.WriteFile(s.path(id), data, 0o600)
 }
 
@@ -59,7 +68,7 @@ func (s *FileSessionStore) Load(_ context.Context, id string) ([]byte, error) {
 		return nil, nil
 	}
 	if err == nil {
-		slog.Debug("session store: load", "id", id[:6], "bytes", len(data))
+		slog.Debug("session store: load", "id", shortID(id), "bytes", len(data))
 	}
 	return data, err
 }
@@ -67,7 +76,7 @@ func (s *FileSessionStore) Load(_ context.Context, id string) ([]byte, error) {
 // Delete removes a session file. Returns nil if the file does not
 // exist.
 func (s *FileSessionStore) Delete(_ context.Context, id string) error {
-	slog.Debug("session store: delete", "id", id[:6])
+	slog.Debug("session store: delete", "id", shortID(id))
 	err := os.Remove(s.path(id))
 	if os.IsNotExist(err) {
 		return nil
@@ -99,7 +108,7 @@ func (s *FileDiffStore) path(id string) string {
 
 // Save writes differ snapshot data to a file.
 func (s *FileDiffStore) Save(_ context.Context, id string, data []byte) error {
-	slog.Debug("diff store: save", "id", id[:6], "bytes", len(data))
+	slog.Debug("diff store: save", "id", shortID(id), "bytes", len(data))
 	return os.WriteFile(s.path(id), data, 0o600)
 }
 
@@ -116,7 +125,7 @@ func (s *FileDiffStore) Load(_ context.Context, id string) ([]byte, error) {
 // Delete removes a differ snapshot file. Returns nil if the file
 // does not exist.
 func (s *FileDiffStore) Delete(_ context.Context, id string) error {
-	slog.Debug("diff store: delete", "id", id[:6])
+	slog.Debug("diff store: delete", "id", shortID(id))
 	err := os.Remove(s.path(id))
 	if os.IsNotExist(err) {
 		return nil

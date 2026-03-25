@@ -82,8 +82,8 @@ func TrackPresence(p *Presence, sessID string) {
 }
 
 // UntrackPresence decrements the online count and publishes a "left"
-// event. The guard against n < 0 handles the edge case where a
-// disconnect fires before the session was fully tracked.
+// event. The guard prevents the count going negative in the edge case
+// where a disconnect fires before the session was fully tracked.
 func UntrackPresence(p *Presence, sessID string) {
 	p.OnlineCount.Update(func(n int) int {
 		if n > 0 {
