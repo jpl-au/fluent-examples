@@ -4,7 +4,7 @@ go 1.25.0
 
 require (
 	github.com/jpl-au/fluent v0.2.1
-	github.com/jpl-au/tether v0.1.0
+	github.com/jpl-au/tether v0.2.0
 )
 
 require (
@@ -18,5 +18,3 @@ require (
 	golang.org/x/crypto v0.48.0 // indirect
 	golang.org/x/sys v0.41.0 // indirect
 )
-
-replace github.com/jpl-au/tether => /home/devbox/go/src/jpl-au/fluent-src/tether

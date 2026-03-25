@@ -6,12 +6,13 @@ require (
 	github.com/go-echarts/go-echarts/v2 v2.7.1
 	github.com/jpl-au/chain v0.1.1
 	github.com/jpl-au/fluent v0.2.1
-	github.com/jpl-au/tether v0.1.0
+	github.com/jpl-au/tether v0.2.0
 	github.com/playwright-community/playwright-go v0.5700.1
 )
 
 require (
 	github.com/deckarep/golang-set/v2 v2.8.0 // indirect
+	github.com/fsnotify/fsnotify v1.9.0 // indirect
 	github.com/fxamacker/cbor/v2 v2.9.0 // indirect
 	github.com/go-jose/go-jose/v3 v3.0.4 // indirect
 	github.com/go-stack/stack v1.8.1 // indirect
@@ -20,6 +21,5 @@ require (
 	github.com/lxzan/gws v1.9.0 // indirect
 	github.com/x448/float16 v0.8.4 // indirect
 	golang.org/x/crypto v0.49.0 // indirect
+	golang.org/x/sys v0.42.0 // indirect
 )
-
-replace github.com/jpl-au/tether => /home/devbox/go/src/jpl-au/fluent-src/tether
