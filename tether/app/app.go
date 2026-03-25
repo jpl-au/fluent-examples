@@ -35,6 +35,7 @@ import (
 	"github.com/jpl-au/fluent-examples/tether/site/realtime"
 	"github.com/jpl-au/fluent-examples/tether/site/rendering"
 	"github.com/jpl-au/fluent-examples/tether/site/scroll"
+	"github.com/jpl-au/fluent-examples/tether/site/selection"
 	"github.com/jpl-au/fluent-examples/tether/site/signals"
 	swsite "github.com/jpl-au/fluent-examples/tether/site/sw"
 	swhandler "github.com/jpl-au/fluent-examples/tether/site/sw/handler"
@@ -72,6 +73,7 @@ func New(ctx context.Context, assets *tether.Asset) (http.Handler, []tether.Drai
 	morphHandler := morph.New(app, assets)
 	middlewareHandler := mwsite.New(app, assets)
 	clipboardHandler := clipboard.New(app, assets)
+	selectionHandler := selection.New(app, assets)
 
 	// WebSocket features (tether.Handler).
 	notificationsHandler := notifications.New(app, assets)
@@ -150,6 +152,7 @@ func New(ctx context.Context, assets *tether.Asset) (http.Handler, []tether.Drai
 	mux.Handle("/diagnostics/", diagnosticsHandler)
 	mux.Handle("/freeze/", freezeHandler)
 	mux.Handle("/clipboard", clipboardHandler)
+	mux.Handle("/selection", selectionHandler)
 	mux.Handle("/hotkey/", hotkeyHandler)
 	mux.Handle("/dragdrop/", dragdropHandler)
 	mux.Handle("/scroll/", scrollHandler)

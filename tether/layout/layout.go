@@ -68,6 +68,7 @@ var sidebar = []sidebarGroup{
 			{"/middleware", "Middleware"},
 			{"/morph", "Full-Page Morph"},
 			{"/clipboard", "Clipboard"},
+			{"/selection", "Multi-Select"},
 		}},
 	}},
 	{"Signals & Directives", []sectionGroup{
