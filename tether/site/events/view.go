@@ -215,6 +215,29 @@ func Render(s State) node.Node {
 				contextMenuResult(s.ContextMenuResult),
 			),
 		),
+
+		panel.Card("Client-Side Validation", "The name field is required. Try submitting with an empty field - the browser shows a validation tooltip without a server round-trip. bind.Required, bind.MinLength, bind.MaxLength, and bind.Pattern use the native constraint validation API.", "bind.Required", panel.AllTransports,
+			layout.Stack(
+				bind.Apply(field.Inline(
+					field.Group(
+						field.Label("validated-name", "Name"),
+						bind.Apply(field.Text("validated-name", "Required field..."), bind.Required("This field is required")),
+					),
+					button.Submit("Submit"),
+				), bind.OnSubmit("events.validated")),
+				validatedResult(s.ValidatedResult),
+			),
+		),
+
+		panel.Card("Content Editable", "Click the text below to edit it inline. When you click away (blur), the edited text is sent to the server. bind.Editable sets contenteditable and fires the action on blur.", "bind.Editable", panel.AllTransports,
+			layout.Stack(
+				bind.Apply(
+					span.Text("Click me to edit this text").Class("signal-panel"),
+					bind.Editable("events.editable"),
+				),
+				editableResult(s.EditableResult),
+			),
+		),
 	)
 }
 
@@ -332,6 +355,22 @@ func pasteResult(val string) node.Node {
 func contextMenuResult(val string) node.Node {
 	if val == "" {
 		return hint.Text("Right-click the box above.")
+	}
+	return result.Success(val)
+}
+
+// validatedResult renders the validation demo outcome.
+func validatedResult(val string) node.Node {
+	if val == "" {
+		return hint.Text("Fill in the field and submit.")
+	}
+	return result.Success(val)
+}
+
+// editableResult renders the contenteditable demo outcome.
+func editableResult(val string) node.Node {
+	if val == "" {
+		return hint.Text("Click the text above to edit, then click away.")
 	}
 	return result.Success(val)
 }

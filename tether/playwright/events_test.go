@@ -220,3 +220,89 @@ func TestEventsContextMenu(t *testing.T) {
 		t.Errorf("context menu result not visible: %v", err)
 	}
 }
+
+// TestEventsValidationRequired submits a form with a required field
+// empty and verifies the browser blocks submission (no server event).
+func TestEventsValidationRequired(t *testing.T) {
+	srv := startApp(t, serverMode())
+	page, cleanup := newPage(t)
+	defer cleanup()
+
+	_, err := page.Goto(srv + "/events")
+	if err != nil {
+		t.Fatalf("goto: %v", err)
+	}
+
+	// Submit the validation form without filling the required field.
+	form := page.Locator("[data-tether-submit='events.validated']")
+	submit := form.Locator("button[type='submit']")
+	if err := submit.Click(); err != nil {
+		t.Fatalf("click submit: %v", err)
+	}
+
+	// The result should NOT appear - the browser blocked submission.
+	result := page.GetByText("Validated:")
+	if err := expect(result).Not().ToBeVisible(); err != nil {
+		t.Errorf("validation should have blocked submission: %v", err)
+	}
+}
+
+// TestEventsValidationSuccess fills the required field and submits,
+// verifying the server receives the event.
+func TestEventsValidationSuccess(t *testing.T) {
+	srv := startApp(t, serverMode())
+	page, cleanup := newPage(t)
+	defer cleanup()
+
+	_, err := page.Goto(srv + "/events")
+	if err != nil {
+		t.Fatalf("goto: %v", err)
+	}
+
+	form := page.Locator("[data-tether-submit='events.validated']")
+	input := form.Locator("input[name='validated-name']")
+	if err := input.Fill("Alice"); err != nil {
+		t.Fatalf("fill: %v", err)
+	}
+	submit := form.Locator("button[type='submit']")
+	if err := submit.Click(); err != nil {
+		t.Fatalf("click submit: %v", err)
+	}
+
+	result := page.GetByText("Validated: Alice")
+	if err := expect(result).ToBeVisible(); err != nil {
+		t.Errorf("validated result not visible: %v", err)
+	}
+}
+
+// TestEventsEditable clicks an editable element, changes its text,
+// clicks away, and verifies the server receives the edited text.
+func TestEventsEditable(t *testing.T) {
+	srv := startApp(t, serverMode())
+	page, cleanup := newPage(t)
+	defer cleanup()
+
+	_, err := page.Goto(srv + "/events")
+	if err != nil {
+		t.Fatalf("goto: %v", err)
+	}
+
+	// Find the editable element and click to focus it.
+	editable := page.Locator("[data-tether-editable='events.editable']")
+	if err := editable.Click(); err != nil {
+		t.Fatalf("click editable: %v", err)
+	}
+
+	// Clear and type new text.
+	if err := editable.Fill("New text here"); err != nil {
+		t.Fatalf("fill editable: %v", err)
+	}
+
+	// Click elsewhere to trigger blur.
+	page.Locator("h3").First().Click()
+
+	result := page.GetByText(`Edited to: "New text here"`)
+	if err := expect(result).ToBeVisible(); err != nil {
+		t.Errorf("editable result not visible: %v", err)
+	}
+}

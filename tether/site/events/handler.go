@@ -41,6 +41,8 @@ type State struct {
 	RawDataResult     string
 	PasteResult       string
 	ContextMenuResult string
+	ValidatedResult   string
+	EditableResult    string
 }
 
 // New creates a stateless page handler for the events demo.
@@ -150,6 +152,11 @@ func Handle(sess tether.Session, s State, ev tether.Event) State {
 		s.PasteResult = fmt.Sprintf("Pasted: %q", ev.Value())
 	case "events.contextmenu":
 		s.ContextMenuResult = "Context menu intercepted!"
+	case "events.validated":
+		name, _ := ev.Get("validated-name")
+		s.ValidatedResult = fmt.Sprintf("Validated: %s", name)
+	case "events.editable":
+		s.EditableResult = fmt.Sprintf("Edited to: %q", ev.Value())
 	}
 	return s
 }
