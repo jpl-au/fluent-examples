@@ -40,6 +40,9 @@ application.
 | Errors | `site/errors` | `tether.Catch` error boundaries recovering from panics in child components |
 | Morph | `site/morph` | Full-page morph fallback when no Dynamic keys are present |
 | Navigation | `site/navigation` | `bind.Link`, `OnNavigate`, query parameter extraction (`Params`), `ReplaceURL`, server-driven `Navigate` |
+| Clipboard | `site/clipboard` | `bind.CopyToClipboard` - client-side copy to clipboard, no server round-trip |
+| Multi-Select | `site/selection` | `bind.Selectable`, `bind.CollectSelected` - click, Ctrl+click, Shift+click selection |
+| Touch Gestures | `site/touch` | `bind.OnSwipe`, `bind.OnLongPress` - swipe direction detection and sustained touch |
 
 ### WebSocket + SSE (stateful)
 
@@ -56,10 +59,13 @@ application.
 | Notifications | `site/notifications` | Server-push side effects: `Toast`, `Flash`, `Announce`, `Signal` |
 | Diagnostics | `site/diagnostics` | `Handler.Diagnostics` bus, live event feed via `WatchBus`, triggerable panics, diagnostic kind reference |
 | Configuration | `site/configuration` | `Timeouts`, `Limits`, `Security`, compression, `SessionStore`, `DiffStore`, `OnRestore` |
-| Uploads | `site/uploads` | File uploads via `bind.Upload` with real-time feedback through `sess.Update` |
+| Uploads | `site/uploads` | File uploads via `bind.Upload` with real-time feedback through `sess.Update`, file download via `sess.Download` |
 | Filtered Uploads | `site/uploads/filtered` | `UploadConfig.Accept` MIME-type filtering |
 | Freeze | `site/freeze` | `FreezeWithConnect`, `SessionStore` persistence, zero-memory disconnected sessions, state restoration |
 | Real-time Monitor | `site/realtime` | Live Go runtime metrics (CPU, heap, goroutines) pushed every second via `sess.Go`, rendered as go-echarts line charts |
+| Hotkeys | `site/hotkey` | `bind.Hotkey` - global keyboard shortcuts regardless of focus |
+| Drag and Drop | `site/dragdrop` | `bind.Draggable`, `bind.Sortable` - drag between zones with within-zone reordering, cross-session sync |
+| Scroll | `site/scroll` | `bind.ScrollTo`, `sess.ScrollTo`, `bind.PreserveScroll` - client and server scroll control |
 
 ### Service Worker
 
