@@ -4,7 +4,6 @@ import (
 	"log/slog"
 	"net/http"
 	"strings"
-	"time"
 
 	"github.com/jpl-au/fluent/html5/body"
 	"github.com/jpl-au/fluent/html5/head"
@@ -63,8 +62,7 @@ func New(board *store.Board, assets *tether.Asset) *tether.Handler[State] {
 			}),
 		},
 
-		// Generous idle timeout for a demo app.
-		Timeouts: tether.Timeouts{Idle: 10 * time.Minute},
+		// No idle timeout - kanban boards are left open indefinitely.
 
 		OnConnect: func(sess *tether.StatefulSession[State]) {
 			slog.Info("connected", "id", sess.ID()[:8])
