@@ -1107,6 +1107,13 @@ svg {
 .config-label { font-weight: 500; min-width: 10rem; color: var(--foreground); }
 .config-value { font-family: var(--mono); font-size: 0.875rem; color: var(--muted-fg); }
 
+/* Data list (windowed/virtualised lists) */
+.data-list { width: 100%; border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; }
+.data-row { display: flex; align-items: center; gap: 1rem; padding: 0.5rem 1rem; border-bottom: 1px solid var(--border); }
+.data-row:last-child { border-bottom: none; }
+.data-label { font-family: var(--mono); font-size: 0.875rem; min-width: 4rem; color: var(--muted-fg); }
+.data-value { color: var(--foreground); }
+
 /* Shoutbox */
 .shoutbox {
   display: flex;

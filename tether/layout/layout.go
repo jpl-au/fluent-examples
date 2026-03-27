@@ -106,6 +106,7 @@ var sidebar = []sidebarGroup{
 		{SectionLive, "", []navItem{
 			{"/memo/", "Memoisation"},
 			{"/memo/realtime/", "Memoised Dashboard"},
+			{"/windowing/", "Windowing"},
 		}},
 	}},
 	{"Observability", []sectionGroup{

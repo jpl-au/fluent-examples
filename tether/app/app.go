@@ -45,6 +45,7 @@ import (
 	"github.com/jpl-au/fluent-examples/tether/site/uploads"
 	filteredupload "github.com/jpl-au/fluent-examples/tether/site/uploads/filtered"
 	"github.com/jpl-au/fluent-examples/tether/site/valuestore"
+	"github.com/jpl-au/fluent-examples/tether/site/windowing"
 )
 
 // New creates the complete example application. The context controls
@@ -101,6 +102,9 @@ func New(ctx context.Context, assets *tether.Asset) (http.Handler, []tether.Drai
 	// Memo demos - subtree memoisation with Versioned keys.
 	memoHandler := memo.New(app, assets)
 	memoRealtimeHandler := memo.NewRealtime(app, assets)
+
+	// Windowing demo - virtual scrolling for large lists.
+	windowingHandler := windowing.New(app, assets)
 
 	// Signal demos - WS and SSE variants.
 	signalsWSHandler := signals.NewWS(app, assets)
@@ -169,6 +173,7 @@ func New(ctx context.Context, assets *tether.Asset) (http.Handler, []tether.Drai
 	mux.Handle("/scroll/", scrollHandler)
 	mux.Handle("/memo/realtime/", memoRealtimeHandler)
 	mux.Handle("/memo/", memoHandler)
+	mux.Handle("/windowing/", windowingHandler)
 	mux.Handle("/sw/", swHandler)
 
 	// HTTP section as the catch-all (must be registered last).
@@ -181,7 +186,8 @@ func New(ctx context.Context, assets *tether.Asset) (http.Handler, []tether.Drai
 		signalsWSHandler, signalsSSEHandler,
 		liveWSHandler, liveSSEHandler,
 		realtimeHandler, diagnosticsHandler, freezeHandler,
-		hotkeyHandler, dragdropHandler, scrollHandler, memoHandler, memoRealtimeHandler, swHandler,
+		hotkeyHandler, dragdropHandler, scrollHandler,
+		memoHandler, memoRealtimeHandler, windowingHandler, swHandler,
 	}
 
 	return mux, drainables
