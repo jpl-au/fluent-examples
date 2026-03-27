@@ -5,6 +5,8 @@ import (
 	"runtime"
 	"time"
 
+	"github.com/jpl-au/fluent/html5/div"
+	"github.com/jpl-au/fluent/node"
 	tether "github.com/jpl-au/tether"
 )
 
@@ -12,8 +14,9 @@ import (
 const maxDataPoints = 60
 
 // startMonitor launches a background goroutine that reads Go runtime
-// metrics every second and pushes them into session state via
-// Versioned.With so the memo keys track each data change.
+// metrics every second and pushes each chart via sess.Patch. Each
+// chart is a targeted update - only the changed chart is re-rendered
+// and sent, not the full page.
 func startMonitor(sess *tether.StatefulSession[RealtimeState]) {
 	sess.Go(func(ctx context.Context) {
 		ticker := time.NewTicker(time.Second)
@@ -42,11 +45,28 @@ func startMonitor(sess *tether.StatefulSession[RealtimeState]) {
 				prevCPU = curCPU
 				prevWall = now
 
-				sess.Update(func(s RealtimeState) RealtimeState {
-					s.HeapMB = s.HeapMB.With(appendMetric(s.HeapMB.Val, heap))
-					s.Goroutines = s.Goroutines.With(appendMetricInt(s.Goroutines.Val, goroutines))
+				// Each chart is a targeted Patch. Only the chart div
+				// is re-rendered and diffed - the card layout, description,
+				// badges, and other charts are untouched.
+				sess.Patch("chart-cpu", func(s RealtimeState) (RealtimeState, node.Node) {
 					s.CPUPercent = s.CPUPercent.With(appendMetric(s.CPUPercent.Val, cpuPct))
-					return s
+					return s, div.New(
+						chartDiv("memocpu", "CPU (%)", "#ee6666", toLineData(s.CPUPercent.Val)),
+					).Dynamic("chart-cpu")
+				})
+
+				sess.Patch("chart-heap", func(s RealtimeState) (RealtimeState, node.Node) {
+					s.HeapMB = s.HeapMB.With(appendMetric(s.HeapMB.Val, heap))
+					return s, div.New(
+						chartDiv("memoheap", "Heap (MB)", "#5470c6", toLineData(s.HeapMB.Val)),
+					).Dynamic("chart-heap")
+				})
+
+				sess.Patch("chart-goroutines", func(s RealtimeState) (RealtimeState, node.Node) {
+					s.Goroutines = s.Goroutines.With(appendMetricInt(s.Goroutines.Val, goroutines))
+					return s, div.New(
+						chartDiv("memogoroutines", "Goroutines", "#91cc75", intsToLineData(s.Goroutines.Val)),
+					).Dynamic("chart-goroutines")
 				})
 			}
 		}

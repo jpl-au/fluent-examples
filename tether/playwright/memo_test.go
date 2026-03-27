@@ -137,7 +137,7 @@ func TestMemoRealtimePageRenders(t *testing.T) {
 
 	waitForConnected(t, page)
 
-	heading := page.GetByText("Memoised System Monitor")
+	heading := page.GetByText("System Monitor")
 	if err := expect(heading).ToBeVisible(); err != nil {
 		t.Fatalf("heading not visible: %v", err)
 	}

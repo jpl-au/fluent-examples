@@ -22,13 +22,26 @@ import (
 func RenderRealtime(s RealtimeState) node.Node {
 	return cpage.New(
 		panel.Card(
-			"Memoised System Monitor",
-			"Same live Go runtime metrics as the Real-time Dashboard, "+
-				"but each chart is wrapped in node.Memo with a Versioned "+
-				"key. On each tick, all three metrics change so all charts "+
-				"re-render. The memoisation benefit shows when only some "+
-				"metrics change - unchanged charts are skipped entirely.",
-			"node.Memo · tether.Versioned · Memo: true · go-echarts", panel.WS|panel.SSE,
+			"Memo + Patch Together",
+			"This dashboard combines two strategies. Memo (via "+
+				"node.Memo and Versioned keys) optimises the full render "+
+				"path - page loads and reconnects skip unchanged charts. "+
+				"Patch (via sess.Patch) optimises the live update path - "+
+				"each timer tick targets a single chart key without "+
+				"touching the rest of the page. The two work through "+
+				"either engine. Use Memo for full renders, Patch for "+
+				"targeted updates, or both together.",
+			"sess.Patch · node.Memo · Versioned · Memo: true", panel.WS|panel.SSE,
+		),
+
+		panel.Card(
+			"System Monitor",
+			"Live Go runtime metrics pushed every second. Each chart "+
+				"is a separate sess.Patch call targeting its Dynamic key. "+
+				"The card layout, description, and other charts are "+
+				"untouched on each tick. On page load and reconnect, "+
+				"node.Memo skips unchanged chart closures.",
+			"sess.Go · sess.Patch · go-echarts", panel.WS|panel.SSE,
 			monitor.Charts(
 				div.New(
 					node.Memo(s.CPUPercent.Version(), func() node.Node {
