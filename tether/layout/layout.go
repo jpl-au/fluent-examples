@@ -102,6 +102,12 @@ var sidebar = []sidebarGroup{
 			{"/scroll/", "Scroll"},
 		}},
 	}},
+	{"Performance", []sectionGroup{
+		{SectionLive, "", []navItem{
+			{"/memo/", "Memoisation"},
+			{"/memo/realtime/", "Memoised Dashboard"},
+		}},
+	}},
 	{"Observability", []sectionGroup{
 		{SectionLive, "", []navItem{
 			{"/diagnostics/", "Diagnostics"},

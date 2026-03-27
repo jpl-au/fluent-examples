@@ -1,7 +1,7 @@
 package configuration
 
 import (
-	"fmt"
+	"strconv"
 	"strings"
 
 	"github.com/jpl-au/fluent/node"
@@ -30,8 +30,8 @@ func Render(s State) node.Node {
 				configtable.Row("Heartbeat", configuredTimeouts.Heartbeat.String()),
 				configtable.Row("Retry", configuredTimeouts.Retry.String()),
 				configtable.Row("MaxRetry", configuredTimeouts.MaxRetry.String()),
-				configtable.Row("BackoffMultiplier", fmt.Sprintf("%.1f", configuredTimeouts.BackoffMultiplier)),
-				configtable.Row("DisableJitter", fmt.Sprintf("%t", configuredTimeouts.DisableJitter)),
+				configtable.Row("BackoffMultiplier", strconv.FormatFloat(configuredTimeouts.BackoffMultiplier, 'f', 1, 64)),
+				configtable.Row("DisableJitter", strconv.FormatBool(configuredTimeouts.DisableJitter)),
 			),
 		),
 
@@ -40,9 +40,9 @@ func Render(s State) node.Node {
 			"Capacity constraints that protect against resource exhaustion. MaxSessions and MaxPending guard against flooding; CmdBufferSize tunes the per-session command channel.",
 			"tether.Limits", panel.AllTransports,
 			configtable.New(
-				configtable.Row("MaxSessions", fmt.Sprintf("%d", configuredLimits.MaxSessions)),
-				configtable.Row("MaxPending", fmt.Sprintf("%d", configuredLimits.MaxPending)),
-				configtable.Row("CmdBufferSize", fmt.Sprintf("%d", configuredLimits.CmdBufferSize)),
+				configtable.Row("MaxSessions", strconv.Itoa(configuredLimits.MaxSessions)),
+				configtable.Row("MaxPending", strconv.Itoa(configuredLimits.MaxPending)),
+				configtable.Row("CmdBufferSize", strconv.Itoa(configuredLimits.CmdBufferSize)),
 				configtable.Row("MaxEventBytes", formatBytes(configuredLimits.MaxEventBytes)),
 			),
 		),
@@ -53,7 +53,7 @@ func Render(s State) node.Node {
 			"tether.Security", panel.AllTransports,
 			configtable.New(
 				configtable.Row("TrustedOrigins", strings.Join(configuredSecurity.TrustedOrigins, ", ")),
-				configtable.Row("DisableSessionBinding", fmt.Sprintf("%t", configuredSecurity.DisableSessionBinding)),
+				configtable.Row("DisableSessionBinding", strconv.FormatBool(configuredSecurity.DisableSessionBinding)),
 			),
 		),
 		panel.Card(
@@ -61,10 +61,10 @@ func Render(s State) node.Node {
 			"Per-message deflate (RFC 7692) is enabled by default. Browsers negotiate the extension transparently during the handshake. ContextTakeover retains the compression dictionary across messages for better ratios on repetitive HTML, at the cost of ~4 KB per connection.",
 			"ws.Compression", panel.WS,
 			configtable.New(
-				configtable.Row("Disabled", fmt.Sprintf("%t", configuredCompression.Disabled)),
+				configtable.Row("Disabled", strconv.FormatBool(configuredCompression.Disabled)),
 				configtable.Row("Level", compressionLevelName(configuredCompression.Level)),
-				configtable.Row("Threshold", fmt.Sprintf("%d B", configuredCompression.Threshold)),
-				configtable.Row("ContextTakeover", fmt.Sprintf("%t", configuredCompression.ContextTakeover)),
+				configtable.Row("Threshold", strconv.Itoa(configuredCompression.Threshold)+" B"),
+				configtable.Row("ContextTakeover", strconv.FormatBool(configuredCompression.ContextTakeover)),
 			),
 		),
 		panel.Card(
@@ -82,7 +82,7 @@ func Render(s State) node.Node {
 			"Bus.Emit inside OnNavigate fires during the initial GET (pre-warming) because CaptureSession.enqueue runs synchronously. The global subscriber counts every page view - including the very first render before any WebSocket connects.",
 			"Bus.Emit · OnNavigate", panel.AllTransports,
 			configtable.New(
-				configtable.Row("Total Page Views", fmt.Sprintf("%d", s.PageViews)),
+				configtable.Row("Total Page Views", strconv.FormatInt(s.PageViews, 10)),
 			),
 		),
 	)
@@ -98,7 +98,7 @@ func compressionLevelName(level ws.CompressionLevel) string {
 	case ws.CompressionSmallest:
 		return "Smallest (9)"
 	default:
-		return fmt.Sprintf("%d", level)
+		return strconv.Itoa(int(level))
 	}
 }
 
@@ -108,10 +108,10 @@ func compressionLevelName(level ws.CompressionLevel) string {
 func formatBytes(b int64) string {
 	switch {
 	case b >= 1<<20 && b%(1<<20) == 0:
-		return fmt.Sprintf("%d MB", b/(1<<20))
+		return strconv.FormatInt(b/(1<<20), 10) + " MB"
 	case b >= 1<<10 && b%(1<<10) == 0:
-		return fmt.Sprintf("%d KB", b/(1<<10))
+		return strconv.FormatInt(b/(1<<10), 10) + " KB"
 	default:
-		return fmt.Sprintf("%d B", b)
+		return strconv.FormatInt(b, 10) + " B"
 	}
 }

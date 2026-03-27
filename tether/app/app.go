@@ -29,6 +29,7 @@ import (
 	"github.com/jpl-au/fluent-examples/tether/site/hotkey"
 	httpsite "github.com/jpl-au/fluent-examples/tether/site/http"
 	"github.com/jpl-au/fluent-examples/tether/site/live"
+	"github.com/jpl-au/fluent-examples/tether/site/memo"
 	"github.com/jpl-au/fluent-examples/tether/site/morph"
 	mwsite "github.com/jpl-au/fluent-examples/tether/site/mw"
 	"github.com/jpl-au/fluent-examples/tether/site/navigation"
@@ -97,6 +98,10 @@ func New(ctx context.Context, assets *tether.Asset) (http.Handler, []tether.Drai
 	// Freeze demo - FreezeWithConnect with SessionStore.
 	freezeHandler := freeze.New(app, assets)
 
+	// Memo demos - subtree memoisation with Versioned keys.
+	memoHandler := memo.New(app, assets)
+	memoRealtimeHandler := memo.NewRealtime(app, assets)
+
 	// Signal demos - WS and SSE variants.
 	signalsWSHandler := signals.NewWS(app, assets)
 	signalsSSEHandler := signals.NewSSE(app, assets)
@@ -162,6 +167,8 @@ func New(ctx context.Context, assets *tether.Asset) (http.Handler, []tether.Drai
 	mux.Handle("/hotkey/", hotkeyHandler)
 	mux.Handle("/dragdrop/", dragdropHandler)
 	mux.Handle("/scroll/", scrollHandler)
+	mux.Handle("/memo/realtime/", memoRealtimeHandler)
+	mux.Handle("/memo/", memoHandler)
 	mux.Handle("/sw/", swHandler)
 
 	// HTTP section as the catch-all (must be registered last).
@@ -174,7 +181,7 @@ func New(ctx context.Context, assets *tether.Asset) (http.Handler, []tether.Drai
 		signalsWSHandler, signalsSSEHandler,
 		liveWSHandler, liveSSEHandler,
 		realtimeHandler, diagnosticsHandler, freezeHandler,
-		hotkeyHandler, dragdropHandler, scrollHandler, swHandler,
+		hotkeyHandler, dragdropHandler, scrollHandler, memoHandler, memoRealtimeHandler, swHandler,
 	}
 
 	return mux, drainables

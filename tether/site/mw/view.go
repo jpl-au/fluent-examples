@@ -1,7 +1,7 @@
 package mw
 
 import (
-	"fmt"
+	"strconv"
 
 	"github.com/jpl-au/fluent/html5/span"
 	"github.com/jpl-au/fluent/node"
@@ -25,7 +25,7 @@ func Render(s State) node.Node {
 			"tether.Middleware", panel.AllTransports,
 			layout.Stack(
 				button.PrimaryAction("Send Event", "mw.ping",
-					bind.EventData("count", fmt.Sprintf("%d", s.EventCount)),
+					bind.EventData("count", strconv.Itoa(s.EventCount)),
 				),
 				layout.Container(chainResult(s.ChainLog)).Dynamic("chain-result"),
 			),
@@ -37,10 +37,10 @@ func Render(s State) node.Node {
 			layout.Stack(
 				layout.Row(
 					button.PrimaryAction("Fast Event", "mw.ping",
-						bind.EventData("count", fmt.Sprintf("%d", s.EventCount)),
+						bind.EventData("count", strconv.Itoa(s.EventCount)),
 					),
 					button.PrimaryAction("Slow Event", "mw.slow",
-						bind.EventData("count", fmt.Sprintf("%d", s.EventCount)),
+						bind.EventData("count", strconv.Itoa(s.EventCount)),
 					),
 				),
 				layout.Container(timingResult(s.TimingResult)).Dynamic("timing-result"),
@@ -53,10 +53,10 @@ func Render(s State) node.Node {
 			layout.Stack(
 				layout.Row(
 					button.PrimaryAction("Allowed Action", "mw.ping",
-						bind.EventData("count", fmt.Sprintf("%d", s.EventCount)),
+						bind.EventData("count", strconv.Itoa(s.EventCount)),
 					),
 					button.DangerAction("Blocked Action", "mw.blocked",
-						bind.EventData("count", fmt.Sprintf("%d", s.EventCount)),
+						bind.EventData("count", strconv.Itoa(s.EventCount)),
 					),
 				),
 				layout.Container(guardResult(s.BlockedResult)).Dynamic("guard-result"),
@@ -68,9 +68,9 @@ func Render(s State) node.Node {
 			"tether.Middleware", panel.AllTransports,
 			layout.Row(
 				button.PrimaryAction("Click Me", "mw.ping",
-					bind.EventData("count", fmt.Sprintf("%d", s.EventCount)),
+					bind.EventData("count", strconv.Itoa(s.EventCount)),
 				),
-				span.Text("Events processed: "+fmt.Sprintf("%d", s.EventCount)),
+				span.Text("Events processed: "+strconv.Itoa(s.EventCount)),
 			),
 		),
 	)

@@ -1,7 +1,6 @@
 package navigation
 
 import (
-	"fmt"
 	"strconv"
 	"strings"
 
@@ -138,7 +137,7 @@ func multiValueResult(tags []string) node.Node {
 func typedParamsResult(s State) node.Node {
 	return result.BlockDynamic("typed-params",
 		"active = "+strconv.FormatBool(s.Active)+" (default: false)\n"+
-			"price  = "+fmt.Sprintf("%.2f", s.Price)+" (default: 0.00)",
+			"price  = "+strconv.FormatFloat(s.Price, 'f', 2, 64)+" (default: 0.00)",
 	)
 }
 
@@ -157,7 +156,7 @@ func numericMultiValueResult(s State) node.Node {
 	if len(s.Prices) > 0 {
 		parts := make([]string, len(s.Prices))
 		for i, p := range s.Prices {
-			parts[i] = fmt.Sprintf("%.2f", p)
+			parts[i] = strconv.FormatFloat(p, 'f', 2, 64)
 		}
 		prices = strings.Join(parts, ", ")
 	}

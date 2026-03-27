@@ -1,4 +1,4 @@
-package realtime
+package memo
 
 import (
 	"html"
@@ -8,6 +8,7 @@ import (
 	"github.com/go-echarts/go-echarts/v2/charts"
 	"github.com/go-echarts/go-echarts/v2/opts"
 
+	"github.com/jpl-au/fluent/html5/div"
 	"github.com/jpl-au/fluent/node"
 
 	"github.com/jpl-au/fluent-examples/tether/components/composite/monitor"
@@ -15,32 +16,40 @@ import (
 	"github.com/jpl-au/fluent-examples/tether/components/simple/panel"
 )
 
-// Render builds the real-time dashboard page with live go-echarts
-// charts for CPU, heap, and goroutine metrics.
-func Render(s State) node.Node {
+// RenderRealtime builds the memoised real-time dashboard. Each chart
+// is wrapped in node.Memo with its Versioned key so only the chart
+// whose data changed re-renders on each tick.
+func RenderRealtime(s RealtimeState) node.Node {
 	return cpage.New(
 		panel.Card(
-			"System Monitor",
-			"Live Go runtime metrics pushed from the server every second. A Session.Go "+
-				"goroutine reads runtime.MemStats and measures process CPU via "+
-				"syscall.Getrusage, updates the session state, and the framework "+
-				"re-renders and diffs the charts automatically. The charts are built "+
-				"by go-echarts - a Go charting library that wraps Apache ECharts. "+
-				"Open the page and watch the charts move.",
-			"sess.Go · sess.Update · go-echarts", panel.WS|panel.SSE,
+			"Memoised System Monitor",
+			"Same live Go runtime metrics as the Real-time Dashboard, "+
+				"but each chart is wrapped in node.Memo with a Versioned "+
+				"key. On each tick, all three metrics change so all charts "+
+				"re-render. The memoisation benefit shows when only some "+
+				"metrics change - unchanged charts are skipped entirely.",
+			"node.Memo · tether.Versioned · Memo: true · go-echarts", panel.WS|panel.SSE,
 			monitor.Charts(
-				chartDiv("chartcpu", "CPU (%)", "#ee6666", toLineData(s.CPUPercent)),
-				chartDiv("chartheap", "Heap (MB)", "#5470c6", toLineData(s.HeapMB)),
-				chartDiv("chartgoroutines", "Goroutines", "#91cc75", intsToLineData(s.Goroutines)),
-			).Dynamic("monitor-charts"),
+				div.New(
+					node.Memo(s.CPUPercent.Version(), func() node.Node {
+						return chartDiv("memocpu", "CPU (%)", "#ee6666", toLineData(s.CPUPercent.Val))
+					}),
+				).Dynamic("chart-cpu"),
+				div.New(
+					node.Memo(s.HeapMB.Version(), func() node.Node {
+						return chartDiv("memoheap", "Heap (MB)", "#5470c6", toLineData(s.HeapMB.Val))
+					}),
+				).Dynamic("chart-heap"),
+				div.New(
+					node.Memo(s.Goroutines.Version(), func() node.Node {
+						return chartDiv("memogoroutines", "Goroutines", "#91cc75", intsToLineData(s.Goroutines.Val))
+					}),
+				).Dynamic("chart-goroutines"),
+			),
 		),
 	)
 }
 
-// chartDiv builds a div wired to the echarts JS hook. The chart
-// option JSON is built by go-echarts and stored HTML-escaped in a
-// data attribute. The hook reads it with getAttribute (which auto-
-// unescapes entities) and calls echarts.setOption().
 func chartDiv(id, titleText, colour string, data []opts.LineData) node.Node {
 	option := buildChartOption(id, titleText, colour, data)
 	el := monitor.Chart(id)
@@ -50,7 +59,6 @@ func chartDiv(id, titleText, colour string, data []opts.LineData) node.Node {
 	return el
 }
 
-// buildChartOption uses go-echarts to produce the ECharts JSON config.
 func buildChartOption(id, titleText, colour string, data []opts.LineData) string {
 	line := charts.NewLine()
 	line.SetGlobalOptions(
@@ -93,15 +101,10 @@ func buildChartOption(id, titleText, colour string, data []opts.LineData) string
 		}),
 	)
 
-	// RenderSnippet().Option may include a trailing semicolon from the
-	// go-echarts base template - strip it so the value is valid JSON.
 	opt := line.RenderSnippet().Option
 	return strings.TrimSuffix(strings.TrimSpace(opt), ";")
 }
 
-// toLineData converts float64 metric samples into go-echarts line
-// data points for chart rendering. Values are passed as numbers so
-// echarts auto-scales the Y-axis correctly.
 func toLineData(values []float64) []opts.LineData {
 	data := make([]opts.LineData, len(values))
 	for i, v := range values {
@@ -110,7 +113,6 @@ func toLineData(values []float64) []opts.LineData {
 	return data
 }
 
-// intsToLineData is the int-typed variant of toLineData.
 func intsToLineData(values []int) []opts.LineData {
 	data := make([]opts.LineData, len(values))
 	for i, v := range values {

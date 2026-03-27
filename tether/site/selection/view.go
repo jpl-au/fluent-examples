@@ -1,7 +1,7 @@
 package selection
 
 import (
-	"fmt"
+	"strconv"
 
 	"github.com/jpl-au/fluent/html5/div"
 	"github.com/jpl-au/fluent/html5/span"
@@ -46,7 +46,7 @@ func itemList() []node.Node {
 	for i, name := range names {
 		items[i] = bind.Apply(
 			div.New(span.Text(name)).Class("list-item"),
-			bind.EventData("id", fmt.Sprintf("%d", i+1)),
+			bind.EventData("id", strconv.Itoa(i+1)),
 		)
 	}
 	return items
