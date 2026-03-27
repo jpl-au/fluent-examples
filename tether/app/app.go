@@ -34,6 +34,7 @@ import (
 	mwsite "github.com/jpl-au/fluent-examples/tether/site/mw"
 	"github.com/jpl-au/fluent-examples/tether/site/navigation"
 	"github.com/jpl-au/fluent-examples/tether/site/notifications"
+	"github.com/jpl-au/fluent-examples/tether/site/patch"
 	"github.com/jpl-au/fluent-examples/tether/site/realtime"
 	"github.com/jpl-au/fluent-examples/tether/site/rendering"
 	"github.com/jpl-au/fluent-examples/tether/site/scroll"
@@ -106,6 +107,9 @@ func New(ctx context.Context, assets *tether.Asset) (http.Handler, []tether.Drai
 	// Windowing demo - virtual scrolling for large lists.
 	windowingHandler := windowing.New(app, assets)
 
+	// Patch demo - targeted single-key updates.
+	patchHandler := patch.New(app, assets)
+
 	// Signal demos - WS and SSE variants.
 	signalsWSHandler := signals.NewWS(app, assets)
 	signalsSSEHandler := signals.NewSSE(app, assets)
@@ -174,6 +178,7 @@ func New(ctx context.Context, assets *tether.Asset) (http.Handler, []tether.Drai
 	mux.Handle("/memo/realtime/", memoRealtimeHandler)
 	mux.Handle("/memo/", memoHandler)
 	mux.Handle("/windowing/", windowingHandler)
+	mux.Handle("/patch/", patchHandler)
 	mux.Handle("/sw/", swHandler)
 
 	// HTTP section as the catch-all (must be registered last).
@@ -187,7 +192,7 @@ func New(ctx context.Context, assets *tether.Asset) (http.Handler, []tether.Drai
 		liveWSHandler, liveSSEHandler,
 		realtimeHandler, diagnosticsHandler, freezeHandler,
 		hotkeyHandler, dragdropHandler, scrollHandler,
-		memoHandler, memoRealtimeHandler, windowingHandler, swHandler,
+		memoHandler, memoRealtimeHandler, windowingHandler, patchHandler, swHandler,
 	}
 
 	return mux, drainables

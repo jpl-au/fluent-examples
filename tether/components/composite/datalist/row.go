@@ -21,3 +21,12 @@ func RowWithID(id, label, value string) node.Node {
 		span.Text(value).Class("data-value"),
 	).Class("data-row").ID(id)
 }
+
+// RowDynamic creates a data row with a Dynamic key for targeted
+// patching via sess.Patch.
+func RowDynamic(key, label, value string) node.Node {
+	return div.New(
+		span.Text(label).Class("data-label"),
+		span.Text(value).Class("data-value"),
+	).Class("data-row").Dynamic(key)
+}

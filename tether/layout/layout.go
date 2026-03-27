@@ -107,6 +107,7 @@ var sidebar = []sidebarGroup{
 			{"/memo/", "Memoisation"},
 			{"/memo/realtime/", "Memoised Dashboard"},
 			{"/windowing/", "Windowing"},
+			{"/patch/", "Targeted Updates"},
 		}},
 	}},
 	{"Observability", []sectionGroup{
