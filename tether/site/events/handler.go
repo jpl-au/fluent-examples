@@ -50,7 +50,7 @@ func New(app tether.App, assets *tether.Asset) http.Handler {
 	return tether.Stateless(app, tether.StatelessConfig[State]{
 		InitialState: func(_ *http.Request) State { return State{} },
 		Render: func(s State) node.Node {
-			return layout.Shell(layout.SectionHTTP, "/events", 0, Render(s))
+			return layout.Shell(layout.SectionHTTP, "/events/", 0, Render(s))
 		},
 		Handle:     Handle,
 		Middleware: []tether.Middleware[State]{middleware.Logging[State]},

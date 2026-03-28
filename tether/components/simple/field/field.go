@@ -26,6 +26,11 @@ func TextWithID(id, name, placeholder string) *input.Element {
 	return input.Text(name, "").ID(id).Class("input").Placeholder(placeholder)
 }
 
+// EmailWithID creates a styled email input with an explicit ID.
+func EmailWithID(id, name, placeholder string) *input.Element {
+	return input.Email(name).ID(id).Class("input").Placeholder(placeholder)
+}
+
 // File creates a styled file input with an explicit ID.
 func File(id, name string) *input.Element {
 	return input.File(name).ID(id).Class("input")

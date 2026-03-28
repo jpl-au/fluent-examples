@@ -1,4 +1,4 @@
-package memo
+package memoise
 
 import (
 	"log/slog"
@@ -21,20 +21,20 @@ import (
 var realtimePresence = shared.NewPresenceCountOnly()
 
 // NewRealtime creates a memoised handler for the real-time dashboard.
-// Same system monitor as the realtime demo, but with Memo: true and
-// each chart region wrapped in node.Memo with Versioned keys.
+// Same system monitor as the realtime demo, but with Memoise: true and
+// each chart region wrapped in node.Memoise with Versioned keys.
 func NewRealtime(app tether.App, assets *tether.Asset) *tether.Handler[RealtimeState] {
 	return tether.Stateful(app, tether.StatefulConfig[RealtimeState]{
-		Name:     "memo/realtime",
+		Name:     "memoise/realtime",
 		Upgrade:  wsupgrade.Upgrade(),
 		Fallback: sse.Upgrade(),
-		Memo:     true,
+		Memoise:  true,
 
 		InitialState: func(_ *http.Request) RealtimeState {
 			return RealtimeState{OnlineCount: realtimePresence.OnlineCount.Load()}
 		},
 		Render: func(s RealtimeState) node.Node {
-			return layout.Shell(layout.SectionLive, "/memo/realtime/", s.OnlineCount, RenderRealtime(s))
+			return layout.Shell(layout.SectionLive, "/memoise/realtime/", s.OnlineCount, RenderRealtime(s))
 		},
 		Handle: func(_ tether.Session, s RealtimeState, _ tether.Event) RealtimeState { return s },
 
@@ -57,12 +57,12 @@ func NewRealtime(app tether.App, assets *tether.Asset) *tether.Handler[RealtimeS
 		),
 
 		OnConnect: func(sess *tether.StatefulSession[RealtimeState]) {
-			slog.Info("memo/realtime: connected", "id", sess.ID())
+			slog.Info("memoise/realtime: connected", "id", sess.ID())
 			shared.TrackPresence(realtimePresence, sess.ID())
 			startMonitor(sess)
 		},
 		OnDisconnect: func(sess *tether.StatefulSession[RealtimeState]) {
-			slog.Info("memo/realtime: disconnected", "id", sess.ID())
+			slog.Info("memoise/realtime: disconnected", "id", sess.ID())
 			shared.UntrackPresence(realtimePresence, sess.ID())
 		},
 	})

@@ -159,6 +159,39 @@ svg {
 }
 
 /* ------------------------------------------------------------------ */
+/* Scrollbar theming                                                  */
+/* ------------------------------------------------------------------ */
+
+/* Standards track (Firefox, future Chrome) */
+.sidebar,
+.content {
+  scrollbar-width: thin;
+  scrollbar-color: var(--muted) transparent;
+}
+
+/* WebKit (Chrome, Safari, Edge) */
+.sidebar::-webkit-scrollbar,
+.content::-webkit-scrollbar {
+  width: 6px;
+}
+
+.sidebar::-webkit-scrollbar-track,
+.content::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.sidebar::-webkit-scrollbar-thumb,
+.content::-webkit-scrollbar-thumb {
+  background: var(--muted);
+  border-radius: 3px;
+}
+
+.sidebar::-webkit-scrollbar-thumb:hover,
+.content::-webkit-scrollbar-thumb:hover {
+  background: var(--accent);
+}
+
+/* ------------------------------------------------------------------ */
 /* Layout shell                                                       */
 /* ------------------------------------------------------------------ */
 
@@ -543,6 +576,12 @@ svg {
   background: var(--primary-hover);
 }
 
+/* Flash feedback - applied temporarily by bind.FlashClass */
+.btn-flashed {
+  background: var(--success) !important;
+  border-color: var(--success-border) !important;
+}
+
 /* Secondary - muted, a step below primary */
 .btn-secondary {
   background: var(--secondary);
@@ -906,13 +945,30 @@ svg {
   flex-direction: column;
   gap: 0;
   margin-top: 0.5rem;
+  align-self: stretch;
 }
 
 .list-item {
-  padding: 0.5rem 0;
+  width: 100%;
+  padding: 0.5rem 0.75rem;
   border-bottom: 1px solid var(--border);
   font-size: 0.875rem;
   color: var(--muted-fg);
+  border-radius: var(--radius);
+  cursor: pointer;
+  user-select: none;
+  transition: background 0.15s, color 0.15s;
+}
+
+.list-item:hover {
+  background: var(--accent);
+  color: var(--accent-fg);
+}
+
+.list-item.tether-selected {
+  background: var(--primary);
+  color: var(--primary-fg);
+  border-color: var(--primary-border);
 }
 
 /* Viewport / infinite scroll list */

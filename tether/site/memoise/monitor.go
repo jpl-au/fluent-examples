@@ -1,4 +1,4 @@
-package memo
+package memoise
 
 import (
 	"context"
@@ -51,21 +51,21 @@ func startMonitor(sess *tether.StatefulSession[RealtimeState]) {
 				sess.Patch("chart-cpu", func(s RealtimeState) (RealtimeState, node.Node) {
 					s.CPUPercent = s.CPUPercent.With(appendMetric(s.CPUPercent.Val, cpuPct))
 					return s, div.New(
-						chartDiv("memocpu", "CPU (%)", "#ee6666", toLineData(s.CPUPercent.Val)),
+						chartDiv("memoise-cpu", "CPU (%)", "#ee6666", toLineData(s.CPUPercent.Val)),
 					).Dynamic("chart-cpu")
 				})
 
 				sess.Patch("chart-heap", func(s RealtimeState) (RealtimeState, node.Node) {
 					s.HeapMB = s.HeapMB.With(appendMetric(s.HeapMB.Val, heap))
 					return s, div.New(
-						chartDiv("memoheap", "Heap (MB)", "#5470c6", toLineData(s.HeapMB.Val)),
+						chartDiv("memoise-heap", "Heap (MB)", "#5470c6", toLineData(s.HeapMB.Val)),
 					).Dynamic("chart-heap")
 				})
 
 				sess.Patch("chart-goroutines", func(s RealtimeState) (RealtimeState, node.Node) {
 					s.Goroutines = s.Goroutines.With(appendMetricInt(s.Goroutines.Val, goroutines))
 					return s, div.New(
-						chartDiv("memogoroutines", "Goroutines", "#91cc75", intsToLineData(s.Goroutines.Val)),
+						chartDiv("memoise-goroutines", "Goroutines", "#91cc75", intsToLineData(s.Goroutines.Val)),
 					).Dynamic("chart-goroutines")
 				})
 			}

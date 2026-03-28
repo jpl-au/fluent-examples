@@ -43,10 +43,10 @@ type State struct {
 func New(app tether.App, assets *tether.Asset) http.Handler {
 	return tether.Stateless(app, tether.StatelessConfig[State]{
 		InitialState: func(_ *http.Request) State {
-			return State{Page: "/navigation", QueryPage: 1}
+			return State{Page: "/navigation/", QueryPage: 1}
 		},
 		Render: func(s State) node.Node {
-			return layout.Shell(layout.SectionHTTP, "/navigation", 0, Render(s))
+			return layout.Shell(layout.SectionHTTP, "/navigation/", 0, Render(s))
 		},
 		Handle: Handle,
 		OnNavigate: func(_ tether.Session, s State, p tether.Params) State {
@@ -87,11 +87,11 @@ func New(app tether.App, assets *tether.Asset) http.Handler {
 func Handle(sess tether.Session, s State, ev tether.Event) State {
 	switch ev.Action {
 	case "nav.replace-a":
-		sess.ReplaceURL("/navigation?tab=a")
+		sess.ReplaceURL("/navigation/?tab=a")
 	case "nav.replace-b":
-		sess.ReplaceURL("/navigation?tab=b")
+		sess.ReplaceURL("/navigation/?tab=b")
 	case "nav.goto-target":
-		sess.Navigate("/navigation/target")
+		sess.Navigate("/navigation/target/")
 	}
 	return s
 }

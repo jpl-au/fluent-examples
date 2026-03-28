@@ -42,7 +42,7 @@ func New(app tether.App, assets *tether.Asset) http.Handler {
 			}
 		},
 		Render: func(s State) node.Node {
-			return layout.Shell(layout.SectionHTTP, "/rendering", 0, Render(s))
+			return layout.Shell(layout.SectionHTTP, "/rendering/", 0, Render(s))
 		},
 		Handle:     Handle,
 		Middleware: []tether.Middleware[State]{middleware.Logging[State]},

@@ -12,7 +12,7 @@ func TestMiddlewarePageRenders(t *testing.T) {
 	page, cleanup := newPage(t)
 	defer cleanup()
 
-	resp, err := page.Goto(srv + "/middleware")
+	resp, err := page.Goto(srv + "/middleware/")
 	if err != nil {
 		t.Fatalf("goto: %v", err)
 	}
@@ -35,7 +35,7 @@ func TestMiddlewareChainOrder(t *testing.T) {
 	page, cleanup := newPage(t)
 	defer cleanup()
 
-	_, err := page.Goto(srv + "/middleware")
+	_, err := page.Goto(srv + "/middleware/")
 	if err != nil {
 		t.Fatalf("goto: %v", err)
 	}
@@ -61,7 +61,7 @@ func TestMiddlewareGuardBlock(t *testing.T) {
 	page, cleanup := newPage(t)
 	defer cleanup()
 
-	_, err := page.Goto(srv + "/middleware")
+	_, err := page.Goto(srv + "/middleware/")
 	if err != nil {
 		t.Fatalf("goto: %v", err)
 	}

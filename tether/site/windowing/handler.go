@@ -66,13 +66,7 @@ func New(app tether.App, assets *tether.Asset) *tether.Handler[State] {
 		},
 		Handle: Handle,
 		OnNavigate: func(_ tether.Session, s State, p tether.Params) State {
-			s.ScrollOffset = (p.IntDefault("page", 1) - 1) * pageSize
-			if s.ScrollOffset < 0 {
-				s.ScrollOffset = 0
-			}
-			if s.ScrollOffset > len(s.Items)-pageSize {
-				s.ScrollOffset = len(s.Items) - pageSize
-			}
+			s.ScrollOffset = min(max((p.IntDefault("page", 1)-1)*pageSize, 0), len(s.Items)-pageSize)
 			return s
 		},
 

@@ -6,14 +6,14 @@ import (
 	pw "github.com/playwright-community/playwright-go"
 )
 
-// TestClipboardPageRenders verifies the clipboard demo loads and
-// shows the copy button and source text.
-func TestClipboardPageRenders(t *testing.T) {
+// TestClientActionsPageRenders verifies the client-side actions demo
+// loads and shows the copy button and source text.
+func TestClientActionsPageRenders(t *testing.T) {
 	srv := startApp(t, serverMode())
 	page, cleanup := newPage(t)
 	defer cleanup()
 
-	_, err := page.Goto(srv + "/clipboard")
+	_, err := page.Goto(srv + "/client-actions/")
 	if err != nil {
 		t.Fatalf("goto: %v", err)
 	}
@@ -22,7 +22,7 @@ func TestClipboardPageRenders(t *testing.T) {
 	if err := expect(source).ToBeVisible(); err != nil {
 		t.Fatalf("copy source not visible: %v", err)
 	}
-	if err := expect(source).ToContainText("tether-secret-key-abc123"); err != nil {
+	if err := expect(source).ToContainText("sk_live_abc123def456"); err != nil {
 		t.Fatalf("copy source text mismatch: %v", err)
 	}
 
@@ -32,15 +32,15 @@ func TestClipboardPageRenders(t *testing.T) {
 	}
 }
 
-// TestClipboardCopy clicks the copy button and verifies the clipboard
-// contains the expected text. Clipboard read requires the
+// TestClientActionsCopy clicks the copy button and verifies the
+// clipboard contains the expected text. Clipboard read requires the
 // "clipboard-read" permission.
-func TestClipboardCopy(t *testing.T) {
+func TestClientActionsCopy(t *testing.T) {
 	srv := startApp(t, serverMode())
 	page, cleanup := newPage(t, WithPermissions(srv, "clipboard-read", "clipboard-write"))
 	defer cleanup()
 
-	_, err := page.Goto(srv + "/clipboard")
+	_, err := page.Goto(srv + "/client-actions/")
 	if err != nil {
 		t.Fatalf("goto: %v", err)
 	}
@@ -57,7 +57,7 @@ func TestClipboardCopy(t *testing.T) {
 	}
 
 	text, ok := result.(string)
-	if !ok || text != "tether-secret-key-abc123" {
-		t.Errorf("clipboard = %q, want %q", text, "tether-secret-key-abc123")
+	if !ok || text != "sk_live_abc123def456" {
+		t.Errorf("clipboard = %q, want %q", text, "sk_live_abc123def456")
 	}
 }

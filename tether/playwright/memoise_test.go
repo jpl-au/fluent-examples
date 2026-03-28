@@ -7,40 +7,40 @@ import (
 	pw "github.com/playwright-community/playwright-go"
 )
 
-// TestMemoPageRenders verifies the memo demo loads with the initial
-// table and counter.
-func TestMemoPageRenders(t *testing.T) {
+// TestMemoisedPageRenders verifies the memoisation demo loads with
+// the initial table and counter.
+func TestMemoisedPageRenders(t *testing.T) {
 	srv := startApp(t, serverMode())
 	page, cleanup := newPage(t)
 	defer cleanup()
 
-	_, err := page.Goto(srv + "/memo/")
+	_, err := page.Goto(srv + "/memoise/")
 	if err != nil {
 		t.Fatalf("goto: %v", err)
 	}
 
 	waitForConnected(t, page)
 
-	tbl := page.Locator("#memo-table")
+	tbl := page.Locator("#memoise-table")
 	if err := expect(tbl).ToBeVisible(); err != nil {
 		t.Fatalf("table not visible: %v", err)
 	}
 
-	count := page.Locator("#memo-count")
+	count := page.Locator("#memoise-count")
 	if err := expect(count).ToHaveText("0"); err != nil {
 		t.Fatalf("counter should start at 0: %v", err)
 	}
 }
 
-// TestMemoIncrementDoesNotChangeTable verifies that clicking the
+// TestMemoisedIncrementDoesNotChangeTable verifies that clicking the
 // counter button updates the count but does not re-render the table.
-// The table row count stays the same (memo hit - skipped).
-func TestMemoIncrementDoesNotChangeTable(t *testing.T) {
+// The table row count stays the same (memoiser hit - skipped).
+func TestMemoisedIncrementDoesNotChangeTable(t *testing.T) {
 	srv := startApp(t, serverMode())
 	page, cleanup := newPage(t)
 	defer cleanup()
 
-	_, err := page.Goto(srv + "/memo/")
+	_, err := page.Goto(srv + "/memoise/")
 	if err != nil {
 		t.Fatalf("goto: %v", err)
 	}
@@ -48,7 +48,7 @@ func TestMemoIncrementDoesNotChangeTable(t *testing.T) {
 	waitForConnected(t, page)
 
 	// Count initial rows.
-	rows := page.Locator("#memo-table tbody tr")
+	rows := page.Locator("#memoise-table tbody tr")
 	initialCount, err := rows.Count()
 	if err != nil {
 		t.Fatalf("count rows: %v", err)
@@ -61,7 +61,7 @@ func TestMemoIncrementDoesNotChangeTable(t *testing.T) {
 	}
 
 	// Counter should update.
-	count := page.Locator("#memo-count")
+	count := page.Locator("#memoise-count")
 	if err := expect(count).ToHaveText("1"); err != nil {
 		t.Fatalf("counter should be 1: %v", err)
 	}
@@ -72,18 +72,18 @@ func TestMemoIncrementDoesNotChangeTable(t *testing.T) {
 		t.Fatalf("count rows after: %v", err)
 	}
 	if afterCount != initialCount {
-		t.Errorf("table rows changed from %d to %d after increment (memo should skip)", initialCount, afterCount)
+		t.Errorf("table rows changed from %d to %d after increment (memoiser should skip)", initialCount, afterCount)
 	}
 }
 
-// TestMemoAddItemUpdatesTable verifies that clicking Add Item adds a
-// new row to the table (memo miss - re-rendered).
-func TestMemoAddItemUpdatesTable(t *testing.T) {
+// TestMemoisedAddItemUpdatesTable verifies that clicking Add Item
+// adds a new row to the table (memoiser miss - re-rendered).
+func TestMemoisedAddItemUpdatesTable(t *testing.T) {
 	srv := startApp(t, serverMode())
 	page, cleanup := newPage(t)
 	defer cleanup()
 
-	_, err := page.Goto(srv + "/memo/")
+	_, err := page.Goto(srv + "/memoise/")
 	if err != nil {
 		t.Fatalf("goto: %v", err)
 	}
@@ -91,7 +91,7 @@ func TestMemoAddItemUpdatesTable(t *testing.T) {
 	waitForConnected(t, page)
 
 	// Count initial rows.
-	rows := page.Locator("#memo-table tbody tr")
+	rows := page.Locator("#memoise-table tbody tr")
 	initialCount, err := rows.Count()
 	if err != nil {
 		t.Fatalf("count rows: %v", err)
@@ -123,14 +123,14 @@ func itoa(n int) string {
 	return strconv.Itoa(n)
 }
 
-// TestMemoRealtimePageRenders verifies the memoised real-time
+// TestMemoisedRealtimePageRenders verifies the memoised real-time
 // dashboard loads and the chart containers are present.
-func TestMemoRealtimePageRenders(t *testing.T) {
+func TestMemoisedRealtimePageRenders(t *testing.T) {
 	srv := startApp(t, serverMode())
 	page, cleanup := newPage(t)
 	defer cleanup()
 
-	_, err := page.Goto(srv + "/memo/realtime/")
+	_, err := page.Goto(srv + "/memoise/realtime/")
 	if err != nil {
 		t.Fatalf("goto: %v", err)
 	}
@@ -142,7 +142,7 @@ func TestMemoRealtimePageRenders(t *testing.T) {
 		t.Fatalf("heading not visible: %v", err)
 	}
 
-	for _, id := range []string{"memocpu", "memoheap", "memogoroutines"} {
+	for _, id := range []string{"memoise-cpu", "memoise-heap", "memoise-goroutines"} {
 		chart := page.Locator("#" + id)
 		if err := expect(chart).ToBeVisible(); err != nil {
 			t.Errorf("chart %q not visible: %v", id, err)

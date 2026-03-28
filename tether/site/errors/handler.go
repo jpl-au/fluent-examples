@@ -22,7 +22,7 @@ func New(app tether.App, assets *tether.Asset) http.Handler {
 	return tether.Stateless(app, tether.StatelessConfig[State]{
 		InitialState: func(_ *http.Request) State { return State{} },
 		Render: func(s State) node.Node {
-			return layout.Shell(layout.SectionHTTP, "/errors", 0, Render(s))
+			return layout.Shell(layout.SectionHTTP, "/errors/", 0, Render(s))
 		},
 		Handle: func(_ tether.Session, s State, _ tether.Event) State { return s },
 		Layout: func(_ State, content node.Node) node.Node {

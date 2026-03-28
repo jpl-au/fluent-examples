@@ -39,9 +39,13 @@ func Render(s State) node.Node {
 	)
 }
 
+// itemNames is the shared list of selectable item names, indexed
+// from 1 (ID 1 = index 0).
+var itemNames = []string{"Alpha", "Bravo", "Charlie", "Delta", "Echo", "Foxtrot", "Golf", "Hotel"}
+
 // itemList generates a list of selectable items.
 func itemList() []node.Node {
-	names := []string{"Alpha", "Bravo", "Charlie", "Delta", "Echo", "Foxtrot", "Golf", "Hotel"}
+	names := itemNames
 	items := make([]node.Node, len(names))
 	for i, name := range names {
 		items[i] = bind.Apply(

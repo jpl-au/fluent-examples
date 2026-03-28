@@ -17,7 +17,7 @@ func Render(s State) node.Node {
 		panel.Card(
 			"Frozen Counter",
 			"Click increment a few times, then disconnect (kill the WebSocket or navigate away briefly). When you reconnect, the counter is restored from the SessionStore - the server released all session memory during the disconnect.",
-			"FreezeWithConnect · SessionStore · OnConnect", panel.WS,
+			"FreezeWithConnect · SessionStore · OnConnect", panel.WS|panel.SSE,
 			layout.Stack(
 				layout.Row(
 					button.IncrementAction("freeze.increment"),

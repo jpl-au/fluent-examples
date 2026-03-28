@@ -12,7 +12,7 @@ func TestSelectionPageRenders(t *testing.T) {
 	page, cleanup := newPage(t)
 	defer cleanup()
 
-	_, err := page.Goto(srv + "/selection")
+	_, err := page.Goto(srv + "/selection/")
 	if err != nil {
 		t.Fatalf("goto: %v", err)
 	}
@@ -30,7 +30,7 @@ func TestSelectionClickSelect(t *testing.T) {
 	page, cleanup := newPage(t)
 	defer cleanup()
 
-	_, err := page.Goto(srv + "/selection")
+	_, err := page.Goto(srv + "/selection/")
 	if err != nil {
 		t.Fatalf("goto: %v", err)
 	}
@@ -53,7 +53,7 @@ func TestSelectionClickSelect(t *testing.T) {
 		t.Fatalf("click button: %v", err)
 	}
 
-	result := page.GetByText("Selected 1 items: 1")
+	result := page.GetByText("Selected 1 items: Alpha")
 	if err := expect(result).ToBeVisible(); err != nil {
 		t.Errorf("selection result not visible: %v", err)
 	}
@@ -66,7 +66,7 @@ func TestSelectionNone(t *testing.T) {
 	page, cleanup := newPage(t)
 	defer cleanup()
 
-	_, err := page.Goto(srv + "/selection")
+	_, err := page.Goto(srv + "/selection/")
 	if err != nil {
 		t.Fatalf("goto: %v", err)
 	}
@@ -89,7 +89,7 @@ func TestSelectionCtrlClick(t *testing.T) {
 	page, cleanup := newPage(t)
 	defer cleanup()
 
-	_, err := page.Goto(srv + "/selection")
+	_, err := page.Goto(srv + "/selection/")
 	if err != nil {
 		t.Fatalf("goto: %v", err)
 	}

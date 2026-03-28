@@ -17,7 +17,7 @@ import (
 
 // Render builds the navigation demo page.
 func Render(s State) node.Node {
-	if s.Page == "/navigation/target" {
+	if s.Page == "/navigation/target/" {
 		return renderTarget()
 	}
 	return renderMain(s)
@@ -28,18 +28,18 @@ func renderMain(s State) node.Node {
 	return page.New(
 		panel.Card("Client-Side Navigation", "Click any link to navigate without a full page reload. The browser URL updates via pushState and the new page HTML loads via a fetch POST. This example includes a target page to navigate to and back.", "bind.Link", panel.AllTransports,
 			layout.Row(
-				button.Nav("Go to Target Page", "/navigation/target", bind.Link()),
-				button.Nav("Stay Here (reload)", "/navigation", bind.Link()),
+				button.Nav("Go to Target Page", "/navigation/target/", bind.Link()),
+				button.Nav("Stay Here (reload)", "/navigation/", bind.Link()),
 			),
 		),
 
 		panel.Card("Query Parameters", "Click a link - the URL changes and OnNavigate reads the query string into state using typed helpers. The server uses p.Get for strings, p.IntDefault for optional integers with a default, and displays what it received. This is how you derive state from the URL: filters, pagination, search terms.", "Params.Get · Params.IntDefault", panel.AllTransports,
 			layout.Stack(
 				layout.Row(
-					button.Nav("Tab: overview, page 1", "/navigation?tab=overview&page=1", bind.Link()),
-					button.Nav("Tab: settings, page 3", "/navigation?tab=settings&page=3", bind.Link()),
-					button.Nav("Search: hello, page 2", "/navigation?q=hello&page=2", bind.Link()),
-					button.Nav("No params (defaults)", "/navigation", bind.Link()),
+					button.Nav("Tab: overview, page 1", "/navigation/?tab=overview&page=1", bind.Link()),
+					button.Nav("Tab: settings, page 3", "/navigation/?tab=settings&page=3", bind.Link()),
+					button.Nav("Search: hello, page 2", "/navigation/?q=hello&page=2", bind.Link()),
+					button.Nav("No params (defaults)", "/navigation/", bind.Link()),
 				),
 				queryParamsResult(s),
 			),
@@ -48,9 +48,9 @@ func renderMain(s State) node.Node {
 		panel.Card("Multi-Value Parameters", "Click a link with repeated query keys. OnNavigate uses p.Strings to collect all values for the same key into a slice.", "Params.Strings", panel.AllTransports,
 			layout.Stack(
 				layout.Row(
-					button.Nav("Tags: go, web, sse", "/navigation?tag=go&tag=web&tag=sse", bind.Link()),
-					button.Nav("Tag: react", "/navigation?tag=react", bind.Link()),
-					button.Nav("No tags", "/navigation", bind.Link()),
+					button.Nav("Tags: go, web, sse", "/navigation/?tag=go&tag=web&tag=sse", bind.Link()),
+					button.Nav("Tag: react", "/navigation/?tag=react", bind.Link()),
+					button.Nav("No tags", "/navigation/", bind.Link()),
 				),
 				multiValueResult(s.Tags),
 			),
@@ -59,9 +59,9 @@ func renderMain(s State) node.Node {
 		panel.Card("Typed Parameters", "Click a link with boolean and float query values. OnNavigate uses p.BoolDefault and p.Float64Default to parse them with defaults when absent.", "Params.BoolDefault · Params.Float64Default", panel.AllTransports,
 			layout.Stack(
 				layout.Row(
-					button.Nav("Active, price 9.99", "/navigation?active=true&price=9.99", bind.Link()),
-					button.Nav("Inactive, price 4.50", "/navigation?active=false&price=4.50", bind.Link()),
-					button.Nav("No params (defaults)", "/navigation", bind.Link()),
+					button.Nav("Active, price 9.99", "/navigation/?active=true&price=9.99", bind.Link()),
+					button.Nav("Inactive, price 4.50", "/navigation/?active=false&price=4.50", bind.Link()),
+					button.Nav("No params (defaults)", "/navigation/", bind.Link()),
 				),
 				typedParamsResult(s),
 			),
@@ -70,15 +70,15 @@ func renderMain(s State) node.Node {
 		panel.Card("Multi-Value Numeric Parameters", "Click a link with repeated numeric query keys. OnNavigate uses p.Ints and p.Float64s to collect all values into typed slices - the numeric counterparts of p.Strings.", "Params.Ints · Params.Float64s", panel.AllTransports,
 			layout.Stack(
 				layout.Row(
-					button.Nav("Quantities: 1, 2, 5", "/navigation?qty=1&qty=2&qty=5", bind.Link()),
-					button.Nav("Prices: 9.99, 24.50, 3.00", "/navigation?price=9.99&price=24.50&price=3.00", bind.Link()),
-					button.Nav("No params", "/navigation", bind.Link()),
+					button.Nav("Quantities: 1, 2, 5", "/navigation/?qty=1&qty=2&qty=5", bind.Link()),
+					button.Nav("Prices: 9.99, 24.50, 3.00", "/navigation/?price=9.99&price=24.50&price=3.00", bind.Link()),
+					button.Nav("No params", "/navigation/", bind.Link()),
 				),
 				numericMultiValueResult(s),
 			),
 		),
 
-		panel.Card("ReplaceURL", "Click a button and watch the browser URL bar - the query string changes, but pressing Back will not return to the previous URL. This uses replaceState instead of pushState, which is useful for filters and tab selections that shouldn't pollute navigation history.", "Session.ReplaceURL", panel.AllTransports,
+		panel.Card("ReplaceURL", "Click a button and watch the browser URL bar - the query string changes, but pressing Back will not return to the previous URL. This uses replaceState instead of pushState, which is useful for filters and tab selections that shouldn't pollute navigation history.", "Session.ReplaceURL", panel.WS|panel.SSE,
 			layout.Row(
 				button.PrimaryAction("Set ?tab=a", "nav.replace-a"),
 				button.PrimaryAction("Set ?tab=b", "nav.replace-b"),
@@ -86,7 +86,7 @@ func renderMain(s State) node.Node {
 			span.Text("Check the browser URL bar after clicking."),
 		),
 
-		panel.Card("Programmatic Navigation", "Click the button - the server decides where to navigate and tells the browser. Unlike bind.Link where the destination is in the HTML, here the navigation target is determined server-side in the event handler.", "Session.Navigate", panel.AllTransports,
+		panel.Card("Programmatic Navigation", "Click the button - the server decides where to navigate and tells the browser. Unlike bind.Link where the destination is in the HTML, here the navigation target is determined server-side in the event handler.", "Session.Navigate", panel.WS|panel.SSE,
 			button.PrimaryAction("Navigate to Target Page", "nav.goto-target"),
 		),
 	)
@@ -98,7 +98,7 @@ func renderTarget() node.Node {
 	return page.New(
 		panel.Card("Target Page", "You navigated here via bind.Link or Session.Navigate. Click below to go back.", "bind.Link", panel.AllTransports,
 			layout.Stack(
-				button.NavPrimary("Back to Navigation Demos", "/navigation", bind.Link()),
+				button.NavPrimary("Back to Navigation Demos", "/navigation/", bind.Link()),
 			),
 		),
 	)

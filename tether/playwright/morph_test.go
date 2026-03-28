@@ -8,7 +8,7 @@ func TestMorphPageRenders(t *testing.T) {
 	page, cleanup := newPage(t)
 	defer cleanup()
 
-	resp, err := page.Goto(srv + "/morph")
+	resp, err := page.Goto(srv + "/morph/")
 	if err != nil {
 		t.Fatalf("goto: %v", err)
 	}
@@ -29,7 +29,7 @@ func TestMorphIncrement(t *testing.T) {
 	page, cleanup := newPage(t)
 	defer cleanup()
 
-	_, err := page.Goto(srv + "/morph")
+	_, err := page.Goto(srv + "/morph/")
 	if err != nil {
 		t.Fatalf("goto: %v", err)
 	}

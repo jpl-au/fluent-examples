@@ -1,4 +1,4 @@
-package memo
+package memoise
 
 import (
 	"strconv"
@@ -20,7 +20,7 @@ import (
 	"github.com/jpl-au/fluent-examples/tether/components/simple/panel"
 )
 
-// Render builds the memo demo page with two regions:
+// Render builds the memoisation demo page with two regions:
 //   - A memoised table that only re-renders when items change
 //   - A plain counter that re-renders on every event
 func Render(s State) node.Node {
@@ -36,38 +36,38 @@ func Render(s State) node.Node {
 				"runs and no HTML is produced for skipped regions. Cheap "+
 				"regions use plain Dynamic keys and always re-render. You "+
 				"choose per region.",
-			"node.Memo · tether.Versioned · StatefulConfig.Memo", panel.WS|panel.SSE,
+			"node.Memoise · tether.Versioned · StatefulConfig.Memoise", panel.WS|panel.SSE,
 		),
 
 		panel.Card(
 			"Memoised Table vs Plain Counter",
-			"The table below is wrapped in node.Memo with a "+
+			"The table below is wrapped in node.Memoise with a "+
 				"tether.Versioned key. The counter uses a plain Dynamic "+
 				"key. Incrementing the counter leaves Items.Version() "+
 				"unchanged, so the Memoiser skips the table entirely. "+
 				"Adding an item calls With(), which increments the "+
 				"version and triggers a re-render of the table.",
-			"tether.Versioned.With · node.Memo · .Dynamic", panel.WS|panel.SSE,
+			"tether.Versioned.With · node.Memoise · .Dynamic", panel.WS|panel.SSE,
 			layout.Stack(
 				hint.Text("Click Increment - the counter updates but "+
-					"the table is skipped (memo hit). Click Add Item "+
-					"- the table re-renders with the new row (memo miss)."),
+					"the table is skipped (memoiser hit). Click Add Item "+
+					"- the table re-renders with the new row (memoiser miss)."),
 
 				layout.Row(
-					button.PrimaryAction("Increment Counter", "memo.increment"),
-					button.SecondaryAction("Add Item", "memo.add-item"),
+					button.PrimaryAction("Increment Counter", "memoise.increment"),
+					button.SecondaryAction("Add Item", "memoise.add-item"),
 				),
 
 				// Counter - plain Dynamic, always re-renders.
 				div.New(
 					span.Text("Counter: "),
-					span.Text(strconv.Itoa(s.Count)).ID("memo-count"),
+					span.Text(strconv.Itoa(s.Count)).ID("memoise-count"),
 				).Dynamic("counter").Class("result-block"),
 
 				// Table - memoised. The closure only runs when
 				// Items.Version() changes (i.e. when With was called).
 				div.New(
-					node.Memo(s.Items.Version(), func() node.Node {
+					node.Memoise(s.Items.Version(), func() node.Node {
 						return renderTable(s.Items.Val)
 					}),
 				).Dynamic("items"),
@@ -77,7 +77,7 @@ func Render(s State) node.Node {
 }
 
 // renderTable builds the HTML table from the items slice. This is
-// the "expensive" render function that memo skips when the version
+// the "expensive" render function that the memoiser skips when the version
 // matches.
 func renderTable(items []Item) node.Node {
 	rows := make([]node.Node, len(items))
@@ -90,5 +90,5 @@ func renderTable(items []Item) node.Node {
 	return table.New(
 		thead.New(tr.New(th.Text("ID"), th.Text("Name"))),
 		tbody.New(rows...),
-	).Class("demo-table").ID("memo-table")
+	).Class("demo-table").ID("memoise-table")
 }

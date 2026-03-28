@@ -22,7 +22,7 @@ func Render(s State) node.Node {
 			"Press Ctrl+K anywhere on this page. The server receives the event "+
 				"and updates the result below. bind.Hotkey fires regardless of which "+
 				"element has focus.",
-			"bind.Hotkey", panel.WS,
+			"bind.Hotkey", panel.WS|panel.SSE,
 			layout.Stack(
 				hint.Text("Press Ctrl+K or Escape to trigger a hotkey."),
 				lastCombo(s.LastCombo),

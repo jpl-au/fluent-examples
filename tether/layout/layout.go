@@ -61,15 +61,15 @@ var sidebar = []sidebarGroup{
 	{"Stateless (tether.Stateless)", []sectionGroup{
 		{SectionHTTP, "", []navItem{
 			{"/", "Overview"},
-			{"/events", "Events & Forms"},
-			{"/rendering", "State & Rendering"},
-			{"/errors", "Error Boundaries"},
-			{"/navigation", "Navigation"},
-			{"/middleware", "Middleware"},
-			{"/morph", "Full-Page Morph"},
-			{"/clipboard", "Clipboard"},
-			{"/selection", "Multi-Select"},
-			{"/touch", "Touch Gestures"},
+			{"/events/", "Events & Forms"},
+			{"/rendering/", "State & Rendering"},
+			{"/errors/", "Error Boundaries"},
+			{"/navigation/", "Navigation"},
+			{"/middleware/", "Middleware"},
+			{"/morph/", "Full-Page Morph"},
+			{"/client-actions/", "Client-Side Actions"},
+			{"/selection/", "Multi-Select"},
+			{"/touch/", "Touch Gestures"},
 		}},
 	}},
 	{"Signals & Directives", []sectionGroup{
@@ -104,8 +104,8 @@ var sidebar = []sidebarGroup{
 	}},
 	{"Performance", []sectionGroup{
 		{SectionLive, "", []navItem{
-			{"/memo/", "Memoisation"},
-			{"/memo/realtime/", "Memoised Dashboard"},
+			{"/memoise/", "Memoisation"},
+			{"/memoise/realtime/", "Memoised Dashboard"},
 			{"/windowing/", "Windowing"},
 			{"/patch/", "Targeted Updates"},
 		}},

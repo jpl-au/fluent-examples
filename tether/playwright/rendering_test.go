@@ -8,7 +8,7 @@ func TestRenderingPageRenders(t *testing.T) {
 	page, cleanup := newPage(t)
 	defer cleanup()
 
-	resp, err := page.Goto(srv + "/rendering")
+	resp, err := page.Goto(srv + "/rendering/")
 	if err != nil {
 		t.Fatalf("goto: %v", err)
 	}
@@ -31,7 +31,7 @@ func TestRenderingCounterIncrement(t *testing.T) {
 	page, cleanup := newPage(t)
 	defer cleanup()
 
-	_, err := page.Goto(srv + "/rendering")
+	_, err := page.Goto(srv + "/rendering/")
 	if err != nil {
 		t.Fatalf("goto: %v", err)
 	}
@@ -57,7 +57,7 @@ func TestRenderingAddItem(t *testing.T) {
 	page, cleanup := newPage(t)
 	defer cleanup()
 
-	_, err := page.Goto(srv + "/rendering")
+	_, err := page.Goto(srv + "/rendering/")
 	if err != nil {
 		t.Fatalf("goto: %v", err)
 	}

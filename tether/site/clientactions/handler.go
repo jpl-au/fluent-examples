@@ -1,4 +1,4 @@
-package clipboard
+package clientactions
 
 import (
 	"net/http"
@@ -14,15 +14,15 @@ import (
 	"github.com/jpl-au/fluent-examples/tether/layout"
 )
 
-// State holds per-request state for the clipboard demo.
+// State holds per-request state for the client-side actions demo.
 type State struct{}
 
-// New creates a stateless handler demonstrating clipboard copy.
+// New creates a stateless handler demonstrating client-side actions.
 func New(app tether.App, assets *tether.Asset) http.Handler {
 	return tether.Stateless(app, tether.StatelessConfig[State]{
 		InitialState: func(_ *http.Request) State { return State{} },
 		Render: func(s State) node.Node {
-			return layout.Shell(layout.SectionHTTP, "/clipboard", 0, Render(s))
+			return layout.Shell(layout.SectionHTTP, "/client-actions/", 0, Render(s))
 		},
 		Handle: func(_ tether.Session, s State, _ tether.Event) State { return s },
 		Layout: func(_ State, content node.Node) node.Node {
@@ -30,7 +30,7 @@ func New(app tether.App, assets *tether.Asset) http.Handler {
 				head.New(
 					meta.UTF8(),
 					meta.Viewport("width=device-width, initial-scale=1"),
-					title.Static("Tether - Clipboard"),
+					title.Static("Tether - Client-Side Actions"),
 					assets.Stylesheet("app.css"),
 				),
 				body.New(content),

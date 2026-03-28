@@ -1,4 +1,4 @@
-package memo
+package memoise
 
 import (
 	"log/slog"
@@ -25,9 +25,9 @@ type Item struct {
 	Name string
 }
 
-// State holds per-session state for the memo demo.
+// State holds per-session state for the memoisation demo.
 type State struct {
-	// Items is wrapped in Versioned so the memo key tracks changes
+	// Items is wrapped in Versioned so the memoisation key tracks changes
 	// automatically via With().
 	Items tether.Versioned[[]Item]
 	// Count is a plain field - the counter region uses a standard
@@ -50,10 +50,10 @@ func seedItems() []Item {
 // New creates a stateful handler demonstrating memoisation.
 func New(app tether.App, assets *tether.Asset) *tether.Handler[State] {
 	return tether.Stateful(app, tether.StatefulConfig[State]{
-		Name:     "memo",
+		Name:     "memoise",
 		Upgrade:  wsupgrade.Upgrade(),
 		Fallback: sse.Upgrade(),
-		Memo:     true,
+		Memoise:  true,
 
 		InitialState: func(_ *http.Request) State {
 			return State{
@@ -62,7 +62,7 @@ func New(app tether.App, assets *tether.Asset) *tether.Handler[State] {
 			}
 		},
 		Render: func(s State) node.Node {
-			return layout.Shell(layout.SectionLive, "/memo/", s.OnlineCount, Render(s))
+			return layout.Shell(layout.SectionLive, "/memoise/", s.OnlineCount, Render(s))
 		},
 		Handle: Handle,
 
@@ -84,24 +84,24 @@ func New(app tether.App, assets *tether.Asset) *tether.Handler[State] {
 		),
 
 		OnConnect: func(sess *tether.StatefulSession[State]) {
-			slog.Info("memo: connected", "id", sess.ID())
+			slog.Info("memoise: connected", "id", sess.ID())
 			shared.TrackPresence(memoPresence, sess.ID())
 		},
 		OnDisconnect: func(sess *tether.StatefulSession[State]) {
-			slog.Info("memo: disconnected", "id", sess.ID())
+			slog.Info("memoise: disconnected", "id", sess.ID())
 			shared.UntrackPresence(memoPresence, sess.ID())
 		},
 	})
 }
 
-// Handle processes memo demo events.
+// Handle processes memoisation demo events.
 func Handle(sess tether.Session, s State, ev tether.Event) State {
 	switch ev.Action {
-	case "memo.increment":
+	case "memoise.increment":
 		// Only the counter changes. Items.Version() is unchanged,
 		// so the Memoiser skips the table entirely.
 		s.Count++
-	case "memo.add-item":
+	case "memoise.add-item":
 		// Items change via With() - version increments automatically.
 		// The Memoiser detects the miss and re-renders the table.
 		id := len(s.Items.Val) + 1

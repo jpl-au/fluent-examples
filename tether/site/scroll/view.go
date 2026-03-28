@@ -17,16 +17,17 @@ import (
 // Render builds the scroll demo page.
 func Render(s State) node.Node {
 	return page.New(
+		// Anchor for "Scroll to Top" at the bottom of the page.
+		div.New().ID("scroll-top"),
+
 		panel.Card(
 			"Client-Side ScrollTo",
-			"Click the button to scroll the target element into view. "+
-				"bind.ScrollTo runs entirely on the client - no server round-trip.",
-			"bind.ScrollTo", panel.WS,
-			layout.Stack(
-				button.Primary("Scroll to Target", bind.ScrollTo("#scroll-target")),
-				scrollSpacer(),
-				span.Text("Scroll target reached!").ID("scroll-target").Class("result-block"),
-			),
+			"Click the button to scroll to the target at the bottom of "+
+				"the page. bind.ScrollTo runs entirely on the client - no "+
+				"server round-trip. A \"Scroll to Top\" button at the "+
+				"bottom brings you back.",
+			"bind.ScrollTo", panel.AllTransports,
+			button.Primary("Scroll to Target", bind.ScrollTo("#scroll-target")),
 		),
 
 		panel.Card(
@@ -34,7 +35,7 @@ func Render(s State) node.Node {
 			"Click the button - the server calls sess.ScrollTo to "+
 				"scroll the same target element into view. The scroll "+
 				"command travels over the WebSocket.",
-			"sess.ScrollTo", panel.WS,
+			"sess.ScrollTo", panel.WS|panel.SSE,
 			button.PrimaryAction("Server Scroll", "scroll.server-scroll"),
 		),
 
@@ -44,20 +45,19 @@ func Render(s State) node.Node {
 				"The list re-renders with more items but the scroll "+
 				"position is preserved because bind.PreserveScroll "+
 				"saves and restores scrollTop across morphs.",
-			"bind.PreserveScroll", panel.WS,
+			"bind.PreserveScroll", panel.WS|panel.SSE,
 			layout.Stack(
 				button.PrimaryAction("Add 5 Items", "scroll.add"),
 				preserveList(s.Items),
 			),
 		),
-	)
-}
 
-// scrollSpacer creates vertical space so the target is off-screen.
-func scrollSpacer() node.Node {
-	return div.New().SetData("testid", "spacer").
-		Class("demo-description").
-		Style("height:20rem")
+		// Scroll target at the bottom of the page with a way back up.
+		layout.Row(
+			span.Text("Scroll target reached!").ID("scroll-target").Class("result-block"),
+			button.Primary("Scroll to Top", bind.ScrollTo("#scroll-top")),
+		),
+	)
 }
 
 // preserveList renders a scrollable list with PreserveScroll. The
@@ -70,7 +70,7 @@ func preserveList(n int) node.Node {
 		).ID(fmt.Sprintf("item-%d", i+1)).Class("list-item")
 	}
 	return bind.Apply(
-		div.New(items...).Class("item-list viewport-list").Style("max-height:12rem;overflow-y:auto"),
+		div.New(items...).Class("item-list viewport-list"),
 		bind.PreserveScroll(),
 	).Dynamic("preserve-list")
 }

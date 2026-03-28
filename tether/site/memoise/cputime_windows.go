@@ -1,4 +1,4 @@
-package memo
+package memoise
 
 import (
 	"log/slog"

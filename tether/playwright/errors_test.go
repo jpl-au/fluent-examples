@@ -8,7 +8,7 @@ func TestErrorsPageRenders(t *testing.T) {
 	page, cleanup := newPage(t)
 	defer cleanup()
 
-	resp, err := page.Goto(srv + "/errors")
+	resp, err := page.Goto(srv + "/errors/")
 	if err != nil {
 		t.Fatalf("goto: %v", err)
 	}

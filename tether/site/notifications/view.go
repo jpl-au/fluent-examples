@@ -89,7 +89,7 @@ func Render(_ State) node.Node {
 				"The left button uses bind.Indicator - it targets a spinner element by CSS selector and toggles it automatically while the request is in flight. "+
 				"The right button uses bind.Optimistic to flip a signal immediately (showing the spinner), then the server clears it when done. "+
 				"Indicator is simpler; signals avoid selector coupling.",
-			"bind.Indicator · bind.Optimistic · bind.BindShow", panel.WS|panel.SSE,
+			"bind.Indicator · bind.Optimistic · bind.BindShow", panel.AllTransports,
 			columns.New(
 				layout.Stack(
 					result.Label("Selector approach (bind.Indicator)"),

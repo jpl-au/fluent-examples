@@ -1,6 +1,6 @@
 //go:build !windows
 
-package memo
+package memoise
 
 import (
 	"log/slog"

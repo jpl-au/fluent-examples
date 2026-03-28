@@ -23,10 +23,12 @@ func Render(s State) node.Node {
 				"changed and want to skip the full render pipeline. A "+
 				"full Update re-renders every Dynamic region and diffs "+
 				"them all. Patch re-renders only the targeted key - over "+
-				"1,000x faster for a single key out of many. Use it "+
-				"from timers, broadcast callbacks, and Go goroutines "+
-				"where the mutation is known and targeted.",
-			"sess.Patch · DiffKey", panel.WS|panel.SSE,
+				"1,000x faster for a single key out of many. Patch works "+
+				"with either engine (Differ or Memoiser) and does not "+
+				"require Memoise: true. Any handler with Dynamic keys can "+
+				"use it. Use it from timers, broadcast callbacks, and Go "+
+				"goroutines where the mutation is known and targeted.",
+			"sess.Patch · DiffKey · Differ · Memoiser", panel.WS|panel.SSE,
 		),
 
 		panel.Card(

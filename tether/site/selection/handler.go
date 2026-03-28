@@ -3,6 +3,7 @@ package selection
 import (
 	"fmt"
 	"net/http"
+	"strconv"
 	"strings"
 
 	"github.com/jpl-au/fluent/html5/body"
@@ -26,7 +27,7 @@ func New(app tether.App, assets *tether.Asset) http.Handler {
 	return tether.Stateless(app, tether.StatelessConfig[State]{
 		InitialState: func(_ *http.Request) State { return State{} },
 		Render: func(s State) node.Node {
-			return layout.Shell(layout.SectionHTTP, "/selection", 0, Render(s))
+			return layout.Shell(layout.SectionHTTP, "/selection/", 0, Render(s))
 		},
 		Handle: Handle,
 		Layout: func(_ State, content node.Node) node.Node {
@@ -52,7 +53,14 @@ func Handle(_ tether.Session, s State, ev tether.Event) State {
 			s.Result = "No items selected"
 		} else {
 			ids := strings.Split(sel, ",")
-			s.Result = fmt.Sprintf("Selected %d items: %s", len(ids), sel)
+			names := make([]string, 0, len(ids))
+			for _, raw := range ids {
+				n, err := strconv.Atoi(raw)
+				if err == nil && n >= 1 && n <= len(itemNames) {
+					names = append(names, itemNames[n-1])
+				}
+			}
+			s.Result = fmt.Sprintf("Selected %d items: %s (%s)", len(ids), strings.Join(names, ", "), sel)
 		}
 	}
 	return s

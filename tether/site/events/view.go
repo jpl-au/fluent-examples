@@ -279,7 +279,7 @@ func inputResult(val string) node.Node {
 // autoFocusInput conditionally applies bind.AutoFocus so the cursor
 // returns to the input after a validation error.
 func autoFocusInput(s State) node.Node {
-	n := field.TextWithID("autofocus-email", "email", "Enter your email...")
+	n := field.EmailWithID("autofocus-email", "email", "Enter your email...")
 	if s.AutoFocusError != "" {
 		return bind.Apply(n, bind.AutoFocus())
 	}

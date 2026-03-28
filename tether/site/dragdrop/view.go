@@ -19,7 +19,7 @@ func Render(items []Item) node.Node {
 			"Drag items between the two zones. All connected tabs update "+
 				"instantly via Group.Broadcast. The tether-drag-and-drop.js "+
 				"extension is auto-included when any element uses bind.Draggable.",
-			"bind.Draggable · bind.Sortable", panel.WS,
+			"bind.Draggable · bind.Sortable", panel.AllTransports,
 			columns.New(
 				zone("left", "Zone A", items),
 				zone("right", "Zone B", items),

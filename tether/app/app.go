@@ -17,7 +17,7 @@ import (
 	"github.com/jpl-au/fluent-examples/tether/middleware"
 	"github.com/jpl-au/fluent-examples/tether/site/broadcasting"
 	"github.com/jpl-au/fluent-examples/tether/site/chat"
-	"github.com/jpl-au/fluent-examples/tether/site/clipboard"
+	"github.com/jpl-au/fluent-examples/tether/site/clientactions"
 	"github.com/jpl-au/fluent-examples/tether/site/components"
 	"github.com/jpl-au/fluent-examples/tether/site/configuration"
 	"github.com/jpl-au/fluent-examples/tether/site/diagnostics"
@@ -29,7 +29,7 @@ import (
 	"github.com/jpl-au/fluent-examples/tether/site/hotkey"
 	httpsite "github.com/jpl-au/fluent-examples/tether/site/http"
 	"github.com/jpl-au/fluent-examples/tether/site/live"
-	"github.com/jpl-au/fluent-examples/tether/site/memo"
+	"github.com/jpl-au/fluent-examples/tether/site/memoise"
 	"github.com/jpl-au/fluent-examples/tether/site/morph"
 	mwsite "github.com/jpl-au/fluent-examples/tether/site/mw"
 	"github.com/jpl-au/fluent-examples/tether/site/navigation"
@@ -77,7 +77,7 @@ func New(ctx context.Context, assets *tether.Asset) (http.Handler, []tether.Drai
 	renderingHandler := rendering.New(app, assets)
 	morphHandler := morph.New(app, assets)
 	middlewareHandler := mwsite.New(app, assets)
-	clipboardHandler := clipboard.New(app, assets)
+	clientActionsHandler := clientactions.New(app, assets)
 	selectionHandler := selection.New(app, assets)
 	touchHandler := touch.New(app, assets)
 
@@ -100,9 +100,9 @@ func New(ctx context.Context, assets *tether.Asset) (http.Handler, []tether.Drai
 	// Freeze demo - FreezeWithConnect with SessionStore.
 	freezeHandler := freeze.New(app, assets)
 
-	// Memo demos - subtree memoisation with Versioned keys.
-	memoHandler := memo.New(app, assets)
-	memoRealtimeHandler := memo.NewRealtime(app, assets)
+	// Memoisation demos - subtree memoisation with Versioned keys.
+	memoiseHandler := memoise.New(app, assets)
+	memoiseRealtimeHandler := memoise.NewRealtime(app, assets)
 
 	// Windowing demo - virtual scrolling for large lists.
 	windowingHandler := windowing.New(app, assets)
@@ -146,10 +146,10 @@ func New(ctx context.Context, assets *tether.Asset) (http.Handler, []tether.Drai
 		}
 	})
 
-	mux.Handle("/events", eventsHandler)
-	mux.Handle("/errors", errorsHandler)
+	mux.Handle("/events/", eventsHandler)
+	mux.Handle("/errors/", errorsHandler)
 	mux.Handle("/navigation/", navigationHandler)
-	mux.Handle("/rendering", renderingHandler)
+	mux.Handle("/rendering/", renderingHandler)
 	mux.Handle("/notifications/", notificationsHandler)
 	mux.HandleFunc("GET /uploads/files/", uploads.ServeFile)
 	mux.Handle("/uploads/", uploadsHandler)
@@ -160,8 +160,8 @@ func New(ctx context.Context, assets *tether.Asset) (http.Handler, []tether.Drai
 	mux.Handle("/configuration/", configurationHandler)
 	mux.Handle("/valuestore/", valuestoreHandler)
 	mux.Handle("/groups/", groupsHandler)
-	mux.Handle("/morph", morphHandler)
-	mux.Handle("/middleware", middlewareHandler)
+	mux.Handle("/morph/", morphHandler)
+	mux.Handle("/middleware/", middlewareHandler)
 	mux.Handle("/signals/ws/", signalsWSHandler)
 	mux.Handle("/signals/sse/", signalsSSEHandler)
 	mux.Handle("/live/ws/", liveWSHandler)
@@ -169,14 +169,14 @@ func New(ctx context.Context, assets *tether.Asset) (http.Handler, []tether.Drai
 	mux.Handle("/realtime/", realtimeHandler)
 	mux.Handle("/diagnostics/", diagnosticsHandler)
 	mux.Handle("/freeze/", freezeHandler)
-	mux.Handle("/clipboard", clipboardHandler)
-	mux.Handle("/selection", selectionHandler)
-	mux.Handle("/touch", touchHandler)
+	mux.Handle("/client-actions/", clientActionsHandler)
+	mux.Handle("/selection/", selectionHandler)
+	mux.Handle("/touch/", touchHandler)
 	mux.Handle("/hotkey/", hotkeyHandler)
 	mux.Handle("/dragdrop/", dragdropHandler)
 	mux.Handle("/scroll/", scrollHandler)
-	mux.Handle("/memo/realtime/", memoRealtimeHandler)
-	mux.Handle("/memo/", memoHandler)
+	mux.Handle("/memoise/realtime/", memoiseRealtimeHandler)
+	mux.Handle("/memoise/", memoiseHandler)
 	mux.Handle("/windowing/", windowingHandler)
 	mux.Handle("/patch/", patchHandler)
 	mux.Handle("/sw/", swHandler)
@@ -192,7 +192,7 @@ func New(ctx context.Context, assets *tether.Asset) (http.Handler, []tether.Drai
 		liveWSHandler, liveSSEHandler,
 		realtimeHandler, diagnosticsHandler, freezeHandler,
 		hotkeyHandler, dragdropHandler, scrollHandler,
-		memoHandler, memoRealtimeHandler, windowingHandler, patchHandler, swHandler,
+		memoiseHandler, memoiseRealtimeHandler, windowingHandler, patchHandler, swHandler,
 	}
 
 	return mux, drainables

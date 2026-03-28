@@ -1,4 +1,4 @@
-package memo
+package memoise
 
 import (
 	"html"
@@ -17,21 +17,21 @@ import (
 )
 
 // RenderRealtime builds the memoised real-time dashboard. Each chart
-// is wrapped in node.Memo with its Versioned key so only the chart
+// is wrapped in node.Memoise with its Versioned key so only the chart
 // whose data changed re-renders on each tick.
 func RenderRealtime(s RealtimeState) node.Node {
 	return cpage.New(
 		panel.Card(
-			"Memo + Patch Together",
-			"This dashboard combines two strategies. Memo (via "+
-				"node.Memo and Versioned keys) optimises the full render "+
+			"Memoisation + Patch Together",
+			"This dashboard combines two strategies. Memoisation (via "+
+				"node.Memoise and Versioned keys) optimises the full render "+
 				"path - page loads and reconnects skip unchanged charts. "+
 				"Patch (via sess.Patch) optimises the live update path - "+
 				"each timer tick targets a single chart key without "+
 				"touching the rest of the page. The two work through "+
-				"either engine. Use Memo for full renders, Patch for "+
+				"either engine. Use Memoise for full renders, Patch for "+
 				"targeted updates, or both together.",
-			"sess.Patch · node.Memo · Versioned · Memo: true", panel.WS|panel.SSE,
+			"sess.Patch · node.Memoise · Versioned · Memoise: true", panel.WS|panel.SSE,
 		),
 
 		panel.Card(
@@ -40,22 +40,22 @@ func RenderRealtime(s RealtimeState) node.Node {
 				"is a separate sess.Patch call targeting its Dynamic key. "+
 				"The card layout, description, and other charts are "+
 				"untouched on each tick. On page load and reconnect, "+
-				"node.Memo skips unchanged chart closures.",
+				"node.Memoise skips unchanged chart closures.",
 			"sess.Go · sess.Patch · go-echarts", panel.WS|panel.SSE,
 			monitor.Charts(
 				div.New(
-					node.Memo(s.CPUPercent.Version(), func() node.Node {
-						return chartDiv("memocpu", "CPU (%)", "#ee6666", toLineData(s.CPUPercent.Val))
+					node.Memoise(s.CPUPercent.Version(), func() node.Node {
+						return chartDiv("memoise-cpu", "CPU (%)", "#ee6666", toLineData(s.CPUPercent.Val))
 					}),
 				).Dynamic("chart-cpu"),
 				div.New(
-					node.Memo(s.HeapMB.Version(), func() node.Node {
-						return chartDiv("memoheap", "Heap (MB)", "#5470c6", toLineData(s.HeapMB.Val))
+					node.Memoise(s.HeapMB.Version(), func() node.Node {
+						return chartDiv("memoise-heap", "Heap (MB)", "#5470c6", toLineData(s.HeapMB.Val))
 					}),
 				).Dynamic("chart-heap"),
 				div.New(
-					node.Memo(s.Goroutines.Version(), func() node.Node {
-						return chartDiv("memogoroutines", "Goroutines", "#91cc75", intsToLineData(s.Goroutines.Val))
+					node.Memoise(s.Goroutines.Version(), func() node.Node {
+						return chartDiv("memoise-goroutines", "Goroutines", "#91cc75", intsToLineData(s.Goroutines.Val))
 					}),
 				).Dynamic("chart-goroutines"),
 			),

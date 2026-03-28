@@ -8,7 +8,7 @@ func TestTouchPageRenders(t *testing.T) {
 	page, cleanup := newPage(t)
 	defer cleanup()
 
-	_, err := page.Goto(srv + "/touch")
+	_, err := page.Goto(srv + "/touch/")
 	if err != nil {
 		t.Fatalf("goto: %v", err)
 	}
@@ -31,7 +31,7 @@ func TestTouchSwipeViaJS(t *testing.T) {
 	page, cleanup := newPage(t)
 	defer cleanup()
 
-	_, err := page.Goto(srv + "/touch")
+	_, err := page.Goto(srv + "/touch/")
 	if err != nil {
 		t.Fatalf("goto: %v", err)
 	}

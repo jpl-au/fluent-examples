@@ -13,7 +13,7 @@ func TestEventsPageRenders(t *testing.T) {
 	page, cleanup := newPage(t)
 	defer cleanup()
 
-	resp, err := page.Goto(srv + "/events")
+	resp, err := page.Goto(srv + "/events/")
 	if err != nil {
 		t.Fatalf("goto: %v", err)
 	}
@@ -34,7 +34,7 @@ func TestEventsClick(t *testing.T) {
 	page, cleanup := newPage(t)
 	defer cleanup()
 
-	_, err := page.Goto(srv + "/events")
+	_, err := page.Goto(srv + "/events/")
 	if err != nil {
 		t.Fatalf("goto: %v", err)
 	}
@@ -59,7 +59,7 @@ func TestEventsFormSubmit(t *testing.T) {
 	page, cleanup := newPage(t)
 	defer cleanup()
 
-	_, err := page.Goto(srv + "/events")
+	_, err := page.Goto(srv + "/events/")
 	if err != nil {
 		t.Fatalf("goto: %v", err)
 	}
@@ -91,7 +91,7 @@ func TestEventsFormSubmitEmpty(t *testing.T) {
 	page, cleanup := newPage(t)
 	defer cleanup()
 
-	_, err := page.Goto(srv + "/events")
+	_, err := page.Goto(srv + "/events/")
 	if err != nil {
 		t.Fatalf("goto: %v", err)
 	}
@@ -116,7 +116,7 @@ func TestEventsChangeDropdown(t *testing.T) {
 	page, cleanup := newPage(t)
 	defer cleanup()
 
-	_, err := page.Goto(srv + "/events")
+	_, err := page.Goto(srv + "/events/")
 	if err != nil {
 		t.Fatalf("goto: %v", err)
 	}
@@ -140,7 +140,7 @@ func TestEventsKeydown(t *testing.T) {
 	page, cleanup := newPage(t)
 	defer cleanup()
 
-	_, err := page.Goto(srv + "/events")
+	_, err := page.Goto(srv + "/events/")
 	if err != nil {
 		t.Fatalf("goto: %v", err)
 	}
@@ -167,7 +167,7 @@ func TestEventsPaste(t *testing.T) {
 	page, cleanup := newPage(t)
 	defer cleanup()
 
-	_, err := page.Goto(srv + "/events")
+	_, err := page.Goto(srv + "/events/")
 	if err != nil {
 		t.Fatalf("goto: %v", err)
 	}
@@ -199,7 +199,7 @@ func TestEventsContextMenu(t *testing.T) {
 	page, cleanup := newPage(t)
 	defer cleanup()
 
-	_, err := page.Goto(srv + "/events")
+	_, err := page.Goto(srv + "/events/")
 	if err != nil {
 		t.Fatalf("goto: %v", err)
 	}
@@ -228,7 +228,7 @@ func TestEventsValidationRequired(t *testing.T) {
 	page, cleanup := newPage(t)
 	defer cleanup()
 
-	_, err := page.Goto(srv + "/events")
+	_, err := page.Goto(srv + "/events/")
 	if err != nil {
 		t.Fatalf("goto: %v", err)
 	}
@@ -254,7 +254,7 @@ func TestEventsValidationSuccess(t *testing.T) {
 	page, cleanup := newPage(t)
 	defer cleanup()
 
-	_, err := page.Goto(srv + "/events")
+	_, err := page.Goto(srv + "/events/")
 	if err != nil {
 		t.Fatalf("goto: %v", err)
 	}
@@ -282,7 +282,7 @@ func TestEventsEditable(t *testing.T) {
 	page, cleanup := newPage(t)
 	defer cleanup()
 
-	_, err := page.Goto(srv + "/events")
+	_, err := page.Goto(srv + "/events/")
 	if err != nil {
 		t.Fatalf("goto: %v", err)
 	}
