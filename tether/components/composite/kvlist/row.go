@@ -1,4 +1,4 @@
-package configtable
+package kvlist
 
 import (
 	"github.com/jpl-au/fluent/html5/div"
@@ -6,7 +6,7 @@ import (
 	"github.com/jpl-au/fluent/node"
 )
 
-// Row creates a single label-value pair inside a config table.
+// Row creates a single label-value pair inside a key-value list.
 func Row(label, value string) node.Node {
 	return div.New(
 		span.Text(label).Class("config-label"),
