@@ -11,5 +11,5 @@ import (
 // the grid to be used inside a node.Memoise closure where the
 // Dynamic key lives on the parent.
 func Columns(columns ...node.Node) node.Node {
-	return div.New(columns...).Class("board-grid")
+	return div.New(columns...).Class("board")
 }

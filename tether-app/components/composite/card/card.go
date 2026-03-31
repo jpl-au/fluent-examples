@@ -2,11 +2,16 @@
 // Each card is draggable (for moving between columns) and clickable
 // (for opening the detail view). Shows the title, description
 // snippet, creator, timestamp, and who is currently viewing.
+//
+// Presence indicators (typing and viewing) use Signals rather than
+// server-rendered HTML. The handler pushes signal values like
+// "typing-{id}" and "viewing-{id}" directly to the client, and
+// bind.BindText updates the text in place with no render cycle.
+// This is the right tool for high-frequency, text-only updates
+// where the DOM structure never changes - only the content.
 package card
 
 import (
-	"strings"
-
 	"github.com/jpl-au/fluent/html5/div"
 	"github.com/jpl-au/fluent/html5/p"
 	"github.com/jpl-au/fluent/html5/span"
@@ -16,18 +21,10 @@ import (
 	"github.com/jpl-au/fluent-examples/tether-app/store"
 )
 
-// CardViewers holds presence information for a card on the board.
-type CardViewers struct {
-	Viewing []string
-	Typing  []string
-}
-
-// New renders a draggable kanban card with optional presence info.
-func New(c store.Card, v ...CardViewers) node.Node {
-	var cv CardViewers
-	if len(v) > 0 {
-		cv = v[0]
-	}
+// New renders a draggable kanban card with signal-bound presence
+// indicators. The presence text is pushed via sess.Signal() -
+// see handler/viewers.go for the signal push logic.
+func New(c store.Card) node.Node {
 	return bind.Apply(
 		div.New(
 			bind.Apply(
@@ -38,7 +35,7 @@ func New(c store.Card, v ...CardViewers) node.Node {
 						span.Text(c.CreatedBy).Class("card-author"),
 						span.Text(store.TimeAgo(c.CreatedAt)).Class("card-time"),
 					).Class("card-meta"),
-					presence(cv),
+					presence(c.ID),
 				).Class("card-body"),
 				bind.OnClick("card.select"),
 				bind.EventData("id", c.ID),
@@ -60,43 +57,20 @@ func desc(s string) node.Node {
 	return p.Text(s).Class("card-desc")
 }
 
-// presence renders typing and viewing indicators on the card.
-// Users who are typing are excluded from the viewing list to avoid
-// showing both "editing" and "viewing" for the same person.
-func presence(cv CardViewers) node.Node {
-	// Build a set of typing names for exclusion.
-	typingSet := make(map[string]bool, len(cv.Typing))
-	for _, n := range cv.Typing {
-		typingSet[n] = true
-	}
-
-	// Viewers who are NOT typing.
-	var viewOnly []string
-	for _, n := range cv.Viewing {
-		if !typingSet[n] {
-			viewOnly = append(viewOnly, n)
-		}
-	}
-
-	if len(cv.Typing) == 0 && len(viewOnly) == 0 {
-		return nil
-	}
-
-	var nodes []node.Node
-	if len(cv.Typing) > 0 {
-		if len(cv.Typing) == 1 {
-			nodes = append(nodes, span.Text(cv.Typing[0]+" is editing...").Class("card-typing"))
-		} else {
-			nodes = append(nodes, span.Text(strings.Join(cv.Typing, ", ")+" are editing...").Class("card-typing"))
-		}
-	}
-	if len(viewOnly) > 0 {
-		if len(viewOnly) == 1 {
-			nodes = append(nodes, span.Text(viewOnly[0]+" is viewing this").Class("card-viewing"))
-		} else {
-			nodes = append(nodes, span.Text(strings.Join(viewOnly, ", ")+" are viewing this").Class("card-viewing"))
-		}
-	}
-
-	return div.New(nodes...).Class("card-presence")
+// presence renders signal-bound typing and viewing indicators.
+// The server pushes text values via sess.Signal("typing-{id}", ...)
+// and the client updates these elements directly - no render/diff
+// cycle needed. BindShow hides the element when the signal value
+// is empty, so the presence section collapses automatically.
+func presence(cardID string) node.Node {
+	return div.New(
+		bind.Apply(span.New().Class("card-typing"),
+			bind.BindText("typing-"+cardID),
+			bind.BindShow("typing-"+cardID),
+		),
+		bind.Apply(span.New().Class("card-viewing"),
+			bind.BindText("viewing-"+cardID),
+			bind.BindShow("viewing-"+cardID),
+		),
+	).Class("card-presence")
 }

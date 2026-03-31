@@ -78,6 +78,8 @@ func Handle(board *store.Board, group *tether.Group[State], viewers *viewers) fu
 				notify(group, sess, fmt.Sprintf("%s created \"%s\"", s.Name, title))
 			} else {
 				board.Update(id, title, desc, s.Name)
+				viewers.Presence.Clear(sess.ID())
+				pushPresenceSignals(group, viewers, id)
 				sess.ReplaceURL("/")
 				s.View = "board"
 				s.SelectedID = ""

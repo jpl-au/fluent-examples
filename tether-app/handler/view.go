@@ -68,7 +68,7 @@ func memoiseBoard(b *store.Board, boardVersion int) node.Node {
 		node.Memoise(boardVersion, func() node.Node {
 			return boardColumns(b)
 		}),
-	).Class("board").Dynamic("board")
+	).Dynamic("board")
 }
 
 // landing renders the name entry page shown on first visit.

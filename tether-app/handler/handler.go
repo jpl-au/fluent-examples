@@ -51,8 +51,8 @@ func New(board *store.Board, assets *tether.Asset) *tether.Handler[State] {
 		// differ snapshots so reconnecting clients receive targeted
 		// patches instead of a full morph. Together they provide
 		// crash recovery and seamless server restarts.
-		SessionStore: tetherfs.NewSessionStore("tmp/sessions"),
-		DiffStore:    tetherfs.NewDiffStore("tmp/diffs"),
+		SessionStore: tetherfs.NewSessionStore(".tether/sessions"),
+		DiffStore:    tetherfs.NewDiffStore(".tether/diffs"),
 
 		InitialState: func(_ *http.Request) State {
 			return State{View: "board", OnlineCount: group.Count().Load()}
