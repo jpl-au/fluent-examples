@@ -18,15 +18,25 @@ import (
 func Render(s State) node.Node {
 	return page.New(
 		panel.Card(
+			"App",
+			"Server-level settings shared across all handlers: shutdown grace period and capacity limits that protect against resource exhaustion.",
+			"tether.App", panel.AllTransports,
+			configtable.New(
+				configtable.Row("ShutdownGrace", configuredShutdownGrace.String()),
+				configtable.Row("MaxSessions", strconv.Itoa(configuredMaxSessions)),
+				configtable.Row("MaxPending", strconv.Itoa(configuredMaxPending)),
+			),
+		),
+
+		panel.Card(
 			"Timeouts",
-			"Duration-based settings that control session lifecycle, reconnection, and transport keep-alive. Zero values use framework defaults.",
+			"Per-handler duration-based settings that control session lifecycle, reconnection, and transport keep-alive. Zero values use framework defaults.",
 			"tether.Timeouts", panel.WS|panel.SSE,
 			configtable.New(
 				configtable.Row("Idle", configuredTimeouts.Idle.String()),
 				configtable.Row("MaxLifetime", configuredTimeouts.MaxLifetime.String()),
 				configtable.Row("Reconnect", configuredTimeouts.Reconnect.String()),
 				configtable.Row("Pending", configuredTimeouts.Pending.String()),
-				configtable.Row("ShutdownGrace", configuredTimeouts.ShutdownGrace.String()),
 				configtable.Row("Heartbeat", configuredTimeouts.Heartbeat.String()),
 				configtable.Row("Retry", configuredTimeouts.Retry.String()),
 				configtable.Row("MaxRetry", configuredTimeouts.MaxRetry.String()),
@@ -37,11 +47,9 @@ func Render(s State) node.Node {
 
 		panel.Card(
 			"Limits",
-			"Capacity constraints that protect against resource exhaustion. MaxSessions and MaxPending guard against flooding; CmdBufferSize tunes the per-session command channel.",
+			"Per-handler capacity constraints. CmdBufferSize tunes the per-session command channel; MaxEventBytes caps POST body size.",
 			"tether.Limits", panel.AllTransports,
 			configtable.New(
-				configtable.Row("MaxSessions", strconv.Itoa(configuredLimits.MaxSessions)),
-				configtable.Row("MaxPending", strconv.Itoa(configuredLimits.MaxPending)),
 				configtable.Row("CmdBufferSize", strconv.Itoa(configuredLimits.CmdBufferSize)),
 				configtable.Row("MaxEventBytes", formatBytes(configuredLimits.MaxEventBytes)),
 			),

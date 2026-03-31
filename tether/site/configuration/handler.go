@@ -69,7 +69,6 @@ var (
 		MaxLifetime:       30 * time.Minute,
 		Reconnect:         15 * time.Second,
 		Pending:           20 * time.Second,
-		ShutdownGrace:     15 * time.Second,
 		Heartbeat:         25 * time.Second,
 		Retry:             time.Second,
 		MaxRetry:          20 * time.Second,
@@ -77,11 +76,14 @@ var (
 		DisableJitter:     false,
 	}
 	configuredLimits = tether.Limits{
-		MaxSessions:   100,
-		MaxPending:    64,
 		CmdBufferSize: 128,
 		MaxEventBytes: 128 << 10, // 128 KB
 	}
+	// App-level settings displayed in the view.
+	configuredShutdownGrace = 15 * time.Second
+	configuredMaxSessions   = 100
+	configuredMaxPending    = 64
+
 	configuredSecurity = tether.Security{
 		TrustedOrigins: []string{"http://localhost:8080"},
 	}
@@ -105,6 +107,10 @@ var (
 // handler uses non-default values so each field is visible in the
 // rendered cards.
 func New(app tether.App, assets *tether.Asset) *tether.Handler[State] {
+	app.ShutdownGrace = configuredShutdownGrace
+	app.MaxSessions = configuredMaxSessions
+	app.MaxPending = configuredMaxPending
+
 	return tether.Stateful(app, tether.StatefulConfig[State]{
 		Name: "configuration",
 		Mode: mode.WebSocket,
