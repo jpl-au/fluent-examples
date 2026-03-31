@@ -12,8 +12,6 @@ import (
 	"github.com/jpl-au/fluent/html5/title"
 	"github.com/jpl-au/fluent/node"
 	tether "github.com/jpl-au/tether"
-	"github.com/jpl-au/tether/sse"
-	wsupgrade "github.com/jpl-au/tether/ws"
 
 	"github.com/jpl-au/fluent-examples/tether/layout"
 	"github.com/jpl-au/fluent-examples/tether/site/shared"
@@ -95,9 +93,7 @@ var ddGroup = tether.NewGroup[State]()
 // New creates a stateful handler demonstrating drag and drop.
 func New(app tether.App, assets *tether.Asset) *tether.Handler[State] {
 	return tether.Stateful(app, tether.StatefulConfig[State]{
-		Name:     "dragdrop",
-		Upgrade:  wsupgrade.Upgrade(),
-		Fallback: sse.Upgrade(),
+		Name: "dragdrop",
 
 		InitialState: func(_ *http.Request) State {
 			return State{OnlineCount: ddPresence.OnlineCount.Load()}

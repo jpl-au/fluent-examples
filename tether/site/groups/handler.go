@@ -12,7 +12,6 @@ import (
 	"github.com/jpl-au/fluent/node"
 	tether "github.com/jpl-au/tether"
 	"github.com/jpl-au/tether/mode"
-	wsupgrade "github.com/jpl-au/tether/ws"
 
 	"github.com/jpl-au/fluent-examples/tether/layout"
 	"github.com/jpl-au/fluent-examples/tether/site/shared"
@@ -75,9 +74,8 @@ func broadcastActivity(g *tether.Group[State], msg string) {
 // OnJoin/OnLeave callbacks.
 func New(app tether.App, assets *tether.Asset) *tether.Handler[State] {
 	return tether.Stateful(app, tether.StatefulConfig[State]{
-		Name:    "groups",
-		Mode:    mode.WebSocket,
-		Upgrade: wsupgrade.Upgrade(),
+		Name: "groups",
+		Mode: mode.WebSocket,
 
 		InitialState: func(_ *http.Request) State {
 			return State{OnlineCount: presence.OnlineCount.Load()}

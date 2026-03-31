@@ -15,7 +15,6 @@ import (
 	"github.com/jpl-au/fluent/node"
 	tether "github.com/jpl-au/tether"
 	"github.com/jpl-au/tether/mode"
-	wsupgrade "github.com/jpl-au/tether/ws"
 
 	"github.com/jpl-au/fluent-examples/tether/layout"
 	"github.com/jpl-au/fluent-examples/tether/site/shared"
@@ -42,9 +41,8 @@ var wsPresence = shared.NewPresence()
 // Group operations, SetTitle, State() in Go(), and Close().
 func NewWS(app tether.App, assets *tether.Asset) *tether.Handler[State] {
 	return tether.Stateful(app, tether.StatefulConfig[State]{
-		Name:    "live/ws",
-		Mode:    mode.WebSocket,
-		Upgrade: wsupgrade.Upgrade(),
+		Name: "live/ws",
+		Mode: mode.WebSocket,
 
 		InitialState: func(_ *http.Request) State {
 			return State{OnlineCount: wsPresence.OnlineCount.Load()}

@@ -12,8 +12,6 @@ import (
 	"github.com/jpl-au/fluent/html5/title"
 	"github.com/jpl-au/fluent/node"
 	tether "github.com/jpl-au/tether"
-	"github.com/jpl-au/tether/sse"
-	wsupgrade "github.com/jpl-au/tether/ws"
 
 	"github.com/jpl-au/fluent-examples/tether/layout"
 	"github.com/jpl-au/fluent-examples/tether/site/shared"
@@ -50,10 +48,8 @@ func seedItems() []Item {
 // New creates a stateful handler demonstrating memoisation.
 func New(app tether.App, assets *tether.Asset) *tether.Handler[State] {
 	return tether.Stateful(app, tether.StatefulConfig[State]{
-		Name:     "memoise",
-		Upgrade:  wsupgrade.Upgrade(),
-		Fallback: sse.Upgrade(),
-		Memoise:  true,
+		Name:    "memoise",
+		Memoise: true,
 
 		InitialState: func(_ *http.Request) State {
 			return State{

@@ -14,7 +14,6 @@ import (
 	"github.com/jpl-au/fluent/node"
 	tether "github.com/jpl-au/tether"
 	"github.com/jpl-au/tether/mode"
-	wsupgrade "github.com/jpl-au/tether/ws"
 
 	"github.com/jpl-au/fluent-examples/tether/layout"
 	"github.com/jpl-au/fluent-examples/tether/site/shared"
@@ -33,9 +32,8 @@ var notifyPresence = shared.NewPresenceCountOnly()
 // Flash, Announce, and Signal to the client at any time.
 func New(app tether.App, assets *tether.Asset) *tether.Handler[State] {
 	return tether.Stateful(app, tether.StatefulConfig[State]{
-		Name:    "notifications",
-		Mode:    mode.WebSocket,
-		Upgrade: wsupgrade.Upgrade(),
+		Name: "notifications",
+		Mode: mode.WebSocket,
 
 		InitialState: func(_ *http.Request) State {
 			return State{OnlineCount: notifyPresence.OnlineCount.Load()}

@@ -26,7 +26,8 @@ func TestClientActionsPageRenders(t *testing.T) {
 		t.Fatalf("copy source text mismatch: %v", err)
 	}
 
-	btn := page.GetByRole("button", pw.PageGetByRoleOptions{Name: "Copy"})
+	exact := true
+	btn := page.GetByRole("button", pw.PageGetByRoleOptions{Name: "Copy", Exact: &exact})
 	if err := expect(btn).ToBeVisible(); err != nil {
 		t.Fatalf("copy button not visible: %v", err)
 	}
@@ -45,7 +46,8 @@ func TestClientActionsCopy(t *testing.T) {
 		t.Fatalf("goto: %v", err)
 	}
 
-	btn := page.GetByRole("button", pw.PageGetByRoleOptions{Name: "Copy"})
+	exact := true
+	btn := page.GetByRole("button", pw.PageGetByRoleOptions{Name: "Copy", Exact: &exact})
 	if err := btn.Click(); err != nil {
 		t.Fatalf("click copy: %v", err)
 	}

@@ -13,7 +13,6 @@ import (
 	"github.com/jpl-au/fluent/node"
 	tether "github.com/jpl-au/tether"
 	"github.com/jpl-au/tether/mode"
-	wsupgrade "github.com/jpl-au/tether/ws"
 
 	"github.com/jpl-au/fluent-examples/tether/layout"
 	"github.com/jpl-au/fluent-examples/tether/site/shared"
@@ -41,9 +40,8 @@ var presence = shared.NewPresenceCountOnly()
 // Store (direct set) and Update (read-modify-write) methods.
 func New(app tether.App, assets *tether.Asset) *tether.Handler[State] {
 	return tether.Stateful(app, tether.StatefulConfig[State]{
-		Name:    "valuestore",
-		Mode:    mode.WebSocket,
-		Upgrade: wsupgrade.Upgrade(),
+		Name: "valuestore",
+		Mode: mode.WebSocket,
 
 		InitialState: func(_ *http.Request) State {
 			return State{

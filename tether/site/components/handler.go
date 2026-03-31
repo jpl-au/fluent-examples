@@ -12,7 +12,6 @@ import (
 	"github.com/jpl-au/fluent/node"
 	tether "github.com/jpl-au/tether"
 	"github.com/jpl-au/tether/mode"
-	wsupgrade "github.com/jpl-au/tether/ws"
 
 	"github.com/jpl-au/fluent-examples/tether/component/counter"
 	"github.com/jpl-au/fluent-examples/tether/layout"
@@ -38,9 +37,8 @@ var compPresence = shared.NewPresenceCountOnly()
 // Handle method - the page-level Handle is never involved.
 func New(app tether.App, assets *tether.Asset) *tether.Handler[State] {
 	return tether.Stateful(app, tether.StatefulConfig[State]{
-		Name:    "components",
-		Mode:    mode.WebSocket,
-		Upgrade: wsupgrade.Upgrade(),
+		Name: "components",
+		Mode: mode.WebSocket,
 
 		InitialState: func(_ *http.Request) State {
 			return State{

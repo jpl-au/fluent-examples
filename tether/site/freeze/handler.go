@@ -12,7 +12,6 @@ import (
 	"github.com/jpl-au/fluent/node"
 	tether "github.com/jpl-au/tether"
 	"github.com/jpl-au/tether/mode"
-	wsupgrade "github.com/jpl-au/tether/ws"
 
 	"github.com/jpl-au/fluent-examples/tether/layout"
 	"github.com/jpl-au/fluent-examples/tether/site/shared"
@@ -33,13 +32,12 @@ var freezePresence = shared.NewPresenceCountOnly()
 // reconnect the counter is restored from the store and OnConnect
 // fires as the restore callback.
 func New(app tether.App, assets *tether.Asset) *tether.Handler[State] {
-	sessionStore := store.NewFileSessionStore("tmp/freeze-sessions")
-	diffStore := store.NewFileDiffStore("tmp/freeze-diffs")
+	sessionStore := store.NewFileSessionStore(".tether/freeze-sessions")
+	diffStore := store.NewFileDiffStore(".tether/freeze-diffs")
 
 	return tether.Stateful(app, tether.StatefulConfig[State]{
-		Name:    "freeze",
-		Mode:    mode.WebSocket,
-		Upgrade: wsupgrade.Upgrade(),
+		Name: "freeze",
+		Mode: mode.WebSocket,
 
 		InitialState: func(_ *http.Request) State {
 			return State{OnlineCount: freezePresence.OnlineCount.Load()}

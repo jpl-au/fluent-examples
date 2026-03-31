@@ -11,8 +11,6 @@ import (
 	"github.com/jpl-au/fluent/html5/title"
 	"github.com/jpl-au/fluent/node"
 	tether "github.com/jpl-au/tether"
-	"github.com/jpl-au/tether/sse"
-	wsupgrade "github.com/jpl-au/tether/ws"
 
 	"github.com/jpl-au/fluent-examples/tether/layout"
 	"github.com/jpl-au/fluent-examples/tether/site/shared"
@@ -25,10 +23,8 @@ var realtimePresence = shared.NewPresenceCountOnly()
 // each chart region wrapped in node.Memoise with Versioned keys.
 func NewRealtime(app tether.App, assets *tether.Asset) *tether.Handler[RealtimeState] {
 	return tether.Stateful(app, tether.StatefulConfig[RealtimeState]{
-		Name:     "memoise/realtime",
-		Upgrade:  wsupgrade.Upgrade(),
-		Fallback: sse.Upgrade(),
-		Memoise:  true,
+		Name:    "memoise/realtime",
+		Memoise: true,
 
 		InitialState: func(_ *http.Request) RealtimeState {
 			return RealtimeState{OnlineCount: realtimePresence.OnlineCount.Load()}

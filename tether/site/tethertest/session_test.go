@@ -156,7 +156,7 @@ func TestURLAndReplaceURL(t *testing.T) {
 	})
 
 	h.Send("nav.goto-target")
-	if h.URL() != "/navigation/target" {
+	if h.URL() != "/navigation/target/" {
 		t.Fatalf("URL = %q", h.URL())
 	}
 	if h.Replaced() {

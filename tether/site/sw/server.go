@@ -15,8 +15,6 @@ import (
 	"github.com/jpl-au/fluent/node"
 	tether "github.com/jpl-au/tether"
 	"github.com/jpl-au/tether/mode"
-	"github.com/jpl-au/tether/sse"
-	wsupgrade "github.com/jpl-au/tether/ws"
 
 	"github.com/jpl-au/fluent-examples/tether/layout"
 	"github.com/jpl-au/fluent-examples/tether/middleware"
@@ -31,10 +29,8 @@ func New(app tether.App, assets *tether.Asset) *tether.Handler[state.State] {
 	r := newRouter()
 
 	return tether.Stateful(app, tether.StatefulConfig[state.State]{
-		Mode:     mode.Both,
-		Upgrade:  wsupgrade.Upgrade(),
-		Fallback: sse.Upgrade(),
-		Worker:   true,
+		Mode:   mode.Both,
+		Worker: true,
 		// Name distinguishes this handler in startup logs - without it the
 		// transport label (ws+sse) would be identical to the main ws handler.
 		// Worker: true is the real differentiator; Name makes it human-readable.

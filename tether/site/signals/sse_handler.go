@@ -12,7 +12,6 @@ import (
 	"github.com/jpl-au/fluent/node"
 	tether "github.com/jpl-au/tether"
 	"github.com/jpl-au/tether/mode"
-	"github.com/jpl-au/tether/sse"
 
 	"github.com/jpl-au/fluent-examples/tether/layout"
 	"github.com/jpl-au/fluent-examples/tether/site/shared"
@@ -25,9 +24,8 @@ var ssePresence = shared.NewPresenceCountOnly()
 // SetSignal, ToggleSignal, and Optimistic.
 func NewSSE(app tether.App, assets *tether.Asset) *tether.Handler[State] {
 	return tether.Stateful(app, tether.StatefulConfig[State]{
-		Name:     "signals/sse",
-		Mode:     mode.ServerSentEvents,
-		Fallback: sse.Upgrade(),
+		Name: "signals/sse",
+		Mode: mode.ServerSentEvents,
 
 		InitialState: func(_ *http.Request) State {
 			return State{OnlineCount: ssePresence.OnlineCount.Load()}

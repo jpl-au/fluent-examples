@@ -12,7 +12,6 @@ import (
 	"github.com/jpl-au/fluent/node"
 	tether "github.com/jpl-au/tether"
 	"github.com/jpl-au/tether/mode"
-	wsupgrade "github.com/jpl-au/tether/ws"
 
 	"github.com/jpl-au/fluent-examples/tether/component/shoutbox"
 	"github.com/jpl-au/fluent-examples/tether/layout"
@@ -36,9 +35,8 @@ var chatPresence = shared.NewPresenceCountOnly()
 // WatchBus watcher delivers messages from other sessions.
 func New(app tether.App, assets *tether.Asset) *tether.Handler[State] {
 	return tether.Stateful(app, tether.StatefulConfig[State]{
-		Name:    "chat",
-		Mode:    mode.WebSocket,
-		Upgrade: wsupgrade.Upgrade(),
+		Name: "chat",
+		Mode: mode.WebSocket,
 
 		InitialState: func(_ *http.Request) State {
 			return State{OnlineCount: chatPresence.OnlineCount.Load()}

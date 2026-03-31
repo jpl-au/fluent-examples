@@ -14,8 +14,6 @@ import (
 	"github.com/jpl-au/fluent/html5/title"
 	"github.com/jpl-au/fluent/node"
 	tether "github.com/jpl-au/tether"
-	"github.com/jpl-au/tether/sse"
-	wsupgrade "github.com/jpl-au/tether/ws"
 
 	"github.com/jpl-au/fluent-examples/tether/layout"
 	"github.com/jpl-au/fluent-examples/tether/site/shared"
@@ -35,9 +33,7 @@ var patchPresence = shared.NewPresenceCountOnly()
 // New creates a stateful handler demonstrating targeted updates.
 func New(app tether.App, assets *tether.Asset) *tether.Handler[State] {
 	return tether.Stateful(app, tether.StatefulConfig[State]{
-		Name:     "patch",
-		Upgrade:  wsupgrade.Upgrade(),
-		Fallback: sse.Upgrade(),
+		Name: "patch",
 
 		InitialState: func(_ *http.Request) State {
 			return State{OnlineCount: patchPresence.OnlineCount.Load()}
