@@ -1,6 +1,9 @@
 // Package layout provides the page shell for the kanban board
 // application: a header with the app title, user name, online count,
 // and an action area, wrapping the main content region.
+//
+// The online count updates via re-render driven by WatchValue on
+// Group.Count - one update path, always accurate.
 package layout
 
 import (
@@ -13,8 +16,8 @@ import (
 )
 
 // Shell wraps content in the app chrome: a header bar and scrollable
-// content area. The online count updates via re-render when
-// Group.Count() changes through WatchValue.
+// content area. The online count updates via re-render driven by
+// WatchValue on Group.Count - one update path, always accurate.
 func Shell(name string, onlineCount int, actions node.Node, content node.Node) node.Node {
 	return div.New(
 		header(name, onlineCount, actions),
@@ -23,7 +26,10 @@ func Shell(name string, onlineCount int, actions node.Node, content node.Node) n
 }
 
 // header builds the top bar with app title, user name, online badge,
-// and action nodes.
+// and action nodes. The badge text is initially rendered from state
+// (for the first paint) and then kept up to date via the
+// "online-count" signal - no re-render needed when sessions
+// connect or disconnect.
 func header(name string, onlineCount int, actions node.Node) node.Node {
 	badge := span.Text(fmt.Sprintf("%d online", onlineCount)).Class("badge badge-green")
 

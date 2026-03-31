@@ -12,9 +12,8 @@ import (
 	"github.com/jpl-au/fluent/html5/title"
 	"github.com/jpl-au/fluent/node"
 	tether "github.com/jpl-au/tether"
+	tetherfs "github.com/jpl-au/tether-store/fs"
 	"github.com/jpl-au/tether/mode"
-	"github.com/jpl-au/tether/sse"
-	wsupgrade "github.com/jpl-au/tether/ws"
 
 	"github.com/jpl-au/fluent-examples/tether-app/store"
 )
@@ -22,6 +21,15 @@ import (
 // New creates the kanban board handler. A single handler serves all
 // connected browsers; board state is shared via the store and
 // synchronised across sessions with Group.Broadcast.
+//
+// The handler demonstrates three optimisation strategies:
+//
+//   - Signals for presence indicators (typing, viewing, online count).
+//     High-frequency, text-only updates that skip the render cycle.
+//   - Memoise for board columns. Expensive subtrees that only
+//     re-render when BoardVersion changes (board mutations).
+//   - Patch for targeted card updates after edits. Only the saved
+//     card is re-rendered and diffed, not the entire board.
 func New(board *store.Board, assets *tether.Asset) *tether.Handler[State] {
 	group := tether.NewGroup[State]()
 	viewers := newViewers()
@@ -30,15 +38,26 @@ func New(board *store.Board, assets *tether.Asset) *tether.Handler[State] {
 		DevMode: true,
 		Assets:  []*tether.Asset{assets},
 	}, tether.StatefulConfig[State]{
-		Name:     "kanban",
-		Mode:     mode.Both,
-		Upgrade:  wsupgrade.Upgrade(),
-		Fallback: sse.Upgrade(),
+		Name: "kanban",
+		Mode: mode.Both,
+
+		// Memoise enables subtree memoisation. Column renders are
+		// wrapped in node.Memoise(s.BoardVersion, ...) so they are
+		// skipped entirely when the board hasn't changed. See view.go.
+		Memoise: true,
+
+		// Persistence: SessionStore saves session state (State struct)
+		// to disk on disconnect and graceful shutdown. DiffStore saves
+		// differ snapshots so reconnecting clients receive targeted
+		// patches instead of a full morph. Together they provide
+		// crash recovery and seamless server restarts.
+		SessionStore: tetherfs.NewSessionStore("tmp/sessions"),
+		DiffStore:    tetherfs.NewDiffStore("tmp/diffs"),
 
 		InitialState: func(_ *http.Request) State {
 			return State{View: "board", OnlineCount: group.Count().Load()}
 		},
-		Render:     Render(board, viewers),
+		Render:     Render(board),
 		Handle:     Handle(board, group, viewers),
 		OnNavigate: navigate(board),
 
@@ -56,6 +75,10 @@ func New(board *store.Board, assets *tether.Asset) *tether.Handler[State] {
 
 		Groups: []*tether.Group[State]{group},
 		Watchers: []tether.Watcher[State]{
+			// WatchValue tracks the online count in state for the
+			// initial SSR render. The signal push in the callback
+			// keeps the badge up to date on subsequent changes
+			// without a render cycle.
 			tether.WatchValue(group.Count(), func(n int, s State) State {
 				s.OnlineCount = n
 				return s
@@ -71,6 +94,15 @@ func New(board *store.Board, assets *tether.Asset) *tether.Handler[State] {
 				return s
 			})
 		},
+
+		// OnRestore fires instead of OnConnect when a session is
+		// recovered from the SessionStore (server restart, crash
+		// recovery). The state has been deserialised - rejoin the
+		// group and re-establish presence tracking.
+		OnRestore: func(sess *tether.StatefulSession[State]) {
+			slog.Info("restored", "id", sess.ID()[:8], "name", sess.State().Name)
+		},
+
 		OnDisconnect: func(sess *tether.StatefulSession[State]) {
 			slog.Info("disconnected", "id", sess.ID()[:8])
 			viewers.Presence.Clear(sess.ID())

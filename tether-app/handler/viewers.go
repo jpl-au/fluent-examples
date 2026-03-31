@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"strings"
 	"time"
 
 	tether "github.com/jpl-au/tether"
@@ -64,4 +65,58 @@ func (v *viewers) TypingOnCard(cardID, exclude string) []string {
 		}
 	})
 	return out
+}
+
+// pushPresenceSignals pushes signal values for a card's typing and
+// viewing indicators to all connected sessions. Each session sees
+// different text because it excludes itself from the list.
+//
+// Uses Group.Each instead of Broadcast because only signal values
+// change - the DOM structure is unchanged, so a render cycle would
+// be wasted work. Signals push the value directly to the client's
+// signal store, and bind.BindText updates the element in place.
+func pushPresenceSignals(group *tether.Group[State], v *viewers, cardID string) {
+	group.Each(func(sess *tether.StatefulSession[State]) {
+		typing := v.TypingOnCard(cardID, sess.ID())
+		viewing := v.ViewingCard(cardID, sess.ID())
+		sess.Signals(map[string]any{
+			"typing-" + cardID:  formatTyping(typing),
+			"viewing-" + cardID: formatViewing(viewing, typing),
+		})
+	})
+}
+
+// formatTyping returns the display text for typing indicators.
+func formatTyping(names []string) string {
+	switch len(names) {
+	case 0:
+		return ""
+	case 1:
+		return names[0] + " is editing..."
+	default:
+		return strings.Join(names, ", ") + " are editing..."
+	}
+}
+
+// formatViewing returns the display text for viewing indicators,
+// excluding anyone who is already shown as typing.
+func formatViewing(viewing, typing []string) string {
+	typingSet := make(map[string]bool, len(typing))
+	for _, n := range typing {
+		typingSet[n] = true
+	}
+	var viewOnly []string
+	for _, n := range viewing {
+		if !typingSet[n] {
+			viewOnly = append(viewOnly, n)
+		}
+	}
+	switch len(viewOnly) {
+	case 0:
+		return ""
+	case 1:
+		return viewOnly[0] + " is viewing this"
+	default:
+		return strings.Join(viewOnly, ", ") + " are viewing this"
+	}
 }

@@ -3,6 +3,14 @@ package handler
 // State is the per-session state for the kanban board. The board
 // data itself lives in the shared store; this struct tracks only
 // the session's view state and reactive values.
+//
+// State is serialised to disk via SessionStore (CBOR by default)
+// so sessions survive server restarts. All exported fields are
+// persisted automatically.
+//
+// BoardVersion is the memoisation key for column rendering. The
+// handler increments it on board mutations (create, save, move,
+// delete) so the Memoiser skips unchanged columns. See view.go.
 type State struct {
 	// SessionID identifies this session for viewer tracking.
 	SessionID string
@@ -15,4 +23,8 @@ type State struct {
 	SelectedID string
 	// OnlineCount tracks connected sessions for the header badge.
 	OnlineCount int
+	// BoardVersion is the memoisation key for column rendering.
+	// Incremented on board mutations so Memoise cache misses and
+	// columns re-render.
+	BoardVersion int
 }

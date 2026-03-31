@@ -21,7 +21,16 @@ import (
 
 // Render returns the top-level render function. It closes over the
 // board store so the view always reads the latest shared state.
-func Render(b *store.Board, viewers *viewers) func(State) node.Node {
+//
+// Presence indicators are signal-bound (not rendered here) and the
+// online count badge uses bind.BindText - see layout.Shell.
+//
+// The board view is wrapped in node.Memoise keyed on BoardVersion.
+// When BoardVersion hasn't changed (e.g. navigation between views),
+// the Memoiser skips the entire board subtree - no column renders,
+// no card renders, no HTML generated. The closure only runs on a
+// cache miss (board mutation incremented the version).
+func Render(b *store.Board) func(State) node.Node {
 	return func(s State) node.Node {
 		if s.Name == "" {
 			return landing()
@@ -35,14 +44,31 @@ func Render(b *store.Board, viewers *viewers) func(State) node.Node {
 			} else if c, ok := b.Card(s.SelectedID); ok {
 				content = detail.New(c)
 			} else {
-				content = boardView(b, viewers, s.SessionID)
+				content = memoiseBoard(b, s.BoardVersion)
 			}
 		default:
-			content = boardView(b, viewers, s.SessionID)
+			content = memoiseBoard(b, s.BoardVersion)
 		}
 
 		return layout.Shell(s.Name, s.OnlineCount, addButton(), content)
 	}
+}
+
+// memoiseBoard wraps the board rendering in node.Memoise so the
+// entire column grid is skipped when the board hasn't changed.
+// The boardVersion key is incremented by the handler on every
+// board mutation (create, save, move, delete).
+//
+// The Memoise node is a child of the Dynamic div (Pattern 1 from
+// fluent-jit docs). On a cache hit, the Memoiser finds the key on
+// the Dynamic's child and skips the closure entirely - no column
+// renders, no card renders, no HTML generated.
+func memoiseBoard(b *store.Board, boardVersion int) node.Node {
+	return div.New(
+		node.Memoise(boardVersion, func() node.Node {
+			return boardColumns(b)
+		}),
+	).Class("board").Dynamic("board")
 }
 
 // landing renders the name entry page shown on first visit.
@@ -65,9 +91,11 @@ func landing() node.Node {
 	).Class("landing").Dynamic("landing")
 }
 
-// boardView renders the three-column kanban grid, or an empty state
-// prompt when all columns are empty.
-func boardView(b *store.Board, viewers *viewers, sessionID string) node.Node {
+// boardColumns renders the column grid contents. Called inside the
+// Memoise closure in memoiseBoard, so this only runs on a cache miss
+// (board mutation). Presence indicators are signal-bound and update
+// without re-rendering.
+func boardColumns(b *store.Board) node.Node {
 	empty := true
 	var cols []node.Node
 	for _, col := range store.Columns() {
@@ -77,20 +105,16 @@ func boardView(b *store.Board, viewers *viewers, sessionID string) node.Node {
 		}
 		var cardNodes []node.Node
 		for _, c := range cards {
-			cv := ccard.CardViewers{
-				Viewing: viewers.ViewingCard(c.ID, sessionID),
-				Typing:  viewers.TypingOnCard(c.ID, sessionID),
-			}
-			cardNodes = append(cardNodes, ccard.New(c, cv))
+			cardNodes = append(cardNodes, ccard.New(c))
 		}
 		cols = append(cols, columnView(col, cardNodes))
 	}
 	if empty {
 		return div.New(
 			p.Text("No cards yet. Click Add Card to get started.").Class("empty-board"),
-		).Class("empty-state").Dynamic("board")
+		).Class("empty-state")
 	}
-	return board.New(cols...)
+	return board.Columns(cols...)
 }
 
 // columnView wraps a column component as a sortable drop zone.
