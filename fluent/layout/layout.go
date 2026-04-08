@@ -44,6 +44,7 @@ func doc(t string, actions node.Node, scripts []string, content ...node.Node) no
 		head.New(
 			meta.UTF8(),
 			meta.Viewport("width=device-width, initial-scale=1.0"),
+			meta.HttpEquiv("X-UA-Compatible", "IE=edge"),
 			title.Text("Fluent - "+t),
 			link.Stylesheet("/static/app.css"),
 		),
