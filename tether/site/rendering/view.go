@@ -80,7 +80,7 @@ func itemList(items []string) node.Node {
 	}
 	nodes := make([]node.Node, len(items))
 	for i, item := range items {
-		nodes[i] = li.New().Text(item).Dynamic("item-" + strconv.Itoa(i))
+		nodes[i] = li.Text(item).Dynamic("item-" + strconv.Itoa(i))
 	}
 	return list.New(nodes...)
 }

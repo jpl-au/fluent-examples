@@ -1,6 +1,9 @@
 package playwright_test
 
-import "testing"
+import (
+	"strconv"
+	"testing"
+)
 
 // TestMorphPageRenders verifies the full-page morph demo loads.
 func TestMorphPageRenders(t *testing.T) {
@@ -45,5 +48,87 @@ func TestMorphIncrement(t *testing.T) {
 	result := page.GetByText("Count: 1")
 	if err := expect(result).ToBeVisible(); err != nil {
 		t.Errorf("counter did not update via full-page morph: %v", err)
+	}
+}
+
+// TestMorphDecrement increments once then decrements, verifying the
+// counter returns to zero via full-page morph.
+func TestMorphDecrement(t *testing.T) {
+	srv := startApp(t, serverMode())
+	page, cleanup := newPage(t)
+	defer cleanup()
+
+	_, err := page.Goto(srv + "/morph/")
+	if err != nil {
+		t.Fatalf("goto: %v", err)
+	}
+
+	inc := page.Locator("[data-tether-click='morph.increment']")
+	if err := inc.Click(); err != nil {
+		t.Fatalf("click increment: %v", err)
+	}
+
+	after1 := page.GetByText("Count: 1")
+	if err := expect(after1).ToBeVisible(); err != nil {
+		t.Fatalf("counter did not reach 1: %v", err)
+	}
+
+	dec := page.Locator("[data-tether-click='morph.decrement']")
+	if err := dec.Click(); err != nil {
+		t.Fatalf("click decrement: %v", err)
+	}
+
+	after0 := page.GetByText("Count: 0")
+	if err := expect(after0).ToBeVisible(); err != nil {
+		t.Errorf("counter did not decrement to 0: %v", err)
+	}
+}
+
+// TestMorphDecrementLowerBound verifies that decrementing at zero
+// does not go negative - the counter stays at 0.
+func TestMorphDecrementLowerBound(t *testing.T) {
+	srv := startApp(t, serverMode())
+	page, cleanup := newPage(t)
+	defer cleanup()
+
+	_, err := page.Goto(srv + "/morph/")
+	if err != nil {
+		t.Fatalf("goto: %v", err)
+	}
+
+	dec := page.Locator("[data-tether-click='morph.decrement']")
+	if err := dec.Click(); err != nil {
+		t.Fatalf("click decrement: %v", err)
+	}
+
+	counter := page.GetByText("Count: 0")
+	if err := expect(counter).ToBeVisible(); err != nil {
+		t.Errorf("counter went below 0: %v", err)
+	}
+}
+
+// TestMorphMultipleIncrements clicks + several times and verifies
+// the counter round-trips correctly through full-page morphs.
+func TestMorphMultipleIncrements(t *testing.T) {
+	srv := startApp(t, serverMode())
+	page, cleanup := newPage(t)
+	defer cleanup()
+
+	_, err := page.Goto(srv + "/morph/")
+	if err != nil {
+		t.Fatalf("goto: %v", err)
+	}
+
+	btn := page.Locator("[data-tether-click='morph.increment']")
+
+	for i := 1; i <= 5; i++ {
+		if err := btn.Click(); err != nil {
+			t.Fatalf("click %d: %v", i, err)
+		}
+
+		expected := page.GetByText("Count: " + strconv.Itoa(i))
+		if err := expect(expected).ToBeVisible(); err != nil {
+			t.Fatalf("counter did not reach %d: %v", i, err)
+		}
 	}
 }

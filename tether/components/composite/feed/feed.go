@@ -28,7 +28,7 @@ func ActivityItem(user, action, time string) node.Node {
 
 // ActivityText creates a simple text-only activity item.
 func ActivityText(text string) node.Node {
-	return div.New().Class("activity-item").Text(text)
+	return div.Text(text).Class("activity-item")
 }
 
 // Messages creates a styled message feed from the given items.

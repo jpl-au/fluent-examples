@@ -8,10 +8,10 @@ github.com/fxamacker/cbor/v2 v2.9.0 h1:NpKPmjDBgUfBms6tr6JZkTHtfFGcMKsw3eGcmD/sa
 github.com/fxamacker/cbor/v2 v2.9.0/go.mod h1:vM4b+DJCtHn+zz7h3FFp/hDAI9WNWCsZj23V5ytsSxQ=
 github.com/jpl-au/fluent v0.3.0 h1:6OaCOeu2aEBy+Y5wv5J9D0UKVbAbaSjjQRio/XAJXRk=
 github.com/jpl-au/fluent v0.3.0/go.mod h1:Iptw7Q1CEBYMWKUTo5K9RpWjlpgDltRc3eHdUehPNIE=
-github.com/jpl-au/fluent-jit v0.3.0 h1:cXpkaIoh+HjraIQkeMc3jxX7kQHfw4ByG4KjmvIXv88=
-github.com/jpl-au/fluent-jit v0.3.0/go.mod h1:YDYRFi44Jf5HtJrsUvNm5pRaOsl2ysD8tn4SgGMHNi0=
-github.com/jpl-au/tether v0.3.0 h1:5M9o+Fo4cXPNUIRPbqlESAyzosQdGPwbm0CmQIyFZaw=
-github.com/jpl-au/tether v0.3.0/go.mod h1:IemjFxitarnQ98sYAaYq3yrVcXIrpt4pgXaJERGg0zM=
+github.com/jpl-au/fluent-jit v0.3.1 h1:22WHdc8rpVBgR8QPyUfLJZ8b3oQMnHV+PV410vWQeaI=
+github.com/jpl-au/fluent-jit v0.3.1/go.mod h1:YDYRFi44Jf5HtJrsUvNm5pRaOsl2ysD8tn4SgGMHNi0=
+github.com/jpl-au/tether v0.3.1 h1:9Lbj+szKwQL5hattS5G42Yocv0Nq18kZDD/b5RXOJu0=
+github.com/jpl-au/tether v0.3.1/go.mod h1:O0ybsnS0ojZBOtuDAYTHHq4ATdfsUUq96I5PFOw3xmM=
 github.com/jpl-au/tether-store/fs v0.1.0 h1:u5b3W7t7A7N89CO1721C/UdedWM7LCZl5hhmGntOxu4=
 github.com/jpl-au/tether-store/fs v0.1.0/go.mod h1:nSceEzZvW3Rc+00VvcsrDoFz1DAqw2Ab3W6YDx9WM7M=
 github.com/klauspost/compress v1.17.9 h1:6KIumPrER1LHsvBVuDa0r5xaG0Es51mhhB9BQB2qeMA=

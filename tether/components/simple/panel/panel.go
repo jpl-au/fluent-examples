@@ -16,7 +16,7 @@ import (
 func Card(title, description, api string, transport Transport, children ...node.Node) node.Node {
 	nodes := []node.Node{
 		div.New(
-			h3.New().Class("demo-title").Text(title),
+			h3.Text(title).Class("demo-title"),
 			badges(api, transport),
 		).Class("demo-header"),
 	}

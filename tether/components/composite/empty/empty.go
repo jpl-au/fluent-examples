@@ -15,7 +15,7 @@ import (
 // and an optional link back to a parent page.
 func State(title, message string, link node.Node) node.Node {
 	children := []node.Node{
-		h2.New().Class("empty-title").Text(title),
+		h2.Text(title).Class("empty-title"),
 		p.Text(message).Class("empty-text"),
 	}
 	if link != nil {
@@ -26,11 +26,11 @@ func State(title, message string, link node.Node) node.Node {
 
 // Link creates a plain anchor for the empty-state back link.
 func Link(path, text string) node.Node {
-	return a.New().Href(path).Class("empty-link").Text(text)
+	return a.Text(text).Href(path).Class("empty-link")
 }
 
 // NavLink creates a client-side navigation link for the empty-state
 // back link.
 func NavLink(path, text string) node.Node {
-	return bind.Apply(a.New().Href(path).Class("empty-link").Text(text), bind.Link())
+	return bind.Apply(a.Text(text).Href(path).Class("empty-link"), bind.Link())
 }

@@ -10,28 +10,28 @@ import (
 
 // Block renders a monospace pre-formatted panel for server data.
 func Block(s string) node.Node {
-	return pre.New().Class("result-block").Text(s)
+	return pre.Text(s).Class("result-block")
 }
 
 // BlockDynamic renders a result block with a Tether Dynamic key so
 // the differ can track it across re-renders.
 func BlockDynamic(key, s string) node.Node {
-	return pre.New().Class("result-block").Text(s).Dynamic(key)
+	return pre.Text(s).Class("result-block").Dynamic(key)
 }
 
 // Success renders a green result block for positive outcomes.
 func Success(s string) node.Node {
-	return pre.New().Class("result-block result-success").Text(s)
+	return pre.Text(s).Class("result-block result-success")
 }
 
 // Danger renders a red result block for errors or warnings.
 func Danger(s string) node.Node {
-	return pre.New().Class("result-block result-danger").Text(s)
+	return pre.Text(s).Class("result-block result-danger")
 }
 
 // Blue renders a blue result block.
 func Blue(s string) node.Node {
-	return pre.New().Class("result-block result-blue").Text(s)
+	return pre.Text(s).Class("result-block result-blue")
 }
 
 // Label renders a small muted heading above a result block.

@@ -24,15 +24,16 @@ func Render(s State) node.Node {
 				"element has focus.",
 			"bind.Hotkey", panel.WS|panel.SSE,
 			layout.Stack(
-				hint.Text("Press Ctrl+K or Escape to trigger a hotkey."),
+				hint.Text("Press Ctrl+K, Escape, Ctrl+/, or Shift+? to trigger a hotkey."),
 				lastCombo(s.LastCombo),
 			),
 		),
-		bind.Apply(
-			div.New().Class("sr-only"),
-			bind.Hotkey("ctrl+k", "hotkey.triggered"),
-			bind.Hotkey("escape", "hotkey.triggered"),
-		),
+		div.New(
+			bind.Apply(div.New(), bind.Hotkey("ctrl+k", "hotkey.triggered")),
+			bind.Apply(div.New(), bind.Hotkey("escape", "hotkey.triggered")),
+			bind.Apply(div.New(), bind.Hotkey("ctrl+/", "hotkey.triggered")),
+			bind.Apply(div.New(), bind.Hotkey("shift+?", "hotkey.triggered")),
+		).Class("sr-only"),
 	)
 }
 

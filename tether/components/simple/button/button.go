@@ -18,7 +18,7 @@ import (
 
 // Primary creates a primary button with no default event binding.
 func Primary(label string, opts ...bind.Option) node.Node {
-	n := el.New().Class("btn btn-primary").Text(label)
+	n := el.Text(label).Class("btn btn-primary")
 	if len(opts) == 0 {
 		return n
 	}
@@ -27,12 +27,12 @@ func Primary(label string, opts ...bind.Option) node.Node {
 
 // PrimaryAction creates a primary button that fires the given action on click.
 func PrimaryAction(label, action string, opts ...bind.Option) node.Node {
-	return bind.Apply(el.New().Class("btn btn-primary").Text(label), prepend(bind.OnClick(action), opts)...)
+	return bind.Apply(el.Text(label).Class("btn btn-primary"), prepend(bind.OnClick(action), opts)...)
 }
 
 // Secondary creates a secondary button with no default event binding.
 func Secondary(label string, opts ...bind.Option) node.Node {
-	n := el.New().Class("btn btn-secondary").Text(label)
+	n := el.Text(label).Class("btn btn-secondary")
 	if len(opts) == 0 {
 		return n
 	}
@@ -41,42 +41,42 @@ func Secondary(label string, opts ...bind.Option) node.Node {
 
 // SecondaryAction creates a secondary button that fires the given action on click.
 func SecondaryAction(label, action string, opts ...bind.Option) node.Node {
-	return bind.Apply(el.New().Class("btn btn-secondary").Text(label), prepend(bind.OnClick(action), opts)...)
+	return bind.Apply(el.Text(label).Class("btn btn-secondary"), prepend(bind.OnClick(action), opts)...)
 }
 
 // DangerAction creates a danger button that fires the given action on click.
 func DangerAction(label, action string, opts ...bind.Option) node.Node {
-	return bind.Apply(el.New().Class("btn btn-danger").Text(label), prepend(bind.OnClick(action), opts)...)
+	return bind.Apply(el.Text(label).Class("btn btn-danger"), prepend(bind.OnClick(action), opts)...)
 }
 
 // SmallAction creates a small secondary button that fires the given action.
 func SmallAction(label, action string, opts ...bind.Option) node.Node {
-	return bind.Apply(el.New().Class("btn btn-secondary btn-sm").Text(label), prepend(bind.OnClick(action), opts)...)
+	return bind.Apply(el.Text(label).Class("btn btn-secondary btn-sm"), prepend(bind.OnClick(action), opts)...)
 }
 
 // SmallPrimaryAction creates a small primary button that fires the given action.
 func SmallPrimaryAction(label, action string, opts ...bind.Option) node.Node {
-	return bind.Apply(el.New().Class("btn btn-primary btn-sm").Text(label), prepend(bind.OnClick(action), opts)...)
+	return bind.Apply(el.Text(label).Class("btn btn-primary btn-sm"), prepend(bind.OnClick(action), opts)...)
 }
 
 // SmallDangerAction creates a small danger button that fires the given action.
 func SmallDangerAction(label, action string, opts ...bind.Option) node.Node {
-	return bind.Apply(el.New().Class("btn btn-danger btn-sm").Text(label), prepend(bind.OnClick(action), opts)...)
+	return bind.Apply(el.Text(label).Class("btn btn-danger btn-sm"), prepend(bind.OnClick(action), opts)...)
 }
 
 // SmallOutlineAction creates a small outline button that fires the given action.
 func SmallOutlineAction(label, action string, opts ...bind.Option) node.Node {
-	return bind.Apply(el.New().Class("btn btn-outline btn-sm").Text(label), prepend(bind.OnClick(action), opts)...)
+	return bind.Apply(el.Text(label).Class("btn btn-outline btn-sm"), prepend(bind.OnClick(action), opts)...)
 }
 
 // Link creates a button-styled anchor that opens href in a new tab.
 func Link(label, href string) node.Node {
-	return a.New().Href(href).Target(target.Blank).Rel(rel.Rel("noopener")).Class("btn btn-secondary").Text(label)
+	return a.Text(label).Href(href).Target(target.Blank).Rel(rel.Rel("noopener")).Class("btn btn-secondary")
 }
 
 // Nav creates a secondary button-styled anchor for internal navigation.
 func Nav(label, href string, opts ...bind.Option) node.Node {
-	n := a.New().Href(href).Class("btn btn-secondary").Text(label)
+	n := a.Text(label).Href(href).Class("btn btn-secondary")
 	if len(opts) == 0 {
 		return n
 	}
@@ -85,7 +85,7 @@ func Nav(label, href string, opts ...bind.Option) node.Node {
 
 // NavPrimary creates a primary button-styled anchor for internal navigation.
 func NavPrimary(label, href string, opts ...bind.Option) node.Node {
-	n := a.New().Href(href).Class("btn btn-primary").Text(label)
+	n := a.Text(label).Href(href).Class("btn btn-primary")
 	if len(opts) == 0 {
 		return n
 	}
@@ -103,7 +103,7 @@ func Submit(label string, opts ...bind.Option) node.Node {
 
 // Increment creates a compact "+" button with no default event binding.
 func Increment(opts ...bind.Option) node.Node {
-	n := el.New().Class("btn btn-primary btn-sm").Text("+")
+	n := el.Text("+").Class("btn btn-primary btn-sm")
 	if len(opts) == 0 {
 		return n
 	}
@@ -112,12 +112,12 @@ func Increment(opts ...bind.Option) node.Node {
 
 // IncrementAction creates a compact "+" button that fires the given action.
 func IncrementAction(action string, opts ...bind.Option) node.Node {
-	return bind.Apply(el.New().Class("btn btn-primary btn-sm").Text("+"), prepend(bind.OnClick(action), opts)...)
+	return bind.Apply(el.Text("+").Class("btn btn-primary btn-sm"), prepend(bind.OnClick(action), opts)...)
 }
 
 // Decrement creates a compact "-" button with no default event binding.
 func Decrement(opts ...bind.Option) node.Node {
-	n := el.New().Class("btn btn-secondary btn-sm").Text("-")
+	n := el.Text("-").Class("btn btn-secondary btn-sm")
 	if len(opts) == 0 {
 		return n
 	}
@@ -126,12 +126,12 @@ func Decrement(opts ...bind.Option) node.Node {
 
 // DecrementAction creates a compact "-" button that fires the given action.
 func DecrementAction(action string, opts ...bind.Option) node.Node {
-	return bind.Apply(el.New().Class("btn btn-secondary btn-sm").Text("-"), prepend(bind.OnClick(action), opts)...)
+	return bind.Apply(el.Text("-").Class("btn btn-secondary btn-sm"), prepend(bind.OnClick(action), opts)...)
 }
 
 // Reset creates a compact "Reset" button with no default event binding.
 func Reset(opts ...bind.Option) node.Node {
-	n := el.New().Class("btn btn-outline btn-sm").Text("Reset")
+	n := el.Text("Reset").Class("btn btn-outline btn-sm")
 	if len(opts) == 0 {
 		return n
 	}
@@ -140,7 +140,7 @@ func Reset(opts ...bind.Option) node.Node {
 
 // ResetAction creates a compact "Reset" button that fires the given action.
 func ResetAction(action string, opts ...bind.Option) node.Node {
-	return bind.Apply(el.New().Class("btn btn-outline btn-sm").Text("Reset"), prepend(bind.OnClick(action), opts)...)
+	return bind.Apply(el.Text("Reset").Class("btn btn-outline btn-sm"), prepend(bind.OnClick(action), opts)...)
 }
 
 // prepend inserts first before the rest of the options.

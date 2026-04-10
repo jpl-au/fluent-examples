@@ -42,5 +42,5 @@ func EventList(items ...node.Node) *ul.Element {
 
 // Event renders a single diagnostic event entry in the live feed.
 func Event(s string) node.Node {
-	return li.New().Class("diagnostic-item").Text(s)
+	return li.Text(s).Class("diagnostic-item")
 }

@@ -12,7 +12,7 @@ import (
 func New(title string, children ...node.Node) node.Node {
 	nodes := make([]node.Node, 0, len(children)+1)
 	if title != "" {
-		nodes = append(nodes, h2.New().Class("card-title").Text(title))
+		nodes = append(nodes, h2.Text(title).Class("card-title"))
 	}
 	nodes = append(nodes, children...)
 	return div.New(nodes...).Class("card")

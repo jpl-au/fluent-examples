@@ -17,7 +17,7 @@ func List(items ...node.Node) node.Node {
 
 // Item creates a single viewport list item with text.
 func Item(s string) node.Node {
-	return li.New().Class("viewport-item").Text(s)
+	return li.Text(s).Class("viewport-item")
 }
 
 // Itemf creates a single viewport list item with formatted text.

@@ -30,7 +30,7 @@ func Bubble(user, text, timestamp string, own bool) node.Node {
 			span.Text(user).Class("chat-bubble-user"),
 			span.Text(timestamp).Class("chat-bubble-time"),
 		).Class("chat-bubble-header"),
-		div.New().Class("chat-bubble-body").Text(text),
+		div.Text(text).Class("chat-bubble-body"),
 	).Class(class)
 }
 

@@ -30,6 +30,7 @@ func startClusterServer(t *testing.T, cluster tether.Cluster) string {
 	handler := clustertest.New(app, bus)
 
 	mux := http.NewServeMux()
+	mux.Handle("/_tether/", handler)
 	mux.Handle("/_test/cluster/", handler)
 
 	ln, err := net.Listen("tcp", "127.0.0.1:0")
@@ -105,6 +106,7 @@ func TestClusterPageRenders(t *testing.T) {
 	handler := clustertest.New(app, bus)
 
 	mux := http.NewServeMux()
+	mux.Handle("/_tether/", handler)
 	mux.Handle("/_test/cluster/", handler)
 
 	ln, err := net.Listen("tcp", "127.0.0.1:0")

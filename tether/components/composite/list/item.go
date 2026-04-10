@@ -7,7 +7,7 @@ import (
 
 // Item creates a single list item with text content.
 func Item(text string) node.Node {
-	return li.New().Class("list-item").Text(text)
+	return li.Text(text).Class("list-item")
 }
 
 // ItemNode creates a list item wrapping arbitrary child nodes.

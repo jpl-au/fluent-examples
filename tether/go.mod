@@ -7,7 +7,7 @@ require (
 	github.com/go-echarts/go-echarts/v2 v2.7.1
 	github.com/jpl-au/chain v0.1.1
 	github.com/jpl-au/fluent v0.3.0
-	github.com/jpl-au/tether v0.3.0
+	github.com/jpl-au/tether v0.3.1
 	github.com/jpl-au/tether/tetheredis v0.1.0
 	github.com/playwright-community/playwright-go v0.5700.1
 	github.com/redis/go-redis/v9 v9.18.0
@@ -21,7 +21,7 @@ require (
 	github.com/fxamacker/cbor/v2 v2.9.0 // indirect
 	github.com/go-jose/go-jose/v3 v3.0.4 // indirect
 	github.com/go-stack/stack v1.8.1 // indirect
-	github.com/jpl-au/fluent-jit v0.3.0 // indirect
+	github.com/jpl-au/fluent-jit v0.3.1 // indirect
 	github.com/klauspost/compress v1.18.4 // indirect
 	github.com/lxzan/gws v1.9.0 // indirect
 	github.com/x448/float16 v0.8.4 // indirect

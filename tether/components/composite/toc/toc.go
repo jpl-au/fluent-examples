@@ -28,12 +28,12 @@ func Item(link node.Node, features string) node.Node {
 // Link creates a plain anchor for table-of-contents entries - used
 // in the HTTP section where there is no persistent session.
 func Link(path, title string) node.Node {
-	return a.New().Href(path).Class("toc-title").Text(title)
+	return a.Text(title).Href(path).Class("toc-title")
 }
 
 // NavLink creates a client-side navigation link for table-of-contents
 // entries - used in the WebSocket/SSE sections where bind.Link()
 // navigates without a full page reload.
 func NavLink(path, title string) node.Node {
-	return bind.Apply(a.New().Href(path).Class("toc-title").Text(title), bind.Link())
+	return bind.Apply(a.Text(title).Href(path).Class("toc-title"), bind.Link())
 }

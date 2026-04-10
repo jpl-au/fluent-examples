@@ -5,7 +5,7 @@ go 1.25.0
 require (
 	github.com/jpl-au/chain v0.1.1
 	github.com/jpl-au/fluent v0.3.0
-	github.com/jpl-au/fluent-jit v0.3.0
+	github.com/jpl-au/fluent-jit v0.3.1
 	github.com/lxzan/gws v1.9.0
 )
 
