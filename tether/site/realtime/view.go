@@ -43,8 +43,7 @@ func Render(s State) node.Node {
 // unescapes entities) and calls echarts.setOption().
 func chartDiv(id, titleText, colour string, data []opts.LineData) node.Node {
 	option := buildChartOption(id, titleText, colour, data)
-	el := monitor.Chart(id)
-	el.SetAttribute("style", "width:100%;height:250px")
+	el := monitor.Chart(id).Style("width:100%;height:250px")
 	el.SetData("tether-hook", "echarts")
 	el.SetData("chart-option", html.EscapeString(option))
 	return el

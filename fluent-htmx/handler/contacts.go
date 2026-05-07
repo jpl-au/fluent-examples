@@ -186,7 +186,7 @@ func contactDetail(c store.Contact) (node.Node, node.Node) {
 	notes := card.New("Notes",
 		notelist.New(c.ID, c.Notes),
 		form.Post("/contacts/"+c.ID+"/notes",
-			field.Group(field.TextArea("content", "Add a note...")),
+			field.Group(field.TextArea("content", "Add a note. Basic HTML (strong, em, a, code) survives; scripts are stripped.")),
 			row.New(button.Submit("Add Note")),
 		),
 	)
@@ -194,11 +194,12 @@ func contactDetail(c store.Contact) (node.Node, node.Node) {
 	return details, notes
 }
 
-// detailRow renders a label–value pair. The label is static (never
-// changes); the value is dynamic user input escaped via Text().
+// detailRow renders a label-value pair. Both are escaped via Text() -
+// Static() requires a string literal, and label is a function
+// parameter (a variable).
 func detailRow(label, value string) node.Node {
 	return div.New(
-		span.Static(label).Class("detail-label"),
+		span.Text(label).Class("detail-label"),
 		span.Text(value).Class("detail-value"),
 	).Class("detail-row")
 }

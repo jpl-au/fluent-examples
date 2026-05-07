@@ -1,10 +1,20 @@
 package playwright_test
 
 import (
+	"runtime"
 	"testing"
 
 	pw "github.com/playwright-community/playwright-go"
 )
+
+// multiSelectModifier returns the keyboard modifier for multi-select:
+// Meta (Cmd) on macOS, Control on everything else.
+func multiSelectModifier() pw.KeyboardModifier {
+	if runtime.GOOS == "darwin" {
+		return "Meta"
+	}
+	return "Control"
+}
 
 // TestSelectionPageRenders verifies the selection demo loads.
 func TestSelectionPageRenders(t *testing.T) {
@@ -100,10 +110,10 @@ func TestSelectionCtrlClick(t *testing.T) {
 		t.Fatalf("click item 1: %v", err)
 	}
 
-	// Ctrl+click item 3.
+	// Ctrl+click (Cmd+click on macOS) item 3.
 	item3 := page.Locator("[data-tether-data-id='3']")
 	if err := item3.Click(pw.LocatorClickOptions{
-		Modifiers: []pw.KeyboardModifier{"Control"},
+		Modifiers: []pw.KeyboardModifier{multiSelectModifier()},
 	}); err != nil {
 		t.Fatalf("ctrl+click item 3: %v", err)
 	}

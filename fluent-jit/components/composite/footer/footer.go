@@ -12,10 +12,10 @@ import (
 // New builds the bottom navigation bar with links to the live demos.
 func New() node.Node {
 	return el.New(
-		a.New().Href("/").Text("Home").Class("footer-link"),
+		a.Text("Home").Href("/").Class("footer-link"),
 		span.Static("\u00b7").Class("footer-sep"), // middle dot separator (U+00B7)
-		a.New().Href("/ws").Text("WebSocket Demo").Class("footer-link"),
+		a.Text("WebSocket Demo").Href("/ws").Class("footer-link"),
 		span.Static("\u00b7").Class("footer-sep"), // middle dot separator (U+00B7)
-		a.New().Href("/sse").Text("SSE Demo").Class("footer-link"),
+		a.Text("SSE Demo").Href("/sse").Class("footer-link"),
 	).Class("footer")
 }

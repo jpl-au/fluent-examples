@@ -70,12 +70,14 @@ var sidebar = []sidebarGroup{
 			{"/client-actions/", "Client-Side Actions"},
 			{"/selection/", "Multi-Select"},
 			{"/touch/", "Touch Gestures"},
+			{"/security/", "Security (Sanitise & CSP)"},
 		}},
 	}},
 	{"Signals & Directives", []sectionGroup{
 		{SectionLive, "", []navItem{
 			{"/signals/ws/", "WebSocket"},
 			{"/signals/sse/", "SSE"},
+			{"/timer/", "Client-Side Timers"},
 		}},
 	}},
 	{"Live Updates", []sectionGroup{

@@ -150,7 +150,7 @@ func ShowContact(w http.ResponseWriter, r *http.Request) {
 	notes := card.New("Notes",
 		notelist.New(c.ID, c.Notes),
 		form.Post("/contacts/"+c.ID+"/notes",
-			field.Group(field.TextArea("content", "Add a note...")),
+			field.Group(field.TextArea("content", "Add a note. Basic HTML (strong, em, a, code) survives; scripts are stripped.")),
 			row.New(button.Submit("Add Note")),
 		),
 	)
@@ -208,12 +208,12 @@ func DeleteContact(w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w, r, "/", http.StatusSeeOther)
 }
 
-// detailRow renders a label–value pair for the contact detail card.
-// The label is treated as static (known at definition time); the
-// value is escaped via Text() because it contains user input.
+// detailRow renders a label-value pair for the contact detail card.
+// Both label and value are escaped via Text() - Static() requires a
+// string literal, and label is a function parameter (a variable).
 func detailRow(label, value string) node.Node {
 	return div.New(
-		span.Static(label).Class("detail-label"),
+		span.Text(label).Class("detail-label"),
 		span.Text(value).Class("detail-value"),
 	).Class("detail-row")
 }

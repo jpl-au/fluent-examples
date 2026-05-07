@@ -15,10 +15,10 @@ import (
 func New() node.Node {
 	// U+00B7 middle dot used as a visual separator between links.
 	return el.New(
-		a.New().Href("/").Text("Home").Class("footer-link"),
+		a.Text("Home").Href("/").Class("footer-link"),
 		span.Static("\u00b7").Class("footer-sep"),
-		a.New().Href("/ws").Text("WebSocket Demo").Class("footer-link"),
+		a.Text("WebSocket Demo").Href("/ws").Class("footer-link"),
 		span.Static("\u00b7").Class("footer-sep"),
-		a.New().Href("/sse").Text("SSE Demo").Class("footer-link"),
+		a.Text("SSE Demo").Href("/sse").Class("footer-link"),
 	).Class("footer")
 }

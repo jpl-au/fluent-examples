@@ -56,8 +56,14 @@ func init() {
 		Email: "alice@example.com",
 		Phone: "+61 400 111 222",
 		Notes: []Note{
-			{ID: nextNoteID(), Content: "Met at the Go meetup last Friday.", Created: time.Now().Add(-48 * time.Hour)},
-			{ID: nextNoteID(), Content: "Interested in contributing to the fluent project.", Created: time.Now().Add(-24 * time.Hour)},
+			{ID: nextNoteID(), Content: "Met at the Go meetup last Friday.", Created: time.Now().Add(-72 * time.Hour)},
+			// Rich formatting: demonstrates that safe HTML survives the
+			// fluent-security HTML helper.
+			{ID: nextNoteID(), Content: `Interested in contributing to the <strong>fluent</strong> project - see her <a href="https://example.com/alice">portfolio</a>.`, Created: time.Now().Add(-48 * time.Hour)},
+			// Attack fixture: demonstrates that a <script> tag embedded
+			// by an attacker is stripped by security.HTML before render,
+			// so the alert() never executes when the page loads.
+			{ID: nextNoteID(), Content: `Suspicious note from an attacker: <script>alert('xss')</script> ignore the rest.`, Created: time.Now().Add(-24 * time.Hour)},
 		},
 	}
 	bob := Contact{
@@ -67,6 +73,10 @@ func init() {
 		Phone: "+61 400 333 444",
 		Notes: []Note{
 			{ID: nextNoteID(), Content: "Prefers email over phone calls.", Created: time.Now().Add(-72 * time.Hour)},
+			// Attack fixture: the javascript: scheme on an href is a
+			// classic XSS vector. security.HTML drops the href (and
+			// often the whole <a>) so the link becomes inert text.
+			{ID: nextNoteID(), Content: `Follow-up link: <a href="javascript:alert('stolen')">click here</a>.`, Created: time.Now().Add(-24 * time.Hour)},
 		},
 	}
 	carol := Contact{

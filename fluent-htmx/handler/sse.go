@@ -40,7 +40,7 @@ func SSEPage(w http.ResponseWriter, _ *http.Request) {
 			statusSpan,
 		).Class("layout-row"),
 		div.New(
-			span.Static(
+			span.Text(
 				"Connected to the server via Server-Sent Events. Log entries are "+
 					"pushed as HTML fragments and swapped in by the htmx SSE extension. "+
 					"SSE is unidirectional (server to client) and reconnects "+

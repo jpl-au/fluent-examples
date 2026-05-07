@@ -22,12 +22,12 @@ func TextValue(name, value, placeholder string) *input.Element {
 
 // Area creates a textarea with a name, placeholder, and content.
 func Area(name, placeholder, content string) node.Node {
-	return textarea.New().Name(name).Class("input textarea").Placeholder(placeholder).Text(content)
+	return textarea.Text(content).Name(name).Class("input textarea").Placeholder(placeholder)
 }
 
 // Label creates a form label.
 func Label(text string) node.Node {
-	return label.New().Class("label").Text(text)
+	return label.Text(text).Class("label")
 }
 
 // Inline wraps children in a horizontal inline form layout. Returns

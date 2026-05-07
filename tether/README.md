@@ -3,8 +3,9 @@
 Interactive example application for the [Tether](https://github.com/jpl-au/tether) framework. Each demo is a self-contained package that exercises a specific Tether feature with real, runnable code.
 
 ```bash
-go run .             # defaults to :8080
-PORT=3000 go run .   # or set a custom port
+go run .                 # defaults to :8080, JSON wire format
+go run . -wire cbor      # CBOR wire format (compact binary)
+PORT=3000 go run .       # custom port
 ```
 
 Open multiple browser tabs to see real-time features in action.

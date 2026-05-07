@@ -29,6 +29,7 @@ import (
 	"testing"
 
 	tether "github.com/jpl-au/tether"
+	"github.com/jpl-au/tether/wire"
 	pw "github.com/playwright-community/playwright-go"
 
 	"github.com/jpl-au/fluent-examples/tether/app"
@@ -73,7 +74,7 @@ func startApp(t *testing.T, mode ServerMode) string {
 		FS:     os.DirFS("../static"),
 		Prefix: "/static/",
 	}
-	mux, _ := app.New(ctx, assets)
+	mux, _ := app.New(ctx, assets, wire.JSON)
 
 	switch mode {
 	case HTTP2:

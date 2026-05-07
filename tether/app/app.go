@@ -13,6 +13,7 @@ import (
 
 	"github.com/jpl-au/chain"
 	tether "github.com/jpl-au/tether"
+	"github.com/jpl-au/tether/wire"
 
 	"github.com/jpl-au/fluent-examples/tether/middleware"
 	"github.com/jpl-au/fluent-examples/tether/site/broadcasting"
@@ -38,10 +39,12 @@ import (
 	"github.com/jpl-au/fluent-examples/tether/site/realtime"
 	"github.com/jpl-au/fluent-examples/tether/site/rendering"
 	"github.com/jpl-au/fluent-examples/tether/site/scroll"
+	"github.com/jpl-au/fluent-examples/tether/site/security"
 	"github.com/jpl-au/fluent-examples/tether/site/selection"
 	"github.com/jpl-au/fluent-examples/tether/site/signals"
 	swsite "github.com/jpl-au/fluent-examples/tether/site/sw"
 	swhandler "github.com/jpl-au/fluent-examples/tether/site/sw/handler"
+	"github.com/jpl-au/fluent-examples/tether/site/timer"
 	"github.com/jpl-au/fluent-examples/tether/site/touch"
 	"github.com/jpl-au/fluent-examples/tether/site/uploads"
 	filteredupload "github.com/jpl-au/fluent-examples/tether/site/uploads/filtered"
@@ -56,11 +59,12 @@ import (
 // embedded filesystem. Returns the HTTP handler (a chain.Mux with all
 // routes) and the list of tether handlers that need draining on
 // shutdown.
-func New(ctx context.Context, assets *tether.Asset) (http.Handler, []tether.Drainable) {
+func New(ctx context.Context, assets *tether.Asset, wf wire.Format) (http.Handler, []tether.Drainable) {
 
 	app := tether.App{
-		DevMode: true,
-		Assets:  []*tether.Asset{assets},
+		DevMode:    true,
+		Assets:     []*tether.Asset{assets},
+		WireFormat: wf,
 	}
 
 	// Wire bus subscribers before creating handlers so subscribers
@@ -79,6 +83,7 @@ func New(ctx context.Context, assets *tether.Asset) (http.Handler, []tether.Drai
 	middlewareHandler := mwsite.New(app, assets)
 	clientActionsHandler := clientactions.New(app, assets)
 	selectionHandler := selection.New(app, assets)
+	securityHandler := security.New(app, assets)
 	touchHandler := touch.New(app, assets)
 
 	// WebSocket features (tether.Handler).
@@ -113,6 +118,9 @@ func New(ctx context.Context, assets *tether.Asset) (http.Handler, []tether.Drai
 	// Signal demos - WS and SSE variants.
 	signalsWSHandler := signals.NewWS(app, assets)
 	signalsSSEHandler := signals.NewSSE(app, assets)
+
+	// Client-side timer demo.
+	timerHandler := timer.New(app, assets)
 
 	// Live updates demos - WS and SSE variants.
 	liveWSHandler := live.NewWS(app, assets)
@@ -164,12 +172,14 @@ func New(ctx context.Context, assets *tether.Asset) (http.Handler, []tether.Drai
 	mux.Handle("/middleware/", middlewareHandler)
 	mux.Handle("/signals/ws/", signalsWSHandler)
 	mux.Handle("/signals/sse/", signalsSSEHandler)
+	mux.Handle("/timer/", timerHandler)
 	mux.Handle("/live/ws/", liveWSHandler)
 	mux.Handle("/live/sse/", liveSSEHandler)
 	mux.Handle("/realtime/", realtimeHandler)
 	mux.Handle("/diagnostics/", diagnosticsHandler)
 	mux.Handle("/freeze/", freezeHandler)
 	mux.Handle("/client-actions/", clientActionsHandler)
+	mux.Handle("/security/", securityHandler)
 	mux.Handle("/selection/", selectionHandler)
 	mux.Handle("/touch/", touchHandler)
 	mux.Handle("/hotkey/", hotkeyHandler)
@@ -188,7 +198,7 @@ func New(ctx context.Context, assets *tether.Asset) (http.Handler, []tether.Drai
 		notificationsHandler, uploadsHandler, broadcastingHandler,
 		componentsHandler, chatHandler, filteredUploadHandler,
 		configurationHandler, valuestoreHandler, groupsHandler,
-		signalsWSHandler, signalsSSEHandler,
+		signalsWSHandler, signalsSSEHandler, timerHandler,
 		liveWSHandler, liveSSEHandler,
 		realtimeHandler, diagnosticsHandler, freezeHandler,
 		hotkeyHandler, dragdropHandler, scrollHandler,

@@ -67,11 +67,21 @@ func New() *Board {
 	b := &Board{cards: make(map[string]*Card)}
 	now := time.Now()
 	b.addAt(Todo, "Set up CI pipeline", "Configure GitHub Actions for automated builds and tests.", "System", now.Add(-2*time.Hour))
-	b.addAt(Todo, "Write API documentation", "Document all public endpoints with request and response examples.", "System", now.Add(-90*time.Minute))
-	b.addAt(InProgress, "Design landing page", "Create mockups for the marketing site hero section.", "System", now.Add(-5*time.Hour))
+	// Rich formatting: a <strong> tag and inline <code> survive the
+	// UGC policy and render as real emphasis / code on the detail view.
+	b.addAt(Todo, "Write API documentation",
+		`Document all public endpoints with request and response examples. <strong>Include auth flows</strong> and a <code>curl</code> section.`,
+		"System", now.Add(-90*time.Minute))
+	b.addAt(InProgress, "Design landing page",
+		`Create mockups for the marketing site hero section - see the <a href="https://example.com/brand">brand guide</a> for colour palette and typography.`,
+		"System", now.Add(-5*time.Hour))
 	b.addAt(InProgress, "Implement user auth", "Add session-based authentication with login and registration flows.", "System", now.Add(-4*time.Hour))
 	b.addAt(Done, "Project kickoff", "Align on goals, timeline, and responsibilities.", "System", now.Add(-24*time.Hour))
-	b.addAt(Done, "Choose tech stack", "Evaluate options and commit to Go, Tether, and Fluent.", "System", now.Add(-20*time.Hour))
+	// Attack fixture: the <script> tag is dropped by the UGC policy
+	// before render, so opening this card never executes alert().
+	b.addAt(Done, "Choose tech stack",
+		`Evaluate options and commit to Go, Tether, and Fluent.<script>alert('xss via kanban')</script>`,
+		"System", now.Add(-20*time.Hour))
 	return b
 }
 

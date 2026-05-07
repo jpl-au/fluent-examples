@@ -12,6 +12,7 @@
 package card
 
 import (
+	security "github.com/jpl-au/fluent-security"
 	"github.com/jpl-au/fluent/html5/div"
 	"github.com/jpl-au/fluent/html5/p"
 	"github.com/jpl-au/fluent/html5/span"
@@ -22,8 +23,8 @@ import (
 )
 
 // New renders a draggable kanban card with signal-bound presence
-// indicators. The presence text is pushed via sess.Signal() -
-// see handler/viewers.go for the signal push logic.
+// indicators. Presence text is pushed via sess.Signal() - see
+// handler/viewers.go for the signal push logic.
 func New(c store.Card) node.Node {
 	return bind.Apply(
 		div.New(
@@ -46,15 +47,28 @@ func New(c store.Card) node.Node {
 	).Dynamic(c.ID)
 }
 
-// desc renders a truncated description, or nil if empty.
+// desc renders a truncated plain-text snippet of the description, or
+// nil if empty. The card grid is not the place for rich formatting -
+// even if the description contains <strong> or <a>, the snippet
+// should read as a single line of preview text. security.PlainText
+// strips every tag and returns plain text; it is the correct preset
+// for this use case. The full rich HTML is shown on the detail view,
+// where the hoisted cleaner enforces the UGC policy.
+//
+// Truncation is rune-based rather than byte-based so multi-byte
+// characters (emoji, CJK, accented letters) are never split in the
+// middle of a codepoint, which would produce invalid UTF-8 in the
+// rendered HTML.
 func desc(s string) node.Node {
 	if s == "" {
 		return nil
 	}
-	if len(s) > 80 {
-		s = s[:77] + "..."
+	plain := string(security.PlainText(s).Render())
+	runes := []rune(plain)
+	if len(runes) > 80 {
+		plain = string(runes[:77]) + "..."
 	}
-	return p.Text(s).Class("card-desc")
+	return p.Text(plain).Class("card-desc")
 }
 
 // presence renders signal-bound typing and viewing indicators.

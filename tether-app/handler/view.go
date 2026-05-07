@@ -3,6 +3,7 @@ package handler
 import (
 	"strconv"
 
+	security "github.com/jpl-au/fluent-security"
 	"github.com/jpl-au/fluent/html5/div"
 	"github.com/jpl-au/fluent/html5/h1"
 	"github.com/jpl-au/fluent/html5/p"
@@ -20,7 +21,10 @@ import (
 )
 
 // Render returns the top-level render function. It closes over the
-// board store so the view always reads the latest shared state.
+// board store so the view always reads the latest shared state, and
+// over the description cleaner so the detail view can sanitise rich
+// descriptions with the hoisted UGC policy. Card previews on the
+// board use security.PlainText directly and do not need the cleaner.
 //
 // Presence indicators are signal-bound (not rendered here) and the
 // online count badge uses bind.BindText - see layout.Shell.
@@ -30,7 +34,7 @@ import (
 // the Memoiser skips the entire board subtree - no column renders,
 // no card renders, no HTML generated. The closure only runs on a
 // cache miss (board mutation incremented the version).
-func Render(b *store.Board) func(State) node.Node {
+func Render(b *store.Board, cleaner *security.Cleaner) func(State) node.Node {
 	return func(s State) node.Node {
 		if s.Name == "" {
 			return landing()
@@ -40,9 +44,9 @@ func Render(b *store.Board) func(State) node.Node {
 		switch s.View {
 		case "detail":
 			if s.SelectedID == "" {
-				content = detail.New(store.Card{})
+				content = detail.New(store.Card{}, cleaner)
 			} else if c, ok := b.Card(s.SelectedID); ok {
-				content = detail.New(c)
+				content = detail.New(c, cleaner)
 			} else {
 				content = memoiseBoard(b, s.BoardVersion)
 			}

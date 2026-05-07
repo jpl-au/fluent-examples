@@ -71,7 +71,7 @@ func Render(s State) node.Node {
 
 		panel.Card("Change Events", "Pick a colour from the dropdown - the server receives the selected value when the selection changes.", "bind.Change", panel.AllTransports,
 			layout.Stack(
-				bind.Apply(dropdown.New(option.Option("", "Select a colour..."), option.Option("red", "Red"), option.Option("green", "Green"), option.Option("blue", "Blue")).Name("colour"),
+				bind.Apply(dropdown.Options(option.Option("", "Select a colour..."), option.Option("red", "Red"), option.Option("green", "Green"), option.Option("blue", "Blue")).Name("colour"),
 					bind.OnChange("events.change"),
 				),
 				layout.Container(colourResult(s.ChangeValue)).Dynamic("colour-result"),
@@ -140,7 +140,7 @@ func Render(s State) node.Node {
 					field.Group(field.Label("price", "Price"), field.TextWithID("price", "price", "e.g. 9.99")),
 					field.Group(
 						field.Label("urgent", "Urgent?"),
-						dropdown.New(
+						dropdown.Options(
 							option.Option("", "Select..."),
 							option.Option("true", "Yes"),
 							option.Option("false", "No"),

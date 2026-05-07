@@ -57,7 +57,7 @@ func New(board *store.Board, assets *tether.Asset) *tether.Handler[State] {
 		InitialState: func(_ *http.Request) State {
 			return State{View: "board", OnlineCount: group.Count().Load()}
 		},
-		Render:     Render(board),
+		Render:     Render(board, descCleaner),
 		Handle:     Handle(board, group, viewers),
 		OnNavigate: navigate(board),
 

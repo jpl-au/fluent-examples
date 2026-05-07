@@ -5,10 +5,10 @@ package notelist
 import (
 	htmx "github.com/jpl-au/fluent-htmx"
 	"github.com/jpl-au/fluent-htmx/swap"
+	security "github.com/jpl-au/fluent-security"
 	"github.com/jpl-au/fluent/html5/button"
 	"github.com/jpl-au/fluent/html5/div"
 	"github.com/jpl-au/fluent/html5/form"
-	"github.com/jpl-au/fluent/html5/p"
 	"github.com/jpl-au/fluent/html5/span"
 	"github.com/jpl-au/fluent/node"
 
@@ -29,7 +29,12 @@ func New(contactID string, notes []store.Note) node.Node {
 }
 
 // Item renders a single note with content, timestamp, and a delete
-// button. The delete form uses HTMX to swap the content in place.
+// button. Note content is treated as untrusted HTML and passed
+// through fluent-security's UGC policy before rendering, so
+// formatting tags survive while scripts, event handlers, and
+// javascript: URIs are stripped. See the seeded attack fixtures in
+// store.init for what this catches in practice. The delete form uses
+// HTMX to swap the content in place.
 func Item(contactID string, n store.Note) node.Node {
 	// Progressive enhancement: form.Post provides a standard form
 	// submission for non-JS clients; HxPost upgrades it to swap just
@@ -39,7 +44,7 @@ func Item(contactID string, n store.Note) node.Node {
 	htmx.New(f).HxPost(action).HxTarget("#content").HxSwap(swap.InnerHTML)
 
 	return div.New(
-		p.Text(n.Content).Class("note-content"),
+		div.New(security.HTML(n.Content)).Class("note-content"),
 		span.Text(n.Created.Format("2 Jan 2006, 15:04")).Class("note-time"),
 		f.Add(button.Submit("Delete").Class("btn btn-danger btn-sm")),
 	).Class("note-item")

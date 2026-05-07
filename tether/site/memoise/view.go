@@ -82,13 +82,13 @@ func Render(s State) node.Node {
 func renderTable(items []Item) node.Node {
 	rows := make([]node.Node, len(items))
 	for i, item := range items {
-		rows[i] = tr.New(
+		rows[i] = tr.Cells(
 			td.Text(strconv.Itoa(item.ID)),
 			td.Text(item.Name),
 		).ID("row-" + strconv.Itoa(item.ID))
 	}
 	return table.New(
-		thead.New(tr.New(th.Text("ID"), th.Text("Name"))),
+		thead.Rows(tr.Headers(th.Text("ID"), th.Text("Name"))),
 		tbody.New(rows...),
 	).Class("demo-table").ID("memoise-table")
 }

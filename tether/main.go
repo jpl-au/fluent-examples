@@ -6,12 +6,14 @@ package main
 import (
 	"context"
 	"embed"
+	"flag"
 	"io/fs"
 	"log"
 	"os/signal"
 	"syscall"
 
 	tether "github.com/jpl-au/tether"
+	"github.com/jpl-au/tether/wire"
 
 	"github.com/jpl-au/fluent-examples/tether/app"
 )
@@ -20,6 +22,17 @@ import (
 var staticEmbed embed.FS
 
 func main() {
+	wireFlag := flag.String("wire", "json", "wire format: json or cbor")
+	flag.Parse()
+
+	var wf wire.Format
+	switch *wireFlag {
+	case "cbor":
+		wf = wire.CBOR
+	default:
+		wf = wire.JSON
+	}
+
 	ctx, stop := signal.NotifyContext(context.Background(), syscall.SIGINT, syscall.SIGTERM)
 	defer stop()
 
@@ -33,7 +46,7 @@ func main() {
 		Precache: []string{"app.css", "hooks.js"},
 	}
 
-	mux, drainables := app.New(ctx, assets)
+	mux, drainables := app.New(ctx, assets, wf)
 
 	if err := tether.ListenAndServe("", mux, drainables...); err != nil {
 		log.Fatal(err)

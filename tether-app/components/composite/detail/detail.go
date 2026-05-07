@@ -6,6 +6,7 @@ package detail
 import (
 	"time"
 
+	security "github.com/jpl-au/fluent-security"
 	"github.com/jpl-au/fluent/html5/a"
 	"github.com/jpl-au/fluent/html5/div"
 	"github.com/jpl-au/fluent/html5/form"
@@ -22,8 +23,11 @@ import (
 
 // New renders the detail view for a card. When c.ID is empty, the
 // form creates a new card. When populated, it updates the existing
-// one. Same component either way.
-func New(c store.Card) node.Node {
+// one. Same component either way. Existing cards additionally render
+// a read-only preview of the description through the cleaner, so
+// users can see how their rich-text input will be sanitised before
+// it is shown to other viewers on the board.
+func New(c store.Card, cleaner *security.Cleaner) node.Node {
 	isNew := c.ID == ""
 
 	back := bind.Apply(
@@ -54,7 +58,7 @@ func New(c store.Card) node.Node {
 			).Class("form-group"),
 			div.New(
 				field.Label("Description"),
-				field.Area("description", "Add a description...", c.Description),
+				field.Area("description", "Add a description. Basic HTML (strong, em, a, code) survives; scripts are stripped.", c.Description),
 			).Class("form-group"),
 			div.New(
 				button.Submit("Save"),
@@ -66,9 +70,23 @@ func New(c store.Card) node.Node {
 	)
 
 	return bind.Apply(
-		div.New(header, f, activity(c.Activity)).Class("detail"),
+		div.New(header, f, preview(c, cleaner, isNew), activity(c.Activity)).Class("detail"),
 		bind.Hotkey("escape", "card.back"),
 	).Dynamic("detail")
+}
+
+// preview renders a read-only view of the description as it will
+// appear to other users, with fluent-security's UGC policy applied.
+// Hidden for new cards (no stored content yet) and for existing
+// cards with empty descriptions.
+func preview(c store.Card, cleaner *security.Cleaner, isNew bool) node.Node {
+	if isNew || c.Description == "" {
+		return nil
+	}
+	return div.New(
+		span.Text("Description preview").Class("preview-title"),
+		div.New(cleaner.Clean(c.Description)).Class("preview-body"),
+	).Class("preview-section")
 }
 
 // activity renders the card's event log. Hidden for new cards.

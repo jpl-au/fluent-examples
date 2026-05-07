@@ -31,7 +31,7 @@ func WSPage(w http.ResponseWriter, _ *http.Request) {
 			span.Text("connecting...").Class("status-connecting").ID("ws-status"),
 		).Class("layout-row"),
 		div.New(
-			span.Static(
+			span.Text(
 				"Connected to the server via a WebSocket. Log entries are pushed "+
 					"from the server as HTML fragments and swapped in by the htmx "+
 					"WebSocket extension. The connection is full-duplex so entries "+

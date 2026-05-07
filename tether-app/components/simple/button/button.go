@@ -10,7 +10,7 @@ import (
 
 // Primary creates a primary button with optional bind options.
 func Primary(label string, opts ...bind.Option) node.Node {
-	n := el.New().Class("btn btn-primary").Text(label)
+	n := el.Text(label).Class("btn btn-primary")
 	if len(opts) == 0 {
 		return n
 	}
@@ -20,14 +20,14 @@ func Primary(label string, opts ...bind.Option) node.Node {
 // PrimaryAction creates a primary button that fires action on click.
 func PrimaryAction(label, action string, opts ...bind.Option) node.Node {
 	return bind.Apply(
-		el.New().Class("btn btn-primary").Text(label),
+		el.Text(label).Class("btn btn-primary"),
 		prepend(bind.OnClick(action), opts)...,
 	)
 }
 
 // Secondary creates a secondary button with optional bind options.
 func Secondary(label string, opts ...bind.Option) node.Node {
-	n := el.New().Class("btn btn-secondary").Text(label)
+	n := el.Text(label).Class("btn btn-secondary")
 	if len(opts) == 0 {
 		return n
 	}
@@ -37,7 +37,7 @@ func Secondary(label string, opts ...bind.Option) node.Node {
 // SecondaryAction creates a secondary button that fires action on click.
 func SecondaryAction(label, action string, opts ...bind.Option) node.Node {
 	return bind.Apply(
-		el.New().Class("btn btn-secondary").Text(label),
+		el.Text(label).Class("btn btn-secondary"),
 		prepend(bind.OnClick(action), opts)...,
 	)
 }
@@ -45,7 +45,7 @@ func SecondaryAction(label, action string, opts ...bind.Option) node.Node {
 // DangerAction creates a danger button that fires action on click.
 func DangerAction(label, action string, opts ...bind.Option) node.Node {
 	return bind.Apply(
-		el.New().Class("btn btn-danger").Text(label),
+		el.Text(label).Class("btn btn-danger"),
 		prepend(bind.OnClick(action), opts)...,
 	)
 }
@@ -53,7 +53,7 @@ func DangerAction(label, action string, opts ...bind.Option) node.Node {
 // SmallAction creates a small secondary button that fires action on click.
 func SmallAction(label, action string, opts ...bind.Option) node.Node {
 	return bind.Apply(
-		el.New().Class("btn btn-secondary btn-sm").Text(label),
+		el.Text(label).Class("btn btn-secondary btn-sm"),
 		prepend(bind.OnClick(action), opts)...,
 	)
 }

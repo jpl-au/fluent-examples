@@ -3,10 +3,10 @@
 package notelist
 
 import (
+	security "github.com/jpl-au/fluent-security"
 	"github.com/jpl-au/fluent/html5/button"
 	"github.com/jpl-au/fluent/html5/div"
 	"github.com/jpl-au/fluent/html5/form"
-	"github.com/jpl-au/fluent/html5/p"
 	"github.com/jpl-au/fluent/html5/span"
 	"github.com/jpl-au/fluent/node"
 
@@ -28,10 +28,14 @@ func New(contactID string, notes []store.Note) node.Node {
 }
 
 // Item renders a single note - content, timestamp, and a delete
-// form.
+// form. Note content is treated as untrusted HTML and passed through
+// fluent-security's UGC policy before rendering, so formatting tags
+// survive while scripts, event handlers, and javascript: URIs are
+// stripped. See the seeded attack fixtures in store.init for what
+// this catches in practice.
 func Item(contactID string, n store.Note) node.Node {
 	return div.New(
-		p.Text(n.Content).Class("note-content"),
+		div.New(security.HTML(n.Content)).Class("note-content"),
 		span.Text(n.Created.Format("2 Jan 2006, 15:04")).Class("note-time"),
 		form.Post(
 			"/contacts/"+contactID+"/notes/"+n.ID+"/delete",

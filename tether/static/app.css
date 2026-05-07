@@ -448,6 +448,79 @@ svg {
   gap: 1.5rem;
 }
 
+/* Fixture grid - used by the /security/ demo to pair raw input with
+   sanitised output for each attack fixture. */
+.demo-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+.demo-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.75rem 1rem;
+  padding: 1rem;
+  border: 1px solid var(--border);
+  border-radius: calc(var(--radius) - 2px);
+  background: var(--muted);
+}
+.demo-row-title {
+  grid-column: 1 / -1;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--card-fg);
+}
+.demo-row-note {
+  grid-column: 1 / -1;
+  margin: 0;
+  font-size: 0.75rem;
+  color: var(--muted-fg);
+  line-height: 1.5;
+}
+.demo-col {
+  display: flex;
+  flex-direction: column;
+  gap: 0.375rem;
+  min-width: 0;
+}
+.demo-col-label {
+  font-size: 0.6875rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--muted-fg);
+}
+.demo-raw {
+  margin: 0;
+  padding: 0.625rem 0.75rem;
+  font-family: var(--mono);
+  font-size: 0.75rem;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: calc(var(--radius) - 4px);
+  white-space: pre-wrap;
+  word-break: break-word;
+  overflow-x: auto;
+}
+.demo-rendered {
+  padding: 0.625rem 0.75rem;
+  font-size: 0.8125rem;
+  line-height: 1.5;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: calc(var(--radius) - 4px);
+  word-break: break-word;
+}
+.demo-rendered > * + * {
+  margin-top: 0.5rem;
+}
+.demo-label {
+  margin: 0 0 0.5rem;
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--card-fg);
+}
+
 /* Result text - inline feedback */
 .result-text {
   font-size: 0.875rem;
