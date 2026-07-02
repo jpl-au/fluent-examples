@@ -1,2 +1,6 @@
 .air.toml
 tmp/
+
+# macOS metadata
+._*
+.DS_Store
