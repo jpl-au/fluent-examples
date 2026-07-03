@@ -24,9 +24,10 @@ func TestHotkeyPageRenders(t *testing.T) {
 	}
 }
 
-// TestHotkeyCtrlK presses Ctrl+K and verifies the server receives
-// the hotkey event and updates the page.
-func TestHotkeyCtrlK(t *testing.T) {
+// TestHotkeyModK presses Ctrl+K (the "mod" modifier on Linux, where
+// these tests run headless) and verifies the server receives the
+// hotkey event with the platform-aware mod-k combo.
+func TestHotkeyModK(t *testing.T) {
 	srv := startApp(t, serverMode())
 	page, cleanup := newPage(t)
 	defer cleanup()
@@ -42,9 +43,9 @@ func TestHotkeyCtrlK(t *testing.T) {
 		t.Fatalf("press ctrl+k: %v", err)
 	}
 
-	result := page.GetByText("Last hotkey: ctrl-k")
+	result := page.GetByText("Last hotkey: mod-k")
 	if err := expect(result).ToBeVisible(); err != nil {
-		t.Errorf("ctrl+k not reflected: %v", err)
+		t.Errorf("mod+k not reflected: %v", err)
 	}
 }
 
@@ -71,10 +72,9 @@ func TestHotkeyEscape(t *testing.T) {
 	}
 }
 
-// TestHotkeyCtrlSlash presses Ctrl+/ which contains a character that
-// is special in CSS selectors. Without CSS.escape in the hotkey
-// handler, querySelector would throw a SyntaxError.
-func TestHotkeyCtrlSlash(t *testing.T) {
+// TestHotkeyModSlash presses Ctrl+/ (matching the mod+/ binding),
+// whose key is a character that is special in CSS selectors.
+func TestHotkeyModSlash(t *testing.T) {
 	srv := startApp(t, serverMode())
 	page, cleanup := newPage(t)
 	defer cleanup()
@@ -90,9 +90,9 @@ func TestHotkeyCtrlSlash(t *testing.T) {
 		t.Fatalf("press ctrl+/: %v", err)
 	}
 
-	result := page.GetByText("Last hotkey: ctrl-/")
+	result := page.GetByText("Last hotkey: mod-/")
 	if err := expect(result).ToBeVisible(); err != nil {
-		t.Errorf("ctrl+/ not reflected: %v", err)
+		t.Errorf("ctrl+/ did not match the mod+/ binding: %v", err)
 	}
 }
 
@@ -140,7 +140,7 @@ func TestHotkeySequence(t *testing.T) {
 	if err := page.Keyboard().Press("Control+/"); err != nil {
 		t.Fatalf("press ctrl+/: %v", err)
 	}
-	result := page.GetByText("Last hotkey: ctrl-/")
+	result := page.GetByText("Last hotkey: mod-/")
 	if err := expect(result).ToBeVisible(); err != nil {
 		t.Errorf("ctrl+/ not reflected: %v", err)
 	}
@@ -149,7 +149,7 @@ func TestHotkeySequence(t *testing.T) {
 	if err := page.Keyboard().Press("Control+k"); err != nil {
 		t.Fatalf("press ctrl+k: %v", err)
 	}
-	result = page.GetByText("Last hotkey: ctrl-k")
+	result = page.GetByText("Last hotkey: mod-k")
 	if err := expect(result).ToBeVisible(); err != nil {
 		t.Errorf("ctrl+k after ctrl+/ not reflected: %v", err)
 	}
@@ -187,5 +187,47 @@ func TestHotkeyUnregisteredKeyIgnored(t *testing.T) {
 	hint := page.GetByText("No hotkey triggered yet.")
 	if err := expect(hint).ToBeVisible(); err != nil {
 		t.Errorf("unregistered key should not trigger hotkey: %v", err)
+	}
+}
+
+// TestHotkeyIgnoredWhileTyping focuses the demo's text input and
+// presses Shift+? - an unmodified-style hotkey that must NOT fire
+// from an editable element. The question mark should be typed into
+// the field instead. Blurring and pressing again fires the hotkey.
+func TestHotkeyIgnoredWhileTyping(t *testing.T) {
+	srv := startApp(t, serverMode())
+	page, cleanup := newPage(t)
+	defer cleanup()
+
+	if _, err := page.Goto(srv + "/hotkey/"); err != nil {
+		t.Fatalf("goto: %v", err)
+	}
+	waitForConnected(t, page)
+
+	probe := page.Locator("input[name='hotkey-probe']")
+	if err := probe.Click(); err != nil {
+		t.Fatalf("focus probe input: %v", err)
+	}
+	if err := page.Keyboard().Press("Shift+?"); err != nil {
+		t.Fatalf("press shift+? in input: %v", err)
+	}
+
+	// The keystroke was typed, not swallowed by the hotkey.
+	if err := expect(probe).ToHaveValue("?"); err != nil {
+		t.Errorf("keystroke was not typed into the field: %v", err)
+	}
+	if err := expect(page.GetByText("No hotkey triggered yet.")).ToBeVisible(); err != nil {
+		t.Errorf("hotkey fired while typing in an input: %v", err)
+	}
+
+	// Blur the field - the same key now triggers the hotkey.
+	if err := page.Locator("body").Click(); err != nil {
+		t.Fatalf("blur: %v", err)
+	}
+	if err := page.Keyboard().Press("Shift+?"); err != nil {
+		t.Fatalf("press shift+? after blur: %v", err)
+	}
+	if err := expect(page.GetByText("Last hotkey: shift-?")).ToBeVisible(); err != nil {
+		t.Errorf("shift+? not reflected after blur: %v", err)
 	}
 }

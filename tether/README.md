@@ -102,7 +102,9 @@ Each `site/` package follows a consistent pattern:
 
 ## Playwright tests
 
-End-to-end browser tests live in `playwright/`. They use the system-installed Google Chrome via the Playwright Go driver - no bundled Chromium download is required.
+End-to-end browser tests live in `playwright/`. They use the system-installed Google Chrome or Chromium via the Playwright Go driver - no bundled Chromium download is required.
+
+The suite includes `reconnect_test.go`, which drives a real browser through the recovery paths a production deploy exercises: transport drop and reattach (state preserved), server restart with a `SessionStore` (state restored from disk, same session), and server restart without one (the stale client receives a fresh session and a full morph - no interaction required).
 
 ### Prerequisites
 
