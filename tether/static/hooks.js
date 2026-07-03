@@ -90,3 +90,28 @@ Tether.hooks.echarts = {
     }
   },
 };
+
+// --- Client extension API ---
+//
+// Beyond per-element hooks, the runtime exposes page-wide lifecycle
+// subscriptions. The built-in extensions (tether-hotkey.js,
+// tether-timer.js, tether-select.js) are written against this same
+// surface:
+//
+//   Tether.getSignal(key)            read a signal
+//   Tether.setSignal(key, value)     write one - bindings update
+//   Tether.onSignalChange(fn)        fn(key, value) after any change
+//   Tether.onUpdate(fn)              fn(root) after each server update
+//   Tether.onElementAdded(fn)        fn(el) when a morph adds a node
+//   Tether.onElementRemoved(fn)      fn(el) before a morph removes one
+//
+// Each returns an unsubscribe function, and listeners are guarded -
+// a throwing callback is reported via Tether.onError and skipped.
+//
+// Demo: in dev mode, log every signal change. Open the browser
+// console on the Signals page and click around to watch the stream.
+if (document.querySelector("[data-tether-root][data-tether-dev]")) {
+  Tether.onSignalChange(function (key, value) {
+    console.log("tether signal:", key, "=", value);
+  });
+}

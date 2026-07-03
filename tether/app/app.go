@@ -28,6 +28,7 @@ import (
 	"github.com/jpl-au/fluent-examples/tether/site/freeze"
 	"github.com/jpl-au/fluent-examples/tether/site/groups"
 	"github.com/jpl-au/fluent-examples/tether/site/hotkey"
+	"github.com/jpl-au/fluent-examples/tether/site/htmlwire"
 	httpsite "github.com/jpl-au/fluent-examples/tether/site/http"
 	"github.com/jpl-au/fluent-examples/tether/site/live"
 	"github.com/jpl-au/fluent-examples/tether/site/memoise"
@@ -80,6 +81,7 @@ func New(ctx context.Context, assets *tether.Asset, wf wire.Format) (http.Handle
 	navigationHandler := navigation.New(app, assets)
 	renderingHandler := rendering.New(app, assets)
 	morphHandler := morph.New(app, assets)
+	htmlwireHandler := htmlwire.New(app, assets)
 	middlewareHandler := mwsite.New(app, assets)
 	clientActionsHandler := clientactions.New(app, assets)
 	selectionHandler := selection.New(app, assets)
@@ -169,6 +171,7 @@ func New(ctx context.Context, assets *tether.Asset, wf wire.Format) (http.Handle
 	mux.Handle("/valuestore/", valuestoreHandler)
 	mux.Handle("/groups/", groupsHandler)
 	mux.Handle("/morph/", morphHandler)
+	mux.Handle("/html-wire/", htmlwireHandler)
 	mux.Handle("/middleware/", middlewareHandler)
 	mux.Handle("/signals/ws/", signalsWSHandler)
 	mux.Handle("/signals/sse/", signalsSSEHandler)

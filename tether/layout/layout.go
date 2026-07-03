@@ -67,6 +67,7 @@ var sidebar = []sidebarGroup{
 			{"/navigation/", "Navigation"},
 			{"/middleware/", "Middleware"},
 			{"/morph/", "Full-Page Morph"},
+			{"/html-wire/", "HTML Wire Format"},
 			{"/client-actions/", "Client-Side Actions"},
 			{"/selection/", "Multi-Select"},
 			{"/touch/", "Touch Gestures"},
@@ -174,8 +175,8 @@ func sidebarNav(section Section, currentPage string) node.Node {
 // tether.Handler. Only the service worker handler has internal
 // navigation between sub-pages; every other live handler is
 // standalone, so cross-feature links always do full page loads.
-func sameHandler(a, b Section) bool {
-	return a == SectionSW && b == SectionSW
+func sameHandler(from, to Section) bool {
+	return from == SectionSW && to == SectionSW
 }
 
 // navLink renders a sidebar link. Links within the same handler

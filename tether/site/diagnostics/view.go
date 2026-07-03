@@ -34,6 +34,19 @@ func Render(s State) node.Node {
 		),
 
 		panel.Card(
+			"The Dev Debug Dashboard",
+			"In dev mode every stateful handler also serves an auto-refreshing "+
+				"dashboard at /_tether/debug showing the session pool counts "+
+				"(pending / active / disconnected), outstanding connect tickets, "+
+				"and the most recent diagnostics - no subscriber code needed. "+
+				"Production builds do not expose it; use Handler.Health() and "+
+				"this Diagnostics bus instead.",
+			"/_tether/debug (dev mode)", panel.WS|panel.SSE,
+			hint.Text("Open /_tether/debug in another tab, then trigger a panic "+
+				"above and watch it appear on the dashboard."),
+		),
+
+		panel.Card(
 			"Diagnostic Event Feed",
 			"This feed subscribes to Handler.Diagnostics via WatchBus and renders the 20 most recent events. "+
 				"Events are aggregated from multiple handlers across the application.",
