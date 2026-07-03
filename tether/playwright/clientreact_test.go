@@ -22,7 +22,7 @@ import (
 // features through a real browser, proving they run entirely on the
 // client:
 //
-//   - conditional bindings (BindShowWhen / BindClassWhen) react to a
+//   - conditional bindings (ShowWhen / ClassWhen) react to a
 //     server-pushed signal without the server sending booleans
 //   - client-side filtering hides list items by text match
 //   - client events (Emit / OnClientEvent) clear the filter box and
@@ -51,8 +51,8 @@ func renderReact(s reactState) node.Node {
 
 	return div.New(
 		// Conditional bindings driven by the "count" signal.
-		bind.Apply(span.Text("HIGH"), bind.BindShowWhen("count", ">", 2)).ID("high"),
-		bind.Apply(span.Text("box"), bind.BindClassWhen("danger", "count", ">=", 3)).ID("box"),
+		bind.Apply(span.Text("HIGH"), bind.ShowWhen("count", ">", 2)).ID("high"),
+		bind.Apply(span.Text("box"), bind.ClassWhen("danger", "count", ">=", 3)).ID("box"),
 		bind.Apply(button.Text("inc"), bind.OnClick("inc")).ID("inc"),
 		bind.Apply(button.Text("load"), bind.OnClick("load")).ID("load"),
 
@@ -60,7 +60,7 @@ func renderReact(s reactState) node.Node {
 		// client event - no server involvement for either.
 		bind.Apply(input.Text("q", ""),
 			bind.Filter("#items"),
-			bind.BindValue("query"),
+			bind.Value("query"),
 			bind.OnClientEvent("clear", bind.SetSignal("query", "")),
 		).ID("search"),
 		bind.Apply(button.Text("Clear"), bind.Emit("clear", "#search")).ID("clear"),
@@ -105,7 +105,7 @@ func startReactServer(t *testing.T) string {
 }
 
 // TestConditionalBindingsReactToSignal clicks an increment button that
-// pushes a "count" signal and asserts BindShowWhen and BindClassWhen
+// pushes a "count" signal and asserts ShowWhen and ClassWhen
 // derive their state from the value - no boolean signal is ever sent.
 func TestConditionalBindingsReactToSignal(t *testing.T) {
 	srv := startReactServer(t)

@@ -17,35 +17,35 @@ import (
 )
 
 // RenderWS builds the full signals and directives page for the
-// WebSocket variant: BindText, BindShow/BindHide, SetSignal,
-// ToggleSignal, ToggleTarget, BindClass, BindAttr, BindValue,
+// WebSocket variant: Text, Show/Hide, SetSignal,
+// ToggleSignal, ToggleTarget, Class, Attr, Value,
 // Optimistic, OptimisticToggle, Batch Signals, Cloak, Permanent,
 // Hook, Transition, and FocusTrap.
 func RenderWS(s State) node.Node {
 	return page.New(
 		panel.Card(
-			"BindText",
+			"Text",
 			"Click the button to increment a server-side counter. The server pushes the new value as a signal, and the client updates the text without re-rendering the page.",
-			"bind.BindText", panel.WS|panel.SSE,
+			"bind.Text", panel.WS|panel.SSE,
 			layout.Row(
 				button.PrimaryAction("Increment Server Counter", "signals.increment"),
 				bind.Apply(span.Text(strconv.Itoa(s.Counter)),
-					bind.BindText("signals.counter"),
+					bind.Text("signals.counter"),
 				),
 			),
 		),
 
 		panel.Card(
-			"BindShow / BindHide",
+			"Show / Hide",
 			"Click Toggle Visibility - the server pushes a boolean signal that shows or hides elements instantly on the client. No page re-render happens; the client toggles CSS display directly.",
-			"bind.BindShow · bind.BindHide", panel.WS|panel.SSE,
+			"bind.Show · bind.Hide", panel.WS|panel.SSE,
 			layout.Stack(
 				button.PrimaryAction("Toggle Visibility", "signals.toggle-panel"),
 				bind.Apply(layout.Container(
 					panel.SignalText("This panel is visible when the signal is true."),
-				), bind.BindShow("signals.panel_visible")),
+				), bind.Show("signals.panel_visible")),
 				bind.Apply(span.Text("The panel is hidden."),
-					bind.BindHide("signals.panel_visible"),
+					bind.Hide("signals.panel_visible"),
 				),
 			),
 		),
@@ -58,17 +58,17 @@ func RenderWS(s State) node.Node {
 				button.Primary("Set to Red", bind.SetSignal("signals.colour", "red")),
 				button.Primary("Set to Blue", bind.SetSignal("signals.colour", "blue")),
 				button.Primary("Set to Green", bind.SetSignal("signals.colour", "green")),
-				bind.Apply(span.Text("none").Dynamic("colour-display"), bind.BindText("signals.colour")),
+				bind.Apply(span.Text("none").Dynamic("colour-display"), bind.Text("signals.colour")),
 			),
 		),
 
 		panel.Card(
 			"ToggleSignal (Client-Side)",
-			"Click the button to flip a boolean signal on the client. Combined with BindShow, the panel appears and disappears with no server round-trip.",
-			"bind.ToggleSignal · bind.BindShow", panel.AllTransports,
+			"Click the button to flip a boolean signal on the client. Combined with Show, the panel appears and disappears with no server round-trip.",
+			"bind.ToggleSignal · bind.Show", panel.AllTransports,
 			layout.Stack(
 				button.Primary("Toggle Panel", bind.ToggleSignal("signals.toggle_demo")),
-				bind.Apply(panel.SignalText("Toggled on!"), bind.BindShow("signals.toggle_demo")),
+				bind.Apply(panel.SignalText("Toggled on!"), bind.Show("signals.toggle_demo")),
 			),
 		),
 
@@ -88,39 +88,39 @@ func RenderWS(s State) node.Node {
 		),
 
 		panel.Card(
-			"BindClass",
+			"Class",
 			"Click Toggle Highlight - the box below gains or loses the 'highlighted' CSS class based on a boolean signal.",
-			"bind.BindClass", panel.AllTransports,
+			"bind.Class", panel.AllTransports,
 			layout.Stack(
 				button.Primary("Toggle Highlight", bind.ToggleSignal("signals.highlight")),
 				bind.Apply(panel.ToggleDemo(
 					p.Static("This box gets the 'highlighted' class when the signal is true."),
-				), bind.BindClass("highlighted", "signals.highlight")),
+				), bind.Class("highlighted", "signals.highlight")),
 			),
 		),
 
 		panel.Card(
-			"BindAttr",
-			"Click Toggle Lock - the server pushes a boolean signal that adds or removes the disabled attribute on the input. BindAttr drives any HTML attribute from a signal.",
-			"bind.BindAttr", panel.WS|panel.SSE,
+			"Attr",
+			"Click Toggle Lock - the server pushes a boolean signal that adds or removes the disabled attribute on the input. Attr drives any HTML attribute from a signal.",
+			"bind.Attr", panel.WS|panel.SSE,
 			layout.Row(
 				button.PrimaryAction("Toggle Lock", "signals.toggle-lock"),
 				bind.Apply(
 					field.Text("attr-demo", "Lock me with the button above"),
-					bind.BindAttr("disabled", "signals.input_locked"),
+					bind.Attr("disabled", "signals.input_locked"),
 				),
 			),
 		),
 
 		panel.Card(
-			"BindValue",
-			"Click Pre-fill - the server pushes a signal that sets the value of the form field directly. BindValue is the pattern for server-driven defaults.",
-			"bind.BindValue", panel.WS|panel.SSE,
+			"Value",
+			"Click Pre-fill - the server pushes a signal that sets the value of the form field directly. Value is the pattern for server-driven defaults.",
+			"bind.Value", panel.WS|panel.SSE,
 			layout.Row(
 				button.PrimaryAction("Pre-fill from Server", "signals.prefill"),
 				bind.Apply(
 					field.Text("value-demo", "Server will fill this in"),
-					bind.BindValue("signals.prefill_value"),
+					bind.Value("signals.prefill_value"),
 				),
 			),
 		),
@@ -133,7 +133,7 @@ func RenderWS(s State) node.Node {
 				button.PrimaryAction("Like", "signals.like",
 					bind.Optimistic("signals.liked", "true"),
 				),
-				bind.Apply(span.Text("Liked!"), bind.BindShow("signals.liked")),
+				bind.Apply(span.Text("Liked!"), bind.Show("signals.liked")),
 			),
 		),
 
@@ -145,8 +145,8 @@ func RenderWS(s State) node.Node {
 				button.PrimaryAction("Toggle Favourite", "signals.favourite",
 					bind.OptimisticToggle("signals.favourited"),
 				),
-				bind.Apply(span.Text("Favourited!"), bind.BindShow("signals.favourited")),
-				bind.Apply(span.Text("Not favourited"), bind.BindHide("signals.favourited")),
+				bind.Apply(span.Text("Favourited!"), bind.Show("signals.favourited")),
+				bind.Apply(span.Text("Not favourited"), bind.Hide("signals.favourited")),
 			),
 		),
 
@@ -160,7 +160,7 @@ func RenderWS(s State) node.Node {
 		panel.Card(
 			"Cloak",
 			"The element below is server-rendered with the text 'Loading...' but hidden by a data-tether-cloak attribute. "+
-				"When the client JavaScript initialises, the cloak is removed and the BindText signal replaces the placeholder with the counter value. "+
+				"When the client JavaScript initialises, the cloak is removed and the Text signal replaces the placeholder with the counter value. "+
 				"On localhost the swap is instant - on a slow connection, Cloak prevents a flash of stale placeholder content (FOUC). "+
 				"View source to see the hidden element and its data-tether-cloak attribute.",
 			"bind.Cloak", panel.AllTransports,
@@ -168,7 +168,7 @@ func RenderWS(s State) node.Node {
 				hint.Text("The element below is cloaked until JS initialises:"),
 				bind.Apply(panel.SignalText("Loading...").Dynamic("cloaked"),
 					bind.Cloak(),
-					bind.BindText("signals.counter"),
+					bind.Text("signals.counter"),
 				),
 			),
 		),

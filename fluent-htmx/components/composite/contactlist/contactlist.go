@@ -5,8 +5,8 @@ package contactlist
 import (
 	"fmt"
 
-	htmx "github.com/jpl-au/fluent-htmx"
-	"github.com/jpl-au/fluent-htmx/swap"
+	htmx "github.com/jpl-au/fluent-htmx/htmx2"
+	"github.com/jpl-au/fluent-htmx/htmx2/swap"
 	"github.com/jpl-au/fluent/html5/a"
 	"github.com/jpl-au/fluent/html5/div"
 	"github.com/jpl-au/fluent/html5/span"

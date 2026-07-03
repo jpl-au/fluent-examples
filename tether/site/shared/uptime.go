@@ -11,7 +11,7 @@ import (
 // incrementing counter as a signal every second. The counter is
 // delivered exclusively via sess.Signal - no sess.Update call, no
 // render-diff cycle. The bound element on the live page updates
-// directly through bind.BindText.
+// directly through bind.Text.
 //
 // The goroutine is tied to the session lifetime via sess.Go and
 // stops automatically when the session is destroyed.

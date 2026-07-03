@@ -18,28 +18,28 @@ import (
 func RenderSSE(s State) node.Node {
 	return page.New(
 		panel.Card(
-			"BindText",
+			"Text",
 			"Click the button to increment a server-side counter. The server pushes the new value as a signal over the SSE connection, and the client updates the text without re-rendering the page. Identical to the WebSocket version - only the transport differs.",
-			"bind.BindText", panel.WS|panel.SSE,
+			"bind.Text", panel.WS|panel.SSE,
 			layout.Row(
 				button.PrimaryAction("Increment Server Counter", "signals.increment"),
 				bind.Apply(span.Text(strconv.Itoa(s.Counter)),
-					bind.BindText("signals.counter"),
+					bind.Text("signals.counter"),
 				),
 			),
 		),
 
 		panel.Card(
-			"BindShow / BindHide",
+			"Show / Hide",
 			"Click Toggle Visibility - the server pushes a boolean signal via SSE that shows or hides elements instantly on the client. No page re-render happens; the client toggles CSS display directly.",
-			"bind.BindShow · bind.BindHide", panel.WS|panel.SSE,
+			"bind.Show · bind.Hide", panel.WS|panel.SSE,
 			layout.Stack(
 				button.PrimaryAction("Toggle Visibility", "signals.toggle-panel"),
 				bind.Apply(layout.Container(
 					panel.SignalText("This panel is visible when the signal is true."),
-				), bind.BindShow("signals.panel_visible")),
+				), bind.Show("signals.panel_visible")),
 				bind.Apply(span.Text("The panel is hidden."),
-					bind.BindHide("signals.panel_visible"),
+					bind.Hide("signals.panel_visible"),
 				),
 			),
 		),
@@ -52,17 +52,17 @@ func RenderSSE(s State) node.Node {
 				button.Primary("Set to Red", bind.SetSignal("signals.colour", "red")),
 				button.Primary("Set to Blue", bind.SetSignal("signals.colour", "blue")),
 				button.Primary("Set to Green", bind.SetSignal("signals.colour", "green")),
-				bind.Apply(span.Text("none").Dynamic("colour-display"), bind.BindText("signals.colour")),
+				bind.Apply(span.Text("none").Dynamic("colour-display"), bind.Text("signals.colour")),
 			),
 		),
 
 		panel.Card(
 			"ToggleSignal (Client-Side)",
-			"Click the button to flip a boolean signal on the client. Combined with BindShow, the panel appears and disappears with no server round-trip.",
-			"bind.ToggleSignal · bind.BindShow", panel.AllTransports,
+			"Click the button to flip a boolean signal on the client. Combined with Show, the panel appears and disappears with no server round-trip.",
+			"bind.ToggleSignal · bind.Show", panel.AllTransports,
 			layout.Stack(
 				button.Primary("Toggle Panel", bind.ToggleSignal("signals.toggle_demo")),
-				bind.Apply(panel.SignalText("Toggled on!"), bind.BindShow("signals.toggle_demo")),
+				bind.Apply(panel.SignalText("Toggled on!"), bind.Show("signals.toggle_demo")),
 			),
 		),
 
@@ -74,7 +74,7 @@ func RenderSSE(s State) node.Node {
 				button.PrimaryAction("Like", "signals.like",
 					bind.Optimistic("signals.liked", "true"),
 				),
-				bind.Apply(span.Text("Liked!"), bind.BindShow("signals.liked")),
+				bind.Apply(span.Text("Liked!"), bind.Show("signals.liked")),
 			),
 		),
 	)

@@ -209,7 +209,7 @@ func header(section Section, currentPage string, onlineCount int) node.Node {
 			div.New(
 				bind.Apply(
 					badge.Green(fmt.Sprintf("%d online", onlineCount)),
-					bind.BindText("online_count"),
+					bind.Text("online_count"),
 				),
 			).Class("header-actions"),
 		).Class("header").Dynamic("header")

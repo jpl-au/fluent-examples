@@ -4,13 +4,13 @@ package signals
 type State struct {
 	// OnlineCount tracks connected sessions for the header badge.
 	OnlineCount int
-	// Counter is incremented by the BindText demo button.
+	// Counter is incremented by the Text demo button.
 	Counter int
-	// PanelVisible controls the BindShow/BindHide demo panel.
+	// PanelVisible controls the Show/Hide demo panel.
 	PanelVisible bool
 	// TransitionVisible controls the CSS transition demo panel.
 	TransitionVisible bool
-	// Locked tracks whether the BindAttr demo input is disabled.
+	// Locked tracks whether the Attr demo input is disabled.
 	Locked bool
 	// Favourited tracks the OptimisticToggle demo state.
 	Favourited bool

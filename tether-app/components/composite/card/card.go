@@ -6,7 +6,7 @@
 // Presence indicators (typing and viewing) use Signals rather than
 // server-rendered HTML. The handler pushes signal values like
 // "typing-{id}" and "viewing-{id}" directly to the client, and
-// bind.BindText updates the text in place with no render cycle.
+// bind.Text updates the text in place with no render cycle.
 // This is the right tool for high-frequency, text-only updates
 // where the DOM structure never changes - only the content.
 package card
@@ -74,17 +74,17 @@ func desc(s string) node.Node {
 // presence renders signal-bound typing and viewing indicators.
 // The server pushes text values via sess.Signal("typing-{id}", ...)
 // and the client updates these elements directly - no render/diff
-// cycle needed. BindShow hides the element when the signal value
+// cycle needed. Show hides the element when the signal value
 // is empty, so the presence section collapses automatically.
 func presence(cardID string) node.Node {
 	return div.New(
 		bind.Apply(span.New().Class("card-typing"),
-			bind.BindText("typing-"+cardID),
-			bind.BindShow("typing-"+cardID),
+			bind.Text("typing-"+cardID),
+			bind.Show("typing-"+cardID),
 		),
 		bind.Apply(span.New().Class("card-viewing"),
-			bind.BindText("viewing-"+cardID),
-			bind.BindShow("viewing-"+cardID),
+			bind.Text("viewing-"+cardID),
+			bind.Show("viewing-"+cardID),
 		),
 	).Class("card-presence")
 }

@@ -49,7 +49,7 @@ func TestSignalsSSEIncrement(t *testing.T) {
 		t.Fatalf("click: %v", err)
 	}
 
-	// The counter is updated via BindText signal - look for the text
+	// The counter is updated via Text signal - look for the text
 	// content changing rather than a specific Dynamic key.
 	counter := page.Locator("[data-tether-bind-text='signals.counter']")
 	if err := expect(counter).ToContainText("2"); err != nil {

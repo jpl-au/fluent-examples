@@ -51,7 +51,7 @@ application.
 | Demo | Package | What it shows |
 |------|---------|---------------|
 | Live Updates | `site/live` | Uptime ticker via `sess.Go`, activity feeds via `Bus`, online count via `Value`, Group operations, `SetTitle`, `State()`, `Close()` |
-| Signals | `site/signals` | Every signal binding: `BindText`, `BindShow`, `BindHide`, `BindClass`, `BindAttr`, `BindValue`, `SetSignal`, `ToggleSignal`, `Optimistic`, `OptimisticToggle`, `Cloak`, `Permanent`, `Hook`, `Transition`, `FocusTrap` |
+| Signals | `site/signals` | Every signal binding: `Text`, `Show`, `Hide`, `Class`, `Attr`, `Value`, `SetSignal`, `ToggleSignal`, `Optimistic`, `OptimisticToggle`, `Cloak`, `Permanent`, `Hook`, `Transition`, `FocusTrap` |
 | Chat | `site/chat` | Real-time cross-session chat using `tether.Component`, `Mounter`, `Bus`, and `WatchBus` |
 | Broadcasting | `site/broadcasting` | `Bus.Emit`, `Bus.Publish`, shared counter with `tether.Value`, `WatchBus`, `WatchValue`, async subscribers |
 | Groups | `site/groups` | Room membership with `Group.Add`/`Remove`, `Broadcast`, `BroadcastOthers`, `OnJoin`/`OnLeave` callbacks |

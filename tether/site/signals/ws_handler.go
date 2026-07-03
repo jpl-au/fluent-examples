@@ -49,7 +49,7 @@ func NewWS(app tether.App, assets *tether.Asset) *tether.Handler[State] {
 		OnConnect: func(sess *tether.StatefulSession[State]) {
 			slog.Info("signals-ws: connected", "id", sess.ID())
 			shared.TrackPresence(wsPresence, sess.ID())
-			// Push initial signal values so BindShow/BindHide
+			// Push initial signal values so Show/Hide
 			// elements display correctly before any user interaction.
 			sess.Signals(map[string]any{
 				"signals.counter":       0,

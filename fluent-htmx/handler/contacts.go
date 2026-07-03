@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"net/http"
 
-	htmx "github.com/jpl-au/fluent-htmx"
+	htmx "github.com/jpl-au/fluent-htmx/htmx2"
 	"github.com/jpl-au/fluent/html5/div"
 	"github.com/jpl-au/fluent/html5/form"
 	"github.com/jpl-au/fluent/html5/span"

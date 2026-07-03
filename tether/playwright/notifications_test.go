@@ -151,7 +151,7 @@ func TestNotificationsAnnounce(t *testing.T) {
 	}
 
 	// The handler sends a signal that echoes the announcement text
-	// visually via bind.BindText and bind.BindShow.
+	// visually via bind.Text and bind.Show.
 	echo := page.Locator("[data-tether-bind-text='notify.announced']")
 	if err := expect(echo).ToContainText("Screen readers heard"); err != nil {
 		t.Errorf("announce echo not visible: %v", err)
@@ -233,7 +233,7 @@ func TestNotificationsFlashCompare(t *testing.T) {
 
 // TestNotificationsSignalFlash clicks the Signal button in the
 // comparison panel and verifies the "Saved!" text appears via
-// bind.BindShow.
+// bind.Show.
 func TestNotificationsSignalFlash(t *testing.T) {
 	srv := startApp(t, serverMode())
 	page, cleanup := newPage(t)
@@ -252,7 +252,7 @@ func TestNotificationsSignalFlash(t *testing.T) {
 		t.Fatalf("click: %v", err)
 	}
 
-	// The "Saved!" text should become visible via bind.BindShow.
+	// The "Saved!" text should become visible via bind.Show.
 	saved := page.Locator("[data-tether-bind-show='notify.saved']")
 	if err := expect(saved).ToBeVisible(); err != nil {
 		t.Errorf("signal saved text should be visible: %v", err)

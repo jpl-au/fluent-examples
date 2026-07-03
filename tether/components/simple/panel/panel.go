@@ -51,7 +51,7 @@ func SignalFocusTrap(children ...node.Node) *div.Element {
 	return div.New(children...).Class("signal-panel focus-trap-demo")
 }
 
-// ToggleDemo renders a panel for CSS class toggling via bind.BindClass.
+// ToggleDemo renders a panel for CSS class toggling via bind.Class.
 func ToggleDemo(children ...node.Node) *div.Element {
 	return div.New(children...).Class("toggle-demo")
 }

@@ -55,8 +55,8 @@ func TestRender(t *testing.T) {
 	})
 
 	html := h.Render()
-	if !strings.Contains(html, "BindText") {
-		t.Fatal("Render should contain the BindText demo section")
+	if !strings.Contains(html, "Text") {
+		t.Fatal("Render should contain the Text demo section")
 	}
 }
 

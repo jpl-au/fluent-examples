@@ -27,7 +27,7 @@ import (
 // board use security.PlainText directly and do not need the cleaner.
 //
 // Presence indicators are signal-bound (not rendered here) and the
-// online count badge uses bind.BindText - see layout.Shell.
+// online count badge uses bind.Text - see layout.Shell.
 //
 // The board view is wrapped in node.Memoise keyed on BoardVersion.
 // When BoardVersion hasn't changed (e.g. navigation between views),

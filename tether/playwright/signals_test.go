@@ -47,7 +47,7 @@ func TestSignalsIncrement(t *testing.T) {
 	}
 
 	// After clicking, the server pushes the new count as a signal
-	// and the client updates the text via BindText.
+	// and the client updates the text via Text.
 	counter := page.Locator(".demo:first-child [data-tether-bind-text='signals.counter']")
 	if err := expect(counter).ToHaveText("2"); err != nil {
 		text, _ := counter.TextContent()
@@ -56,7 +56,7 @@ func TestSignalsIncrement(t *testing.T) {
 }
 
 // TestSignalsTogglePanel clicks the toggle button and verifies the
-// panel appears via BindShow.
+// panel appears via Show.
 func TestSignalsTogglePanel(t *testing.T) {
 	srv := startApp(t, serverMode())
 	page, cleanup := newPage(t)
@@ -87,7 +87,7 @@ func TestSignalsTogglePanel(t *testing.T) {
 }
 
 // TestSignalsToggleLock clicks the lock button and verifies the
-// input becomes disabled via BindAttr.
+// input becomes disabled via Attr.
 func TestSignalsToggleLock(t *testing.T) {
 	srv := startApp(t, serverMode())
 	page, cleanup := newPage(t)
@@ -106,7 +106,7 @@ func TestSignalsToggleLock(t *testing.T) {
 		t.Fatalf("click: %v", err)
 	}
 
-	// The input should become disabled. BindAttr renders as a single
+	// The input should become disabled. Attr renders as a single
 	// attribute: data-tether-bind-attr="disabled signals.input_locked".
 	input := page.Locator("[data-tether-bind-attr='disabled signals.input_locked']")
 	if err := expect(input).ToBeDisabled(); err != nil {
@@ -133,7 +133,7 @@ func TestSignalsSetSignalClientSide(t *testing.T) {
 		t.Fatalf("click: %v", err)
 	}
 
-	// The colour display span is bound via BindText to the
+	// The colour display span is bound via Text to the
 	// signals.colour signal.
 	display := page.Locator("[data-tether-key='colour-display']")
 	if err := expect(display).ToHaveText("blue"); err != nil {
@@ -143,7 +143,7 @@ func TestSignalsSetSignalClientSide(t *testing.T) {
 }
 
 // TestSignalsPrefillValue clicks the prefill button and verifies the
-// input value is set via BindValue from a server-pushed signal.
+// input value is set via Value from a server-pushed signal.
 func TestSignalsPrefillValue(t *testing.T) {
 	srv := startApp(t, serverMode())
 	page, cleanup := newPage(t)
@@ -161,7 +161,7 @@ func TestSignalsPrefillValue(t *testing.T) {
 		t.Fatalf("click: %v", err)
 	}
 
-	// The input is bound via BindValue to signals.prefill_value.
+	// The input is bound via Value to signals.prefill_value.
 	// The server pushes "hello@example.com".
 	input := page.Locator("[data-tether-bind-value='signals.prefill_value']")
 	if err := expect(input).ToHaveValue("hello@example.com"); err != nil {
@@ -171,7 +171,7 @@ func TestSignalsPrefillValue(t *testing.T) {
 
 // TestSignalsFavouriteToggle clicks the favourite button twice and
 // verifies the text toggles between "Favourited!" and "Not favourited"
-// via OptimisticToggle and BindShow/BindHide.
+// via OptimisticToggle and Show/Hide.
 func TestSignalsFavouriteToggle(t *testing.T) {
 	srv := startApp(t, serverMode())
 	page, cleanup := newPage(t)
@@ -259,7 +259,7 @@ func TestSignalsResetAll(t *testing.T) {
 }
 
 // TestSignalsCloak verifies that a cloaked element becomes visible
-// after the tether JS initialises and the BindText signal populates
+// after the tether JS initialises and the Text signal populates
 // it. The cloak attribute hides the element during SSR to prevent a
 // flash of stale placeholder content.
 func TestSignalsCloak(t *testing.T) {

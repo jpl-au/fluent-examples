@@ -38,10 +38,10 @@ func OverviewRender(_ state.State) node.Node {
 		panel.Card(
 			"Signals & Directives",
 			"Client-side reactivity powered by server-pushed signals. Elements bind to signal values and update instantly without a full re-render.",
-			"bind.BindText · bind.BindShow · bind.SetSignal", panel.AllTransports,
+			"bind.Text · bind.Show · bind.SetSignal", panel.AllTransports,
 			toc.List(
-				toc.Item(toc.Link("/signals/ws/", "WebSocket"), "BindText, BindShow, SetSignal, ToggleClass, Optimistic, Hook, Transition, FocusTrap, Cloak, Permanent"),
-				toc.Item(toc.Link("/signals/sse/", "SSE"), "BindText, BindShow, SetSignal, ToggleClass, Optimistic"),
+				toc.Item(toc.Link("/signals/ws/", "WebSocket"), "Text, Show, SetSignal, ToggleClass, Optimistic, Hook, Transition, FocusTrap, Cloak, Permanent"),
+				toc.Item(toc.Link("/signals/sse/", "SSE"), "Text, Show, SetSignal, ToggleClass, Optimistic"),
 			),
 		),
 

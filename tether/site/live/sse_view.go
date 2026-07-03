@@ -25,7 +25,7 @@ func RenderSSE(s State) node.Node {
 			"Watch the counter increment every second. A background goroutine started with sess.Go ticks on the server and pushes the new value as a signal over the SSE connection.",
 			"sess.Go · sess.Signal", panel.WS|panel.SSE,
 			layout.Row(
-				bind.Apply(span.Text("0"), bind.BindText("live.uptime")),
+				bind.Apply(span.Text("0"), bind.Text("live.uptime")),
 				hint.Span(" seconds since connect"),
 			),
 		),
@@ -42,7 +42,7 @@ func RenderSSE(s State) node.Node {
 			"This badge shows how many sessions are connected right now. Open or close tabs to see it change. The count is a shared tether.Value that pushes updates as signals via SSE whenever it changes.",
 			"tether.NewValue · tether.WatchValue", panel.WS|panel.SSE,
 			layout.Stack(
-				bind.Apply(badge.GreenDynamic("online-count-live", fmt.Sprintf("%d online", s.OnlineCount)), bind.BindText("online_count")),
+				bind.Apply(badge.GreenDynamic("online-count-live", fmt.Sprintf("%d online", s.OnlineCount)), bind.Text("online_count")),
 				hint.Text("Same as the header badge - both bound to the online_count signal."),
 			),
 		),

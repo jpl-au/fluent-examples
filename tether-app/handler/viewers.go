@@ -74,7 +74,7 @@ func (v *viewers) TypingOnCard(cardID, exclude string) []string {
 // Uses Group.Each instead of Broadcast because only signal values
 // change - the DOM structure is unchanged, so a render cycle would
 // be wasted work. Signals push the value directly to the client's
-// signal store, and bind.BindText updates the element in place.
+// signal store, and bind.Text updates the element in place.
 func pushPresenceSignals(group *tether.Group[State], v *viewers, cardID string) {
 	group.Each(func(sess *tether.StatefulSession[State]) {
 		typing := v.TypingOnCard(cardID, sess.ID())

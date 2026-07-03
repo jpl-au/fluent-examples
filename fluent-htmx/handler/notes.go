@@ -3,7 +3,7 @@ package handler
 import (
 	"net/http"
 
-	htmx "github.com/jpl-au/fluent-htmx"
+	htmx "github.com/jpl-au/fluent-htmx/htmx2"
 
 	"github.com/jpl-au/fluent-examples/fluent-htmx/components/simple/button"
 	"github.com/jpl-au/fluent-examples/fluent-htmx/layout"

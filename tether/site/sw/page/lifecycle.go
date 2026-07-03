@@ -23,8 +23,8 @@ func LifecycleRender(s state.State) node.Node {
 			"When the browser detects a network change, the client sends an online or offline event automatically - no bind helper needed. Try toggling your network in DevTools to see the status update. Note: when truly offline the WebSocket drops, so the offline event queues until the connection restores; the server learns about the offline period from the reconnection sequence.",
 			"event.Online · event.Offline", panel.WS|panel.SSE,
 			layout.Container(
-				bind.Apply(panel.SignalSuccess("Online - connected to server"), bind.BindShow("sw.online")),
-				bind.Apply(panel.SignalMuted("Offline - waiting for reconnection"), bind.BindHide("sw.online")),
+				bind.Apply(panel.SignalSuccess("Online - connected to server"), bind.Show("sw.online")),
+				bind.Apply(panel.SignalMuted("Offline - waiting for reconnection"), bind.Hide("sw.online")),
 			),
 		),
 

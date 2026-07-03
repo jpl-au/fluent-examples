@@ -51,8 +51,8 @@ func Render(_ State) node.Node {
 				button.PrimaryAction("Announce", "notify.announce"),
 				bind.Apply(
 					p.Text(""),
-					bind.BindText("notify.announced"),
-					bind.BindShow("notify.announced"),
+					bind.Text("notify.announced"),
+					bind.Show("notify.announced"),
 				),
 			),
 		),
@@ -61,9 +61,9 @@ func Render(_ State) node.Node {
 			"Flash vs Signal",
 			"Two ways to show temporary inline feedback, side by side. "+
 				"The left button uses sess.Flash - a one-liner that targets a DOM element by CSS selector and auto-reverts. "+
-				"The right button uses sess.Signal with bind.BindShow - no selector, fully decoupled, and the server clears the signal after the same delay. "+
+				"The right button uses sess.Signal with bind.Show - no selector, fully decoupled, and the server clears the signal after the same delay. "+
 				"Flash is faster to wire up; signals are better for reusable components where the server shouldn't know about DOM IDs.",
-			"sess.Flash · sess.Signal · bind.BindShow", panel.WS|panel.SSE,
+			"sess.Flash · sess.Signal · bind.Show", panel.WS|panel.SSE,
 			columns.New(
 				layout.Stack(
 					result.Label("Selector approach (sess.Flash)"),
@@ -74,10 +74,10 @@ func Render(_ State) node.Node {
 					result.Label("Signal approach (sess.Signal)"),
 					button.PrimaryAction("Signal", "notify.signal-flash"),
 					bind.Apply(p.Text("Saved!"),
-						bind.BindShow("notify.saved"),
+						bind.Show("notify.saved"),
 					),
 					bind.Apply(p.Text("Waiting for signal..."),
-						bind.BindHide("notify.saved"),
+						bind.Hide("notify.saved"),
 					),
 				),
 			),
@@ -89,7 +89,7 @@ func Render(_ State) node.Node {
 				"The left button uses bind.Indicator - it targets a spinner element by CSS selector and toggles it automatically while the request is in flight. "+
 				"The right button uses bind.Optimistic to flip a signal immediately (showing the spinner), then the server clears it when done. "+
 				"Indicator is simpler; signals avoid selector coupling.",
-			"bind.Indicator · bind.Optimistic · bind.BindShow", panel.AllTransports,
+			"bind.Indicator · bind.Optimistic · bind.Show", panel.AllTransports,
 			columns.New(
 				layout.Stack(
 					result.Label("Selector approach (bind.Indicator)"),
@@ -103,7 +103,7 @@ func Render(_ State) node.Node {
 					button.PrimaryAction("Load", "notify.signal-indicator",
 						bind.Optimistic("notify.loading", "true"),
 					),
-					bind.Apply(spinner.New(), bind.BindShow("notify.loading")),
+					bind.Apply(spinner.New(), bind.Show("notify.loading")),
 				),
 			),
 		),

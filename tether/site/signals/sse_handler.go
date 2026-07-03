@@ -20,7 +20,7 @@ import (
 var ssePresence = shared.NewPresenceCountOnly()
 
 // NewSSE creates an SSE handler demonstrating a subset of signal
-// bindings over Server-Sent Events: BindText, BindShow/BindHide,
+// bindings over Server-Sent Events: Text, Show/Hide,
 // SetSignal, ToggleSignal, and Optimistic.
 func NewSSE(app tether.App, assets *tether.Asset) *tether.Handler[State] {
 	return tether.Stateful(app, tether.StatefulConfig[State]{

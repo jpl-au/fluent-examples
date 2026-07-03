@@ -32,7 +32,7 @@ func PushRender(_ state.State) node.Node {
 			"Once subscribed, click to send a push notification from the server. The notification appears even if this tab is in the background or closed. The server uses VAPID keys generated on startup for authentication.",
 			"sess.Push · push.Notification", panel.WS|panel.SSE,
 			button.PrimaryAction("Send Test Push", "push.send",
-				bind.BindShow("push.available"),
+				bind.Show("push.available"),
 			),
 		),
 
@@ -41,7 +41,7 @@ func PushRender(_ state.State) node.Node {
 			"Push notifications support a title, body, icon, badge, URL, tag for grouping, and up to two action buttons. Click to send a notification with action buttons that navigate to specific pages.",
 			"push.NotificationAction", panel.WS|panel.SSE,
 			button.PrimaryAction("Send Rich Push", "push.rich",
-				bind.BindShow("push.available"),
+				bind.Show("push.available"),
 			),
 		),
 	)
@@ -57,11 +57,11 @@ func pushSubscribeSection() node.Node {
 			layout.Row(
 				button.Primary("Enable Push Notifications", bind.PushSubscribe()),
 			),
-			bind.BindShow("push.available"),
+			bind.Show("push.available"),
 		),
 		bind.Apply(
 			hint.Text("Push notifications are unavailable (VAPID key generation failed)."),
-			bind.BindShow("push.unavailable"),
+			bind.Show("push.unavailable"),
 		),
 	)
 }
