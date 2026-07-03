@@ -10,10 +10,7 @@ import (
 
 // New creates a card with an optional title and child content.
 func New(title string, children ...node.Node) node.Node {
-	nodes := make([]node.Node, 0, len(children)+1)
-	if title != "" {
-		nodes = append(nodes, h2.Text(title).Class("card-title"))
-	}
-	nodes = append(nodes, children...)
-	return div.New(nodes...).Class("card")
+	return div.New(
+		node.When(title != "", h2.Text(title).Class("card-title")),
+	).Add(children...).Class("card")
 }

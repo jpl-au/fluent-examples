@@ -19,14 +19,11 @@ func List(items ...node.Node) node.Node {
 // Item renders a single diagnostic reference card with kind label,
 // description, and an optional trigger element (button, link, or text).
 func Item(kind, desc string, trigger node.Node) node.Node {
-	children := []node.Node{
+	return div.New(
 		span.Text(kind).Class("diag-kind"),
 		p.Text(desc).Class("diag-desc"),
-	}
-	if trigger != nil {
-		children = append(children, trigger)
-	}
-	return div.New(children...).Class("diag-item")
+		node.When(trigger != nil, trigger),
+	).Class("diag-item")
 }
 
 // Trigger renders plain-text instructions for triggering a diagnostic.

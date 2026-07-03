@@ -81,9 +81,8 @@ var fixtures = []fixture{
 // <pre><code> for the raw source shows what was typed without
 // rendering it; the sanitised column is live HTML.
 func cleanRows() node.Node {
-	rows := make([]node.Node, 0, len(fixtures))
-	for _, f := range fixtures {
-		rows = append(rows, div.New(
+	return div.New(node.Map(fixtures, func(f fixture) node.Node {
+		return div.New(
 			span.Text(f.Title).Class("demo-row-title"),
 			div.New(
 				span.Text("Raw input").Class("demo-col-label"),
@@ -94,9 +93,8 @@ func cleanRows() node.Node {
 				div.New(fsec.HTML(f.Raw)).Class("demo-rendered"),
 			).Class("demo-col"),
 			p.Text(f.Note).Class("demo-row-note"),
-		).Class("demo-row"))
-	}
-	return div.New(rows...).Class("demo-grid")
+		).Class("demo-row")
+	})).Class("demo-grid")
 }
 
 // nonceSection quotes the per-request nonce so the user can see the

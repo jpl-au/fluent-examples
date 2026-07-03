@@ -101,34 +101,28 @@ func landing() node.Node {
 // without re-rendering.
 func boardColumns(b *store.Board) node.Node {
 	empty := true
-	var cols []node.Node
 	for _, col := range store.Columns() {
-		cards := b.Cards(col)
-		if len(cards) > 0 {
+		if len(b.Cards(col)) > 0 {
 			empty = false
+			break
 		}
-		var cardNodes []node.Node
-		for _, c := range cards {
-			cardNodes = append(cardNodes, ccard.New(c))
-		}
-		cols = append(cols, columnView(col, cardNodes))
 	}
 	if empty {
 		return div.New(
 			p.Text("No cards yet. Click Add Card to get started.").Class("empty-board"),
 		).Class("empty-state")
 	}
-	return board.Columns(cols...)
+	return board.Columns(node.Map(store.Columns(), func(col store.Column) node.Node {
+		return columnView(col, b.Cards(col))
+	}))
 }
 
 // columnView wraps a column component as a sortable drop zone.
-func columnView(col store.Column, cards []node.Node) node.Node {
-	var content node.Node
-	if len(cards) == 0 {
-		content = column.New(col.String(), 0, column.Empty())
-	} else {
-		content = column.New(col.String(), len(cards), cards...)
-	}
+func columnView(col store.Column, cards []store.Card) node.Node {
+	content := column.New(col.String(), len(cards),
+		node.When(len(cards) == 0, column.Empty()),
+		node.Map(cards, ccard.New),
+	)
 
 	return bind.Apply(
 		div.New(content).Class("drop-zone"),

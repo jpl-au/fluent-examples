@@ -14,17 +14,14 @@ import (
 // Card renders a content panel with a title, API label badge,
 // transport compatibility badges, optional description, and content.
 func Card(title, description, api string, transport Transport, children ...node.Node) node.Node {
-	nodes := []node.Node{
+	return div.New(
 		div.New(
 			h3.Text(title).Class("demo-title"),
 			badges(api, transport),
 		).Class("demo-header"),
-	}
-	if description != "" {
-		nodes = append(nodes, p.Text(description).Class("demo-description"))
-	}
-	nodes = append(nodes, div.New(children...).Class("demo-content"))
-	return div.New(nodes...).Class("demo")
+		node.When(description != "", p.Text(description).Class("demo-description")),
+		div.New(children...).Class("demo-content"),
+	).Class("demo")
 }
 
 // Signal renders a bordered panel for signal content. Returns the

@@ -14,14 +14,11 @@ import (
 // State renders a centred empty-state block with a title, message,
 // and an optional link back to a parent page.
 func State(title, message string, link node.Node) node.Node {
-	children := []node.Node{
+	return div.New(
 		h2.Text(title).Class("empty-title"),
 		p.Text(message).Class("empty-text"),
-	}
-	if link != nil {
-		children = append(children, link)
-	}
-	return div.New(children...).Class("empty-state")
+		node.When(link != nil, link),
+	).Class("empty-state")
 }
 
 // Link creates a plain anchor for the empty-state back link.
