@@ -108,7 +108,7 @@ func SSEFeed(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 	for {
 		entry := generate.LogEntry()
-		html := logentry.New(entry).Render()
+		html := logentry.New(entry).RenderBytes()
 
 		// SSE data frame format: "data: <payload>\n\n"
 		// The default event name is "message" which matches the

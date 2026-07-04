@@ -63,7 +63,7 @@ func desc(s string) node.Node {
 	if s == "" {
 		return nil
 	}
-	plain := string(security.PlainText(s).Render())
+	plain := string(security.PlainText(s).RenderBytes())
 	runes := []rune(plain)
 	if len(runes) > 80 {
 		plain = string(runes[:77]) + "..."

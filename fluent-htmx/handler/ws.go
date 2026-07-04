@@ -92,7 +92,7 @@ func WSFeed(w http.ResponseWriter, r *http.Request) {
 	// the existing status element by ID.
 	status := span.Text("connected").Class("status-connected").ID("ws-status")
 	status.SetAttribute("hx-swap-oob", "true")
-	if err := conn.WriteMessage(gws.OpcodeText, status.Render()); err != nil {
+	if err := conn.WriteMessage(gws.OpcodeText, status.RenderBytes()); err != nil {
 		slog.Info("ws: client disconnected on status", "remote", r.RemoteAddr)
 		return
 	}
@@ -106,7 +106,7 @@ func WSFeed(w http.ResponseWriter, r *http.Request) {
 		wrapper := div.New(logentry.New(entry)).ID("ws-log")
 		wrapper.SetAttribute("hx-swap-oob", "afterbegin")
 
-		if err := conn.WriteMessage(gws.OpcodeText, wrapper.Render()); err != nil {
+		if err := conn.WriteMessage(gws.OpcodeText, wrapper.RenderBytes()); err != nil {
 			slog.Info("ws: client disconnected", "remote", r.RemoteAddr)
 			return
 		}

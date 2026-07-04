@@ -73,9 +73,9 @@ func TestRenderNode(t *testing.T) {
 		t.Fatal("RenderNode should not return nil")
 	}
 	// Render the node to HTML to verify it produces output.
-	html := string(n.Render())
+	html := string(n.RenderBytes())
 	if html == "" {
-		t.Fatal("node.Render() should produce non-empty HTML")
+		t.Fatal("node RenderBytes should produce non-empty HTML")
 	}
 }
 
