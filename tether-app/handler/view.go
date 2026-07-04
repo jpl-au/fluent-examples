@@ -3,6 +3,7 @@ package handler
 import (
 	"strconv"
 
+	jit "github.com/jpl-au/fluent-jit"
 	security "github.com/jpl-au/fluent-security"
 	"github.com/jpl-au/fluent/html5/div"
 	"github.com/jpl-au/fluent/html5/h1"
@@ -69,7 +70,7 @@ func Render(b *store.Board, cleaner *security.Cleaner) func(State) node.Node {
 // renders, no card renders, no HTML generated.
 func memoiseBoard(b *store.Board, boardVersion int) node.Node {
 	return div.New(
-		node.Memoise(boardVersion, func() node.Node {
+		jit.Memoise(boardVersion, func() node.Node {
 			return boardColumns(b)
 		}),
 	).Dynamic("board")

@@ -71,7 +71,7 @@ func TestUploadsFileUpload(t *testing.T) {
 	}
 
 	// The filename should appear in the uploaded files list.
-	list := page.Locator("[data-tether-key='uploads']")
+	list := page.Locator("[data-fluent-key='uploads']")
 	if err := expect(list).ToContainText("test-upload.txt"); err != nil {
 		t.Errorf("uploaded file not in list: %v", err)
 	}
@@ -112,7 +112,7 @@ func TestUploadsDownload(t *testing.T) {
 	}
 
 	// Wait for the file to appear in the list.
-	list := page.Locator("[data-tether-key='uploads']")
+	list := page.Locator("[data-fluent-key='uploads']")
 	if err := expect(list).ToContainText("test-download.txt"); err != nil {
 		t.Fatalf("uploaded file not in list: %v", err)
 	}

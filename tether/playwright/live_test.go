@@ -71,7 +71,7 @@ func TestLiveSSEBroadcast(t *testing.T) {
 		t.Fatalf("click: %v", err)
 	}
 
-	result := page.Locator("[data-tether-key='broadcast']")
+	result := page.Locator("[data-fluent-key='broadcast']")
 	if err := expect(result).ToContainText("Last: broadcast at"); err != nil {
 		t.Errorf("SSE broadcast message not visible: %v", err)
 	}
@@ -97,7 +97,7 @@ func TestLiveWSBroadcast(t *testing.T) {
 	}
 
 	// The broadcast result shows "Last: broadcast at HH:MM:SS".
-	result := page.Locator("[data-tether-key='broadcast']")
+	result := page.Locator("[data-fluent-key='broadcast']")
 	if err := expect(result).ToContainText("Last: broadcast at"); err != nil {
 		t.Errorf("broadcast message not visible: %v", err)
 	}

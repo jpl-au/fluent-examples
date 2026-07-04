@@ -27,7 +27,7 @@ func TestWindowingPageRenders(t *testing.T) {
 	}
 
 	// Position indicator should show the initial range.
-	position := page.Locator("[data-tether-key='position']")
+	position := page.Locator("[data-fluent-key='position']")
 	if err := expect(position).ToContainText("Showing rows 1"); err != nil {
 		t.Fatalf("position indicator missing: %v", err)
 	}
@@ -88,7 +88,7 @@ func TestWindowingURLPagination(t *testing.T) {
 	}
 
 	// Position indicator should reflect page 5.
-	position := page.Locator("[data-tether-key='position']")
+	position := page.Locator("[data-fluent-key='position']")
 	if err := expect(position).ToContainText("Showing rows 121"); err != nil {
 		t.Fatalf("position should show rows 121: %v", err)
 	}

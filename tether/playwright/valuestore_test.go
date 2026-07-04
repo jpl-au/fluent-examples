@@ -44,7 +44,7 @@ func TestValuestoreIncrement(t *testing.T) {
 	waitForConnected(t, page)
 
 	// Read the initial count before clicking.
-	count := page.Locator("[data-tether-key='update-count']")
+	count := page.Locator("[data-fluent-key='update-count']")
 	before := readCountText(t, count)
 
 	btn := page.Locator("[data-tether-click='value.increment']")
@@ -80,7 +80,7 @@ func TestValuestoreReset(t *testing.T) {
 	}
 
 	// Wait for the increment to register before resetting.
-	count := page.Locator("[data-tether-key='store-count']")
+	count := page.Locator("[data-fluent-key='store-count']")
 	before := readCountText(t, count)
 	if before == 0 {
 		// The watcher may not have propagated yet - wait briefly.
@@ -119,7 +119,7 @@ func TestValuestoreLocalIncrement(t *testing.T) {
 		t.Fatalf("click: %v", err)
 	}
 
-	local := page.Locator("[data-tether-key='local-count']")
+	local := page.Locator("[data-fluent-key='local-count']")
 	if err := expect(local).ToContainText("1"); err != nil {
 		text, _ := local.TextContent()
 		t.Errorf("local = %q, want to contain 1", text)

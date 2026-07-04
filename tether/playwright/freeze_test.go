@@ -46,7 +46,7 @@ func TestFreezeIncrement(t *testing.T) {
 		}
 	}
 
-	count := page.Locator("[data-tether-key='count']")
+	count := page.Locator("[data-fluent-key='count']")
 	if err := expect(count).ToHaveText("Count: 3"); err != nil {
 		text, _ := count.TextContent()
 		t.Errorf("count = %q, want %q", text, "Count: 3")
@@ -77,7 +77,7 @@ func TestFreezeStateSurvivesDisconnect(t *testing.T) {
 		}
 	}
 
-	count := page.Locator("[data-tether-key='count']")
+	count := page.Locator("[data-fluent-key='count']")
 	if err := expect(count).ToHaveText("Count: 5"); err != nil {
 		text, _ := count.TextContent()
 		t.Fatalf("count before disconnect = %q, want %q", text, "Count: 5")

@@ -42,7 +42,7 @@ func New(board *store.Board, assets *tether.Asset) *tether.Handler[State] {
 		Mode: mode.Both,
 
 		// Memoise enables subtree memoisation. Column renders are
-		// wrapped in node.Memoise(s.BoardVersion, ...) so they are
+		// wrapped in jit.Memoise(s.BoardVersion, ...) so they are
 		// skipped entirely when the board hasn't changed. See view.go.
 		Memoise: true,
 

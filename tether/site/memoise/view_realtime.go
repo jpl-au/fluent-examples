@@ -8,6 +8,7 @@ import (
 	"github.com/go-echarts/go-echarts/v2/charts"
 	"github.com/go-echarts/go-echarts/v2/opts"
 
+	jit "github.com/jpl-au/fluent-jit"
 	"github.com/jpl-au/fluent/html5/div"
 	"github.com/jpl-au/fluent/node"
 
@@ -44,17 +45,17 @@ func RenderRealtime(s RealtimeState) node.Node {
 			"sess.Go · sess.Patch · go-echarts", panel.WS|panel.SSE,
 			monitor.Charts(
 				div.New(
-					node.Memoise(s.CPUPercent.Version(), func() node.Node {
+					jit.Memoise(s.CPUPercent.Version(), func() node.Node {
 						return chartDiv("memoise-cpu", "CPU (%)", "#ee6666", toLineData(s.CPUPercent.Val))
 					}),
 				).Dynamic("chart-cpu"),
 				div.New(
-					node.Memoise(s.HeapMB.Version(), func() node.Node {
+					jit.Memoise(s.HeapMB.Version(), func() node.Node {
 						return chartDiv("memoise-heap", "Heap (MB)", "#5470c6", toLineData(s.HeapMB.Val))
 					}),
 				).Dynamic("chart-heap"),
 				div.New(
-					node.Memoise(s.Goroutines.Version(), func() node.Node {
+					jit.Memoise(s.Goroutines.Version(), func() node.Node {
 						return chartDiv("memoise-goroutines", "Goroutines", "#91cc75", intsToLineData(s.Goroutines.Val))
 					}),
 				).Dynamic("chart-goroutines"),

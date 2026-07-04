@@ -135,7 +135,7 @@ func TestSignalsSetSignalClientSide(t *testing.T) {
 
 	// The colour display span is bound via Text to the
 	// signals.colour signal.
-	display := page.Locator("[data-tether-key='colour-display']")
+	display := page.Locator("[data-fluent-key='colour-display']")
 	if err := expect(display).ToHaveText("blue"); err != nil {
 		text, _ := display.TextContent()
 		t.Errorf("colour display = %q, want %q", text, "blue")
@@ -274,7 +274,7 @@ func TestSignalsCloak(t *testing.T) {
 
 	// After JS initialises, the cloak is removed and the element
 	// becomes visible with the signal's current value.
-	cloaked := page.Locator("[data-tether-key='cloaked']")
+	cloaked := page.Locator("[data-fluent-key='cloaked']")
 	if err := expect(cloaked).ToBeVisible(); err != nil {
 		t.Errorf("cloaked element should be visible after JS init: %v", err)
 	}

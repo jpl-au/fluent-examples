@@ -49,7 +49,7 @@ func TestChatSendMessage(t *testing.T) {
 		t.Fatalf("click: %v", err)
 	}
 
-	feed := page.Locator("[data-tether-key='shout-feed']")
+	feed := page.Locator("[data-fluent-key='shout-feed']")
 	if err := expect(feed).ToContainText("hello chat"); err != nil {
 		t.Errorf("message not in feed: %v", err)
 	}
@@ -88,7 +88,7 @@ func TestChatCrossSession(t *testing.T) {
 		t.Fatalf("click: %v", err)
 	}
 
-	receiverFeed := receiver.Locator("[data-tether-key='shout-feed']")
+	receiverFeed := receiver.Locator("[data-fluent-key='shout-feed']")
 	if err := expect(receiverFeed).ToContainText("cross-session chat"); err != nil {
 		t.Errorf("message not received by other session: %v", err)
 	}

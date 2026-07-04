@@ -58,7 +58,7 @@ func TestDiagnosticsTriggerPanic(t *testing.T) {
 	}
 
 	// The diagnostic event feed should show a HandlerPanic entry.
-	feed := page.Locator("[data-tether-key='diagnostics']")
+	feed := page.Locator("[data-fluent-key='diagnostics']")
 	if err := expect(feed).ToContainText("handler_panic"); err != nil {
 		t.Errorf("diagnostic event not in feed: %v", err)
 	}
@@ -86,7 +86,7 @@ func TestDiagnosticsSessionSurvivesPanic(t *testing.T) {
 		t.Fatalf("click 1: %v", err)
 	}
 
-	feed := page.Locator("[data-tether-key='diagnostics']")
+	feed := page.Locator("[data-fluent-key='diagnostics']")
 	if err := expect(feed).ToContainText("handler_panic"); err != nil {
 		t.Fatalf("first panic event not in feed: %v", err)
 	}
@@ -131,7 +131,7 @@ func TestDiagnosticsEventShowsSessionID(t *testing.T) {
 
 	// The event feed renders session IDs truncated to 6 chars in the
 	// format: "handler_panic - detail (session XXXXXX)".
-	feed := page.Locator("[data-tether-key='diagnostics']")
+	feed := page.Locator("[data-fluent-key='diagnostics']")
 	if err := expect(feed).ToContainText("session"); err != nil {
 		t.Errorf("diagnostic event should include session ID: %v", err)
 	}

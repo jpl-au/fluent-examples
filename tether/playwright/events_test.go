@@ -77,7 +77,7 @@ func TestEventsFormSubmit(t *testing.T) {
 		t.Fatalf("submit: %v", err)
 	}
 
-	result := page.Locator("[data-tether-key='submit-result']")
+	result := page.Locator("[data-fluent-key='submit-result']")
 	if err := expect(result).ToContainText("Hello, Alice!"); err != nil {
 		text, _ := result.TextContent()
 		t.Errorf("result = %q, want to contain 'Hello, Alice!'", text)
@@ -102,7 +102,7 @@ func TestEventsFormSubmitEmpty(t *testing.T) {
 		t.Fatalf("submit: %v", err)
 	}
 
-	result := page.Locator("[data-tether-key='submit-result']")
+	result := page.Locator("[data-fluent-key='submit-result']")
 	if err := expect(result).ToContainText("Name is required"); err != nil {
 		text, _ := result.TextContent()
 		t.Errorf("result = %q, want to contain 'Name is required'", text)
@@ -126,7 +126,7 @@ func TestEventsChangeDropdown(t *testing.T) {
 		t.Fatalf("select: %v", err)
 	}
 
-	result := page.Locator("[data-tether-key='colour-result']")
+	result := page.Locator("[data-fluent-key='colour-result']")
 	if err := expect(result).ToContainText("red"); err != nil {
 		text, _ := result.TextContent()
 		t.Errorf("result = %q, want to contain 'red'", text)
@@ -153,7 +153,7 @@ func TestEventsKeydown(t *testing.T) {
 		t.Fatalf("press: %v", err)
 	}
 
-	result := page.Locator("[data-tether-key='key-result']")
+	result := page.Locator("[data-fluent-key='key-result']")
 	if err := expect(result).ToContainText("Enter"); err != nil {
 		text, _ := result.TextContent()
 		t.Errorf("result = %q, want to contain 'Enter'", text)

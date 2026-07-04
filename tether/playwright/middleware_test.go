@@ -75,7 +75,7 @@ func TestMiddlewareChainFullOrder(t *testing.T) {
 
 	// The chain log shows: "Outer → Inner → Inner ← Outer ←"
 	// Verify the Inner markers appear in the chain result.
-	chainResult := page.Locator("[data-tether-key='chain-result']")
+	chainResult := page.Locator("[data-fluent-key='chain-result']")
 	if err := expect(chainResult).ToContainText("Inner →"); err != nil {
 		t.Errorf("chain log missing Inner entry marker: %v", err)
 	}
@@ -132,7 +132,7 @@ func TestMiddlewareSlowEvent(t *testing.T) {
 	}
 
 	// The timing middleware records the handler duration.
-	timingResult := page.Locator("[data-tether-key='timing-result']")
+	timingResult := page.Locator("[data-fluent-key='timing-result']")
 	if err := expect(timingResult).ToContainText("Handled in"); err != nil {
 		t.Errorf("timing result not visible: %v", err)
 	}

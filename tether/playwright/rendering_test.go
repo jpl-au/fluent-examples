@@ -44,7 +44,7 @@ func TestRenderingCounterIncrement(t *testing.T) {
 		t.Fatalf("click: %v", err)
 	}
 
-	counter := page.Locator("[data-tether-key='rendering-counter']")
+	counter := page.Locator("[data-fluent-key='rendering-counter']")
 	if err := expect(counter).ToContainText("1"); err != nil {
 		text, _ := counter.TextContent()
 		t.Errorf("counter = %q, want to contain 1", text)
@@ -70,7 +70,7 @@ func TestRenderingAddItem(t *testing.T) {
 	}
 
 	// Individual items have Dynamic keys item-0, item-1, etc.
-	item := page.Locator("[data-tether-key='item-0']")
+	item := page.Locator("[data-fluent-key='item-0']")
 	if err := expect(item).ToContainText("Item 1"); err != nil {
 		t.Errorf("item not added: %v", err)
 	}
@@ -95,7 +95,7 @@ func TestRenderingCounterDecrement(t *testing.T) {
 		t.Fatalf("click increment: %v", err)
 	}
 
-	counter := page.Locator("[data-tether-key='rendering-counter']")
+	counter := page.Locator("[data-fluent-key='rendering-counter']")
 	if err := expect(counter).ToContainText("1"); err != nil {
 		t.Fatalf("counter did not reach 1: %v", err)
 	}
@@ -130,7 +130,7 @@ func TestRenderingDecrementLowerBound(t *testing.T) {
 		t.Fatalf("click decrement: %v", err)
 	}
 
-	counter := page.Locator("[data-tether-key='rendering-counter']")
+	counter := page.Locator("[data-fluent-key='rendering-counter']")
 	if err := expect(counter).ToContainText("0"); err != nil {
 		text, _ := counter.TextContent()
 		t.Errorf("counter = %q, want to contain 0 after decrement at lower bound", text)
@@ -157,7 +157,7 @@ func TestRenderingRemoveItem(t *testing.T) {
 	if err := addBtn.Click(); err != nil {
 		t.Fatalf("click add 1: %v", err)
 	}
-	item0 := page.Locator("[data-tether-key='item-0']")
+	item0 := page.Locator("[data-fluent-key='item-0']")
 	if err := expect(item0).ToBeVisible(); err != nil {
 		t.Fatalf("item-0 not visible after first add: %v", err)
 	}
@@ -165,7 +165,7 @@ func TestRenderingRemoveItem(t *testing.T) {
 	if err := addBtn.Click(); err != nil {
 		t.Fatalf("click add 2: %v", err)
 	}
-	item1 := page.Locator("[data-tether-key='item-1']")
+	item1 := page.Locator("[data-fluent-key='item-1']")
 	if err := expect(item1).ToBeVisible(); err != nil {
 		t.Fatalf("item-1 not visible after second add: %v", err)
 	}
@@ -181,7 +181,7 @@ func TestRenderingRemoveItem(t *testing.T) {
 		t.Errorf("item-0 should still be visible: %v", err)
 	}
 
-	itemList := page.Locator("[data-tether-key='item-list']")
+	itemList := page.Locator("[data-fluent-key='item-list']")
 	if err := expect(itemList).Not().ToContainText("Item 2"); err != nil {
 		t.Errorf("item-1 should have been removed: %v", err)
 	}

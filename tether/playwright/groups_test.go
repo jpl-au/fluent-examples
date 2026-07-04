@@ -45,7 +45,7 @@ func TestGroupsJoinRoom(t *testing.T) {
 		t.Fatalf("click: %v", err)
 	}
 
-	status := page.Locator("[data-tether-key='room-status']")
+	status := page.Locator("[data-fluent-key='room-status']")
 	if err := expect(status).ToContainText("alpha"); err != nil {
 		t.Errorf("room status should show alpha: %v", err)
 	}
@@ -75,7 +75,7 @@ func TestGroupsLeaveRoom(t *testing.T) {
 		t.Fatalf("click leave: %v", err)
 	}
 
-	hint := page.Locator("[data-tether-key='leave-hint']")
+	hint := page.Locator("[data-fluent-key='leave-hint']")
 	if err := expect(hint).ToContainText("not in a room"); err != nil {
 		t.Errorf("should show 'not in a room' after leaving: %v", err)
 	}
@@ -101,7 +101,7 @@ func TestGroupsBroadcast(t *testing.T) {
 	}
 
 	// Wait for the join to complete before sending a message.
-	status := page.Locator("[data-tether-key='room-status']")
+	status := page.Locator("[data-fluent-key='room-status']")
 	if err := expect(status).ToContainText("alpha"); err != nil {
 		t.Fatalf("join did not complete: %v", err)
 	}
@@ -116,7 +116,7 @@ func TestGroupsBroadcast(t *testing.T) {
 		t.Fatalf("click send: %v", err)
 	}
 
-	msg := page.Locator("[data-tether-key='room-message']")
+	msg := page.Locator("[data-fluent-key='room-message']")
 	if err := expect(msg).ToContainText("hello room"); err != nil {
 		t.Errorf("message not visible: %v", err)
 	}

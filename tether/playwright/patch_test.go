@@ -22,7 +22,7 @@ func TestPatchPageRenders(t *testing.T) {
 	waitForConnected(t, page)
 
 	// First counter should be visible.
-	row := page.Locator("[data-tether-key='counter-0']")
+	row := page.Locator("[data-fluent-key='counter-0']")
 	if err := expect(row).ToBeVisible(); err != nil {
 		t.Fatalf("counter-0 not visible: %v", err)
 	}
@@ -46,7 +46,7 @@ func TestPatchCounterIncrements(t *testing.T) {
 	time.Sleep(2 * time.Second)
 
 	// At least one counter should have incremented above 0.
-	row := page.Locator("[data-tether-key='counter-0']")
+	row := page.Locator("[data-fluent-key='counter-0']")
 	text, err := row.InnerText()
 	if err != nil {
 		t.Fatalf("read counter-0: %v", err)
@@ -79,7 +79,7 @@ func TestPatchMultipleCountersIncrement(t *testing.T) {
 	// hit at least once.
 	time.Sleep(2 * time.Second)
 
-	row1 := page.Locator("[data-tether-key='counter-1']")
+	row1 := page.Locator("[data-fluent-key='counter-1']")
 	text, err := row1.InnerText()
 	if err != nil {
 		t.Fatalf("read counter-1: %v", err)
@@ -116,7 +116,7 @@ func TestPatchResetAll(t *testing.T) {
 
 	// Confirm counter-15 has incremented so we know reset will do
 	// something observable.
-	row15 := page.Locator("[data-tether-key='counter-15']")
+	row15 := page.Locator("[data-fluent-key='counter-15']")
 	before, _ := row15.InnerText()
 	if before == "Counter 150" {
 		t.Fatalf("counter-15 before reset = %q, expected non-zero after 8 seconds", before)

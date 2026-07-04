@@ -3,6 +3,7 @@ package memoise
 import (
 	"strconv"
 
+	jit "github.com/jpl-au/fluent-jit"
 	"github.com/jpl-au/fluent/html5/div"
 	"github.com/jpl-au/fluent/html5/span"
 	"github.com/jpl-au/fluent/html5/table"
@@ -67,7 +68,7 @@ func Render(s State) node.Node {
 				// Table - memoised. The closure only runs when
 				// Items.Version() changes (i.e. when With was called).
 				div.New(
-					node.Memoise(s.Items.Version(), func() node.Node {
+					jit.Memoise(s.Items.Version(), func() node.Node {
 						return renderTable(s.Items.Val)
 					}),
 				).Dynamic("items"),

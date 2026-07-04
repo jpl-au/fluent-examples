@@ -116,11 +116,11 @@ func TestAutoFragmentsBrowserSendsOnlyChangedRegion(t *testing.T) {
 	}
 
 	// And the DOM applied it.
-	if err := expect(page.Locator("[data-tether-key='af-a']")).
+	if err := expect(page.Locator("[data-fluent-key='af-a']")).
 		ToHaveText("Region A: 2"); err != nil {
 		t.Fatalf("fragment not applied to the DOM: %v", err)
 	}
-	if err := expect(page.Locator("[data-tether-key='af-b']")).
+	if err := expect(page.Locator("[data-fluent-key='af-b']")).
 		ToHaveText("Region B: 2"); err != nil {
 		t.Fatalf("untouched region should be intact: %v", err)
 	}
@@ -137,7 +137,7 @@ func TestAutoFragmentsBrowserSendsOnlyChangedRegion(t *testing.T) {
 	if !strings.Contains(body2, "Region A: 3") || strings.Contains(body2, "Region B") {
 		t.Errorf("second event should still be a targeted fragment, got %s", body2)
 	}
-	if err := expect(page.Locator("[data-tether-key='af-a']")).
+	if err := expect(page.Locator("[data-fluent-key='af-a']")).
 		ToHaveText("Region A: 3"); err != nil {
 		t.Fatalf("second fragment not applied: %v", err)
 	}

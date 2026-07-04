@@ -126,7 +126,7 @@ func clickIncrement(t *testing.T, page pw.Page, n, want int) {
 			t.Fatalf("click: %v", err)
 		}
 	}
-	if err := expect(page.Locator("[data-tether-key='count']")).
+	if err := expect(page.Locator("[data-fluent-key='count']")).
 		ToHaveText("Count: " + strconv.Itoa(want)); err != nil {
 		t.Fatalf("count did not reach %d: %v", want, err)
 	}
@@ -168,7 +168,7 @@ func TestReconnectReattachPreservesState(t *testing.T) {
 	if after := sessionID(t, page); after != before {
 		t.Errorf("session changed across reattach: %q != %q", after, before)
 	}
-	if err := expect(page.Locator("[data-tether-key='count']")).
+	if err := expect(page.Locator("[data-fluent-key='count']")).
 		ToHaveText("Count: 3"); err != nil {
 		t.Fatalf("state lost across reattach: %v", err)
 	}
@@ -197,7 +197,7 @@ func TestReconnectRestoresFromSessionStore(t *testing.T) {
 	if after := sessionID(t, page); after != before {
 		t.Errorf("session changed across restore: %q != %q", after, before)
 	}
-	if err := expect(page.Locator("[data-tether-key='count']")).
+	if err := expect(page.Locator("[data-fluent-key='count']")).
 		ToHaveText("Count: 5"); err != nil {
 		t.Fatalf("state not restored from store: %v", err)
 	}
@@ -225,7 +225,7 @@ func TestReconnectStaleClientGetsFreshSession(t *testing.T) {
 
 	// The proactive full morph must reset the stale DOM to the fresh
 	// session's state with no user interaction.
-	if err := expect(page.Locator("[data-tether-key='count']")).
+	if err := expect(page.Locator("[data-fluent-key='count']")).
 		ToHaveText("Count: 0"); err != nil {
 		t.Fatalf("stale DOM was not replaced: %v", err)
 	}

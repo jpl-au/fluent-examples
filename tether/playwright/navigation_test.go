@@ -66,7 +66,7 @@ func TestNavigationQueryParams(t *testing.T) {
 		t.Fatalf("click: %v", err)
 	}
 
-	result := page.Locator("[data-tether-key='query-params']")
+	result := page.Locator("[data-fluent-key='query-params']")
 	if err := expect(result).ToContainText("tab    = settings"); err != nil {
 		t.Errorf("tab not extracted: %v", err)
 	}
@@ -94,7 +94,7 @@ func TestNavigationMultiValue(t *testing.T) {
 		t.Fatalf("click: %v", err)
 	}
 
-	result := page.Locator("[data-tether-key='multi-value-params']")
+	result := page.Locator("[data-fluent-key='multi-value-params']")
 	if err := expect(result).ToContainText("go, web, sse"); err != nil {
 		t.Errorf("tags not extracted: %v", err)
 	}
@@ -119,7 +119,7 @@ func TestNavigationTypedParams(t *testing.T) {
 		t.Fatalf("click: %v", err)
 	}
 
-	result := page.Locator("[data-tether-key='typed-params']")
+	result := page.Locator("[data-fluent-key='typed-params']")
 	if err := expect(result).ToContainText("active = true"); err != nil {
 		t.Errorf("active not parsed: %v", err)
 	}
@@ -147,7 +147,7 @@ func TestNavigationNumericMultiValue(t *testing.T) {
 		t.Fatalf("click: %v", err)
 	}
 
-	result := page.Locator("[data-tether-key='numeric-multi-value-params']")
+	result := page.Locator("[data-fluent-key='numeric-multi-value-params']")
 	if err := expect(result).ToContainText("1, 2, 5"); err != nil {
 		t.Errorf("quantities not parsed: %v", err)
 	}
