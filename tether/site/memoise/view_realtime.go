@@ -1,7 +1,6 @@
 package memoise
 
 import (
-	"html"
 	"strconv"
 	"strings"
 
@@ -68,7 +67,9 @@ func chartDiv(id, titleText, colour string, data []opts.LineData) node.Node {
 	option := buildChartOption(id, titleText, colour, data)
 	el := monitor.Chart(id).Style("width:100%;height:250px")
 	el.SetData("tether-hook", "echarts")
-	el.SetData("chart-option", html.EscapeString(option))
+	// SetData escapes the JSON; escaping here too would double-escape and break
+	// JSON.parse. The echarts hook reads it back via getAttribute, which decodes.
+	el.SetData("chart-option", option)
 	return el
 }
 

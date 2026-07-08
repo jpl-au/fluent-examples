@@ -1,7 +1,6 @@
 package realtime
 
 import (
-	"html"
 	"strconv"
 	"strings"
 
@@ -37,15 +36,16 @@ func Render(s State) node.Node {
 	)
 }
 
-// chartDiv builds a div wired to the echarts JS hook. The chart
-// option JSON is built by go-echarts and stored HTML-escaped in a
-// data attribute. The hook reads it with getAttribute (which auto-
-// unescapes entities) and calls echarts.setOption().
+// chartDiv builds a div wired to the echarts JS hook. The chart option
+// JSON is built by go-echarts and stored in a data attribute; SetData
+// escapes it, and the hook reads it back with getAttribute (which decodes
+// the entities) before calling echarts.setOption(). Escaping here as well
+// would double-escape and break JSON.parse.
 func chartDiv(id, titleText, colour string, data []opts.LineData) node.Node {
 	option := buildChartOption(id, titleText, colour, data)
 	el := monitor.Chart(id).Style("width:100%;height:250px")
 	el.SetData("tether-hook", "echarts")
-	el.SetData("chart-option", html.EscapeString(option))
+	el.SetData("chart-option", option)
 	return el
 }
 
