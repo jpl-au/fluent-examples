@@ -4,6 +4,7 @@ go 1.25.0
 
 require (
 	github.com/jpl-au/fluent v0.3.2
+	github.com/jpl-au/fluent-jit v0.3.3
 	github.com/jpl-au/fluent-security v0.1.0
 	github.com/jpl-au/tether v0.3.3
 	github.com/jpl-au/tether-store/fs v0.1.0
@@ -16,11 +17,10 @@ require (
 	github.com/fsnotify/fsnotify v1.9.0 // indirect
 	github.com/fxamacker/cbor/v2 v2.9.0 // indirect
 	github.com/gorilla/css v1.0.1 // indirect
-	github.com/jpl-au/fluent-jit v0.3.3 // indirect
 	github.com/klauspost/compress v1.17.9 // indirect
 	github.com/lxzan/gws v1.8.9 // indirect
 	github.com/x448/float16 v0.8.4 // indirect
-	golang.org/x/crypto v0.50.0 // indirect
-	golang.org/x/net v0.53.0 // indirect
-	golang.org/x/sys v0.43.0 // indirect
+	golang.org/x/crypto v0.54.0 // indirect
+	golang.org/x/net v0.57.0 // indirect
+	golang.org/x/sys v0.47.0 // indirect
 )
