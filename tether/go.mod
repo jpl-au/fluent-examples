@@ -12,7 +12,8 @@ require (
 	github.com/jpl-au/tether v0.3.3
 	github.com/jpl-au/tether/tetheredis v0.1.0
 	github.com/playwright-community/playwright-go v0.5700.1
-	github.com/redis/go-redis/v9 v9.21.0
+	// Pinned to v9.20.0 like tetheredis: v9.21.0 deadlocks Subscribe (go-redis #3839).
+	github.com/redis/go-redis/v9 v9.20.0
 )
 
 require (
