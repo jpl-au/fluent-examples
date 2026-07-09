@@ -20,7 +20,7 @@ var realtimePresence = shared.NewPresenceCountOnly()
 
 // NewRealtime creates a memoised handler for the real-time dashboard.
 // Same system monitor as the realtime demo, but with Memoise: true and
-// each chart region wrapped in node.Memoise with Versioned keys.
+// each chart region wrapped in jit.Memoise with Versioned keys.
 func NewRealtime(app tether.App, assets *tether.Asset) *tether.Handler[RealtimeState] {
 	return tether.Stateful(app, tether.StatefulConfig[RealtimeState]{
 		Name:    "memoise/realtime",

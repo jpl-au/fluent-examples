@@ -37,18 +37,18 @@ func Render(s State) node.Node {
 				"runs and no HTML is produced for skipped regions. Cheap "+
 				"regions use plain Dynamic keys and always re-render. You "+
 				"choose per region.",
-			"node.Memoise · tether.Versioned · StatefulConfig.Memoise", panel.WS|panel.SSE,
+			"jit.Memoise · tether.Versioned · StatefulConfig.Memoise", panel.WS|panel.SSE,
 		),
 
 		panel.Card(
 			"Memoised Table vs Plain Counter",
-			"The table below is wrapped in node.Memoise with a "+
+			"The table below is wrapped in jit.Memoise with a "+
 				"tether.Versioned key. The counter uses a plain Dynamic "+
 				"key. Incrementing the counter leaves Items.Version() "+
 				"unchanged, so the Memoiser skips the table entirely. "+
 				"Adding an item calls With(), which increments the "+
 				"version and triggers a re-render of the table.",
-			"tether.Versioned.With · node.Memoise · .Dynamic", panel.WS|panel.SSE,
+			"tether.Versioned.With · jit.Memoise · .Dynamic", panel.WS|panel.SSE,
 			layout.Stack(
 				hint.Text("Click Increment - the counter updates but "+
 					"the table is skipped (memoiser hit). Click Add Item "+

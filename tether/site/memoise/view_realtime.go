@@ -17,21 +17,21 @@ import (
 )
 
 // RenderRealtime builds the memoised real-time dashboard. Each chart
-// is wrapped in node.Memoise with its Versioned key so only the chart
+// is wrapped in jit.Memoise with its Versioned key so only the chart
 // whose data changed re-renders on each tick.
 func RenderRealtime(s RealtimeState) node.Node {
 	return cpage.New(
 		panel.Card(
 			"Memoisation + Patch Together",
 			"This dashboard combines two strategies. Memoisation (via "+
-				"node.Memoise and Versioned keys) optimises the full render "+
+				"jit.Memoise and Versioned keys) optimises the full render "+
 				"path - page loads and reconnects skip unchanged charts. "+
 				"Patch (via sess.Patch) optimises the live update path - "+
 				"each timer tick targets a single chart key without "+
 				"touching the rest of the page. The two work through "+
 				"either engine. Use Memoise for full renders, Patch for "+
 				"targeted updates, or both together.",
-			"sess.Patch · node.Memoise · Versioned · Memoise: true", panel.WS|panel.SSE,
+			"sess.Patch · jit.Memoise · Versioned · Memoise: true", panel.WS|panel.SSE,
 		),
 
 		panel.Card(
@@ -40,7 +40,7 @@ func RenderRealtime(s RealtimeState) node.Node {
 				"is a separate sess.Patch call targeting its Dynamic key. "+
 				"The card layout, description, and other charts are "+
 				"untouched on each tick. On page load and reconnect, "+
-				"node.Memoise skips unchanged chart closures.",
+				"jit.Memoise skips unchanged chart closures.",
 			"sess.Go · sess.Patch · go-echarts", panel.WS|panel.SSE,
 			monitor.Charts(
 				div.New(
