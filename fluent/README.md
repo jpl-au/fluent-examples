@@ -1,6 +1,6 @@
 # Fluent Example - Contact Manager
 
-A server-rendered contact manager demonstrating [Fluent](https://github.com/jpl-au/fluent) with plain HTTP - no HTMX, no WebSocket, no framework. Pure Go, pure HTML.
+A server-rendered contact manager demonstrating [Fluent](https://github.com/jpl-au/fluent) with plain HTTP - no HTMX, no framework. Pure Go, pure HTML. A pair of live-log demos (`/ws`, `/sse`) also show raw WebSocket and Server-Sent Events, again using only the standard library.
 
 This is a **teaching example** - a deliberately simple application designed
 to show how Fluent's API works. The contact manager is a toy domain chosen
@@ -31,12 +31,15 @@ routes/routes.go     ← all route registration
 handler/
   contacts.go        ← contact CRUD handlers
   notes.go           ← note handlers
+  ws.go              ← WebSocket live-log demo page + feed
+  sse.go             ← Server-Sent Events live-log demo page + feed
+  live.go            ← shared live-log page scaffold
 store/store.go       ← in-memory storage (seeded with example data)
 layout/layout.go     ← HTML shell (head, body, header)
 components/
   simple/            ← button, field, text
-  composite/         ← page, card, row, contactlist, notelist
-static/              ← CSS, fonts
+  composite/         ← page, card, row, contactlist, notelist, footer, menu
+static/              ← CSS, fonts, ws.js, sse.js
 ```
 
 ## Pages
@@ -52,3 +55,7 @@ static/              ← CSS, fonts
 | `/contacts/{id}/delete` | POST | Delete contact |
 | `/contacts/{id}/notes` | POST | Add note |
 | `/contacts/{id}/notes/{noteID}/delete` | POST | Delete note |
+| `/ws` | GET | WebSocket live-log demo page |
+| `/ws/feed` | GET | WebSocket feed endpoint (upgrades the connection) |
+| `/sse` | GET | Server-Sent Events live-log demo page |
+| `/sse/feed` | GET | SSE feed endpoint (streams events) |

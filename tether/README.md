@@ -41,7 +41,7 @@ application.
 | Errors | `site/errors` | `tether.Catch` error boundaries recovering from panics in child components |
 | Morph | `site/morph` | Full-page morph fallback when no Dynamic keys are present |
 | Navigation | `site/navigation` | `bind.Link`, `OnNavigate`, query parameter extraction (`Params`), `ReplaceURL`, server-driven `Navigate` |
-| Clipboard | `site/clipboard` | `bind.CopyToClipboard` - client-side copy to clipboard, no server round-trip |
+| Client-Side Actions | `site/clientactions` | `bind.CopyToClipboard`, `bind.FlashText`, `bind.FlashClass` - client-side copy with flash feedback, no server round-trip |
 | Multi-Select | `site/selection` | `bind.Selectable`, `bind.CollectSelected` - click, Ctrl+click, Shift+click selection (auto-loaded `tether-select.js` extension) |
 | HTML Wire | `site/htmlwire` | `WireFormat: wire.HTML` - plain-HTML responses with targeted fragments via `sess.Morph`, effects island, `CacheControl`, curl-inspectable |
 | Touch Gestures | `site/touch` | `bind.OnSwipe`, `bind.OnLongPress` - swipe direction detection and sustained touch |
