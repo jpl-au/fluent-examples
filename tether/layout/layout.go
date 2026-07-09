@@ -129,9 +129,9 @@ var sidebar = []sidebarGroup{
 
 // Shell wraps page content in the app chrome: sidebar and header.
 // The section parameter determines whether the online count badge
-// appears. The content wrapper uses Dynamic("_") - a pass-through
-// marker that lets the diff engine look through to the page-level
-// keys inside so each region is patched independently.
+// appears. The content wrapper is an ordinary Dynamic boundary keyed
+// "_"; the page-level Dynamic keys nested inside it are diffed
+// independently within that boundary.
 func Shell(section Section, currentPage string, onlineCount int, content node.Node) node.Node {
 	return div.New(
 		sidebarNav(section, currentPage),
