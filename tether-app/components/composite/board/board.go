@@ -8,7 +8,7 @@ import (
 
 // Columns renders the column grid from the given column nodes. The
 // caller is responsible for the outer Dynamic wrapper - this allows
-// the grid to be used inside a node.Memoise closure where the
+// the grid to be used inside a jit.Memoise closure where the
 // Dynamic key lives on the parent.
 func Columns(columns ...node.Node) node.Node {
 	return div.New(columns...).Class("board")

@@ -30,7 +30,7 @@ import (
 // Presence indicators are signal-bound (not rendered here) and the
 // online count badge uses bind.Text - see layout.Shell.
 //
-// The board view is wrapped in node.Memoise keyed on BoardVersion.
+// The board view is wrapped in jit.Memoise keyed on BoardVersion.
 // When BoardVersion hasn't changed (e.g. navigation between views),
 // the Memoiser skips the entire board subtree - no column renders,
 // no card renders, no HTML generated. The closure only runs on a
@@ -59,7 +59,7 @@ func Render(b *store.Board, cleaner *security.Cleaner) func(State) node.Node {
 	}
 }
 
-// memoiseBoard wraps the board rendering in node.Memoise so the
+// memoiseBoard wraps the board rendering in jit.Memoise so the
 // entire column grid is skipped when the board hasn't changed.
 // The boardVersion key is incremented by the handler on every
 // board mutation (create, save, move, delete).
