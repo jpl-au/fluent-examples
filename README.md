@@ -16,6 +16,7 @@ unrelated code getting in the way.
 | [fluent](fluent/) | [fluent](https://github.com/jpl-au/fluent) | Server-rendered contact manager - pure Go, pure HTML |
 | [fluent-jit](fluent-jit/) | [fluent-jit](https://github.com/jpl-au/fluent-jit) | Same contact manager with JIT optimisation strategies |
 | [fluent-htmx](fluent-htmx/) | [fluent-htmx](https://github.com/jpl-au/fluent-htmx) | Same contact manager with HTMX partial page updates |
+| [fluent-datastar](fluent-datastar/) | [fluent-datastar](https://github.com/jpl-au/fluent-datastar) | Reactive signals and SSE patching with Datastar, with the same demo served by both the fluent-datastar generator and the official Go SDK |
 | [tether](tether/) | [tether](https://github.com/jpl-au/tether) | Reactive server-driven UI - Feature Explorer |
 | [tether-app](tether-app/) | [tether](https://github.com/jpl-au/tether) | Collaborative kanban board - real-world single-handler app |
 

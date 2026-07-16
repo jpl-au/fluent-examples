@@ -6,7 +6,7 @@ require (
 	github.com/alicebob/miniredis/v2 v2.38.0
 	github.com/go-echarts/go-echarts/v2 v2.7.2
 	github.com/jpl-au/chain v0.1.1
-	github.com/jpl-au/fluent v0.3.2
+	github.com/jpl-au/fluent v0.5.0
 	github.com/jpl-au/fluent-jit v0.3.3
 	github.com/jpl-au/fluent-security v0.1.0
 	github.com/jpl-au/tether v0.3.3
