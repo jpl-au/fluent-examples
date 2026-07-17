@@ -38,8 +38,21 @@ func Handle(board *store.Board, group *tether.Group[State], viewers *viewers) fu
 		case "card.new":
 			s.View = "detail"
 			s.SelectedID = ""
+			s.MenuOpen = false
 			viewers.Presence.Clear(sess.ID())
 			sess.ReplaceURL("/new")
+
+		// The overflow menu is per-session UI state, so its toggle and
+		// dismiss re-render only this session's detail view - no board
+		// mutation, no broadcast. card.menu.close is fired by the menu's
+		// bind.Outside binding when a click lands anywhere outside it.
+		case "card.menu.toggle":
+			s.MenuOpen = !s.MenuOpen
+			return s
+
+		case "card.menu.close":
+			s.MenuOpen = false
+			return s
 
 		// Signals: card.typing only updates presence indicators.
 		// No board data changed, so a full render would waste work.
@@ -112,6 +125,7 @@ func Handle(board *store.Board, group *tether.Group[State], viewers *viewers) fu
 			id, _ := ev.Get("id")
 			s.View = "detail"
 			s.SelectedID = id
+			s.MenuOpen = false
 			viewers.View(sess.ID(), id, s.Name)
 			sess.ReplaceURL("/card/" + id)
 			pushPresenceSignals(group, viewers, id)

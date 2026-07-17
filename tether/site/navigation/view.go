@@ -89,6 +89,16 @@ func renderMain(s State) node.Node {
 		panel.Card("Programmatic Navigation", "Click the button - the server decides where to navigate and tells the browser. Unlike bind.Link where the destination is in the HTML, here the navigation target is determined server-side in the event handler.", "Session.Navigate", panel.WS|panel.SSE,
 			button.PrimaryAction("Navigate to Target Page", "nav.goto-target"),
 		),
+
+		panel.Card("Prefetch", "Click Prepare - the server calls sess.Prefetch(\"/navigation/target/\"), hinting the browser to speculatively fetch the target page before you ask for it. The following visit is then instant. The client uses the Speculation Rules API where supported and falls back to a <link rel=\"prefetch\"> otherwise; each URL is fetched at most once per page.", "Session.Prefetch", panel.WS|panel.SSE,
+			layout.Stack(
+				layout.Row(
+					button.PrimaryAction("Prepare Target Page", "nav.prefetch"),
+					button.Nav("Visit Prefetched Target", "/navigation/target/", bind.Link()),
+				),
+				span.Text("Prepare first, then navigate - the target loads from the speculative fetch."),
+			),
+		),
 	)
 }
 

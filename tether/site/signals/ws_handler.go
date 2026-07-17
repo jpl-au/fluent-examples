@@ -59,6 +59,10 @@ func NewWS(app tether.App, assets *tether.Asset) *tether.Handler[State] {
 				"signals.liked":         false,
 				"signals.toggle_demo":   false,
 				"signals.highlight":     false,
+				// Seed the Computed demo inputs so the derived total
+				// renders a value before the first click.
+				"signals.qty":   1,
+				"signals.price": 3,
 			})
 		},
 		OnDisconnect: func(sess *tether.StatefulSession[State]) {

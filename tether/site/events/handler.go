@@ -43,6 +43,8 @@ type State struct {
 	ContextMenuResult string
 	ValidatedResult   string
 	EditableResult    string
+	MenuOpen          bool
+	LeadingValue      string
 }
 
 // New creates a stateless page handler for the events demo.
@@ -157,6 +159,12 @@ func Handle(sess tether.Session, s State, ev tether.Event) State {
 		s.ValidatedResult = fmt.Sprintf("Validated: %s", name)
 	case "events.editable":
 		s.EditableResult = fmt.Sprintf("Edited to: %q", ev.Value())
+	case "events.menu-open":
+		s.MenuOpen = true
+	case "events.menu-close":
+		s.MenuOpen = false
+	case "events.leading":
+		s.LeadingValue = ev.Value()
 	}
 	return s
 }

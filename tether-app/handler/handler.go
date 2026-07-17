@@ -37,6 +37,12 @@ func New(board *store.Board, assets *tether.Asset) *tether.Handler[State] {
 	return tether.Stateful(tether.App{
 		DevMode: true,
 		Assets:  []*tether.Asset{assets},
+		// ViewTransitions cross-fades the content region when it swaps
+		// between the board and a card detail, so the SPA-style region
+		// morph animates instead of snapping. The browser falls back to
+		// an instant swap when it lacks the API or the user has
+		// prefers-reduced-motion set.
+		Client: tether.Client{ViewTransitions: true},
 	}, tether.StatefulConfig[State]{
 		Name: "kanban",
 		Mode: mode.Both,
@@ -114,6 +120,7 @@ func New(board *store.Board, assets *tether.Asset) *tether.Handler[State] {
 func navigate(board *store.Board) func(tether.Session, State, tether.Params) State {
 	return func(_ tether.Session, s State, p tether.Params) State {
 		path := p.Path
+		s.MenuOpen = false
 		if after, ok := strings.CutPrefix(path, "/card/"); ok {
 			if _, ok := board.Card(after); ok {
 				s.View = "detail"

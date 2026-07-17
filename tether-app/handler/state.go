@@ -27,4 +27,8 @@ type State struct {
 	// Incremented on board mutations so Memoise cache misses and
 	// columns re-render.
 	BoardVersion int
+	// MenuOpen tracks whether the card detail's overflow menu is
+	// showing. The menu renders only when open so its click-outside
+	// binding (bind.Outside) exists solely while it is dismissable.
+	MenuOpen bool
 }

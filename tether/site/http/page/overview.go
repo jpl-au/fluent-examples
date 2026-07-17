@@ -26,11 +26,12 @@ func OverviewRender(_ state.State) node.Node {
 			"Stateless pages served via plain HTTP. No WebSocket, no SSE. State is reconstructed from each request. Events are sent as fetch POST requests and the response carries the HTML update.",
 			"tether.Stateless", panel.AllTransports,
 			toc.List(
-				toc.Item(toc.Link("/events/", "Events & Forms"), "Click, Input, Submit, Change, KeyDown, Focus, Confirm, Throttle, EventData, Indicator, On, Reset, Viewport"),
+				toc.Item(toc.Link("/events/", "Events & Forms"), "Click, Input, Submit, Change, KeyDown, Focus, Confirm, Throttle, DebounceLeading, Outside, EventData, Indicator, On, Reset, Viewport"),
 				toc.Item(toc.Link("/rendering/", "State & Rendering"), "Dynamic keys, tether.Catch, tether.Component"),
 				toc.Item(toc.Link("/morph/", "Full-Page Morph"), "Rendering without Dynamic keys, idiomorph fallback"),
 				toc.Item(toc.Link("/errors/", "Error Boundaries"), "tether.Catch, panic recovery"),
-				toc.Item(toc.Link("/navigation/", "Navigation"), "Navigate, ReplaceURL, SetTitle"),
+				toc.Item(toc.Link("/navigation/", "Navigation"), "Navigate, ReplaceURL, Prefetch, SetTitle"),
+				toc.Item(toc.Link("/view-transitions/", "View Transitions"), "tether.Client{ViewTransitions}, view-transition-name"),
 				toc.Item(toc.Link("/middleware/", "Middleware"), "Chain, Guard, Timing, custom middleware"),
 			),
 		),
@@ -40,7 +41,7 @@ func OverviewRender(_ state.State) node.Node {
 			"Client-side reactivity powered by server-pushed signals. Elements bind to signal values and update instantly without a full re-render.",
 			"bind.Text · bind.Show · bind.SetSignal", panel.AllTransports,
 			toc.List(
-				toc.Item(toc.Link("/signals/ws/", "WebSocket"), "Text, Show, SetSignal, ToggleClass, Optimistic, Hook, Transition, FocusTrap, Cloak, Permanent"),
+				toc.Item(toc.Link("/signals/ws/", "WebSocket"), "Text, Show, SetSignal, Computed, ShowWhen, ToggleClass, Optimistic, Hook, Transition, FocusTrap, Cloak, Permanent"),
 				toc.Item(toc.Link("/signals/sse/", "SSE"), "Text, Show, SetSignal, ToggleClass, Optimistic"),
 			),
 		),

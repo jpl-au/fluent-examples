@@ -27,7 +27,7 @@ import (
 // a read-only preview of the description through the cleaner, so
 // users can see how their rich-text input will be sanitised before
 // it is shown to other viewers on the board.
-func New(c store.Card, cleaner *security.Cleaner) node.Node {
+func New(c store.Card, cleaner *security.Cleaner, menuOpen bool) node.Node {
 	isNew := c.ID == ""
 
 	back := bind.Apply(
@@ -46,7 +46,7 @@ func New(c store.Card, cleaner *security.Cleaner) node.Node {
 			span.Text(title).Class("detail-title"),
 			columnBadge(c.Column, isNew),
 		).Class("detail-title-row"),
-		overflow(c, isNew),
+		overflow(c, isNew, menuOpen),
 	).Class("detail-header")
 
 	f := bind.Apply(
@@ -111,26 +111,40 @@ func activity(events []store.Event) node.Node {
 	).Class("activity-section")
 }
 
-// overflow renders the three-dot menu for existing cards.
-func overflow(c store.Card, isNew bool) node.Node {
+// overflow renders the three-dot menu for existing cards. The menu is
+// server-state driven (State.MenuOpen) so it can dismiss on any click
+// outside it via bind.Outside, which listens only while the menu is
+// actually rendered.
+func overflow(c store.Card, isNew, menuOpen bool) node.Node {
 	if isNew {
 		return nil
 	}
 
+	// bind.Stop keeps the trigger click from bubbling to the open menu's
+	// document-level Outside listener, so toggling closed sends a single
+	// card.menu.toggle rather than also firing card.menu.close.
 	toggle := bind.Apply(
 		span.Text("\u22EF").Class("overflow-trigger"),
-		bind.ToggleClass("overflow-open"),
-		bind.ToggleTarget(".overflow-menu"),
+		bind.OnClick("card.menu.toggle"),
+		bind.Stop(),
 	)
 
-	menu := div.New(
-		bind.Apply(
-			span.Text("Delete card").Class("overflow-item overflow-danger"),
-			bind.OnClick("card.delete"),
-			bind.EventData("id", c.ID),
-			bind.Confirm("Delete this card?"),
-		),
-	).Class("overflow-menu")
+	if !menuOpen {
+		return div.New(toggle).Class("overflow")
+	}
+
+	menu := bind.Apply(
+		div.New(
+			bind.Apply(
+				span.Text("Delete card").Class("overflow-item overflow-danger"),
+				bind.OnClick("card.delete"),
+				bind.EventData("id", c.ID),
+				bind.Confirm("Delete this card?"),
+			),
+		).Class("overflow-menu"),
+		bind.OnClick("card.menu.close"),
+		bind.Outside(),
+	)
 
 	return div.New(toggle, menu).Class("overflow")
 }

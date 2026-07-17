@@ -18,8 +18,9 @@ A collaborative kanban board built with a single [Tether](https://github.com/jpl
 - **Relative timestamps** - cards show "2 hours ago", "just now" etc.
 - **URL routing** - `/` for the board, `/card/<id>` for detail, `/new` for creating; browser back/forward works via `OnNavigate`
 - **Hotkeys** - Escape closes the card detail view via `bind.Hotkey`
-- **Overflow menu** - three-dot menu with delete action, toggled via `bind.ToggleClass`
+- **Overflow menu** - three-dot menu with delete action; opens on click and dismisses when you click anywhere outside it via `bind.Outside`, with `bind.Stop` on the trigger so toggling closed fires a single event
 - **SPA-style region swapping** - clicking a card replaces the board with a detail view, no page reloads, no dialogs
+- **View transitions** - the board-to-detail region swap cross-fades via `tether.Client{ViewTransitions: true}`, honouring `prefers-reduced-motion`
 - **Reactive online count** - `Group.Count()` + `WatchValue` keeps the badge accurate across all sessions
 - **Shimmer animation** - rotating conic-gradient border on card hover
 

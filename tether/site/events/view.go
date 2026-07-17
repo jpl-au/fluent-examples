@@ -47,6 +47,20 @@ func Render(s State) node.Node {
 			),
 		),
 
+		panel.Card("Leading-Edge Debounce", "Type quickly - unlike the trailing debounce above, the first keystroke reaches the server immediately; the burst that follows is coalesced until you pause for 300ms. Reach for the leading edge when the first character should act at once (open a suggestions panel, mark a field dirty) while the rest is batched.", "bind.Input + bind.DebounceLeading", panel.AllTransports,
+			layout.Stack(
+				bind.Apply(field.TextValue("leading", s.LeadingValue, "Type quickly..."),
+					bind.OnInput("events.leading"),
+					bind.DebounceLeading(300*time.Millisecond),
+				),
+				layout.Container(leadingResult(s.LeadingValue)).Dynamic("leading-result"),
+			),
+		),
+
+		panel.Card("Click-Outside Dismiss", "Open the menu, then click anywhere outside it to dismiss. The open panel carries bind.OnClick(\"events.menu-close\") plus bind.Outside(), so the close action fires only for clicks that land outside the panel - the canonical dropdown and popover pattern, with no hand-rolled document listener.", "bind.Outside", panel.AllTransports,
+			menuDemo(s.MenuOpen),
+		),
+
 		panel.Card("Form Submit", "Enter a name and submit. The button disables while the server processes the request, then shows the result below.", "bind.Submit + bind.Disable", panel.AllTransports,
 			bind.Apply(field.Inline(
 				field.Group(field.Label("name", "Name"), field.Text("name", "Enter a name...")),
@@ -274,6 +288,38 @@ func inputResult(val string) node.Node {
 		result.Label("Server received"),
 		result.Block(val),
 	)
+}
+
+// leadingResult renders the leading-edge debounce result.
+func leadingResult(val string) node.Node {
+	if val == "" {
+		return hint.Text("Type above - the first keystroke arrives immediately")
+	}
+	return layout.Container(
+		result.Label("Server received"),
+		result.Block(val),
+	)
+}
+
+// menuDemo renders the click-outside dropdown. When open, the panel
+// carries bind.Outside so a click anywhere outside it fires the close
+// action; the open button is replaced by the panel so it cannot fire
+// both open and close from a single click.
+func menuDemo(open bool) node.Node {
+	if !open {
+		return layout.Container(
+			button.PrimaryAction("Open Menu", "events.menu-open"),
+		).Dynamic("menu-demo")
+	}
+	menu := bind.Apply(
+		layout.Stack(
+			panel.SignalText("Menu is open. Click anywhere outside to dismiss."),
+			button.SmallAction("Close", "events.menu-close"),
+		).ID("outside-menu"),
+		bind.OnClick("events.menu-close"),
+		bind.Outside(),
+	)
+	return layout.Container(menu).Dynamic("menu-demo")
 }
 
 // autoFocusInput conditionally applies bind.AutoFocus so the cursor

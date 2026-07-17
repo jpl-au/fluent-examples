@@ -187,6 +187,9 @@ a {
   flex: 1;
   overflow-y: auto;
   padding: 1.25rem;
+  /* Names the content region so ViewTransitions cross-fades the whole
+     area as one unit when it swaps between the board and a card detail. */
+  view-transition-name: board-content;
 }
 
 /* ------------------------------------------------------------------ */
@@ -461,7 +464,6 @@ a {
 }
 
 .overflow-menu {
-  display: none;
   position: absolute;
   top: 100%;
   right: 0;
@@ -471,10 +473,6 @@ a {
   border-radius: var(--radius);
   padding: 0.25rem;
   z-index: 10;
-}
-
-.overflow-open {
-  display: block;
 }
 
 .overflow-item {

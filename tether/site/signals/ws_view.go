@@ -10,6 +10,7 @@ import (
 
 	"github.com/jpl-au/fluent-examples/tether/components/composite/layout"
 	"github.com/jpl-au/fluent-examples/tether/components/composite/page"
+	"github.com/jpl-au/fluent-examples/tether/components/simple/badge"
 	"github.com/jpl-au/fluent-examples/tether/components/simple/button"
 	"github.com/jpl-au/fluent-examples/tether/components/simple/field"
 	"github.com/jpl-au/fluent-examples/tether/components/simple/hint"
@@ -18,7 +19,7 @@ import (
 
 // RenderWS builds the full signals and directives page for the
 // WebSocket variant: Text, Show/Hide, SetSignal,
-// ToggleSignal, ToggleTarget, Class, Attr, Value,
+// ToggleSignal, Computed, ToggleTarget, Class, Attr, Value,
 // Optimistic, OptimisticToggle, Batch Signals, Cloak, Permanent,
 // Hook, Transition, and FocusTrap.
 func RenderWS(s State) node.Node {
@@ -69,6 +70,35 @@ func RenderWS(s State) node.Node {
 			layout.Stack(
 				button.Primary("Toggle Panel", bind.ToggleSignal("signals.toggle_demo")),
 				bind.Apply(panel.SignalText("Toggled on!"), bind.Show("signals.toggle_demo")),
+			),
+		),
+
+		panel.Card(
+			"Computed",
+			"Pick a quantity and a unit price - the line total is derived entirely on the client by bind.Computed. Both inputs are set client-side with SetSignal (no round-trip); the server never pushes the total. Whenever either input changes the browser re-evaluates qty * price - compiled in Go, run by the client VM with no eval - and every binding on the result updates. The bulk-order badge reads the same computed value through bind.ShowWhen, which shares that VM.",
+			"bind.Computed · bind.ShowWhen", panel.AllTransports,
+			layout.Stack(
+				layout.Row(
+					span.Text("Quantity:"),
+					button.Primary("1", bind.SetSignal("signals.qty", "1")),
+					button.Primary("2", bind.SetSignal("signals.qty", "2")),
+					button.Primary("5", bind.SetSignal("signals.qty", "5")),
+				),
+				layout.Row(
+					span.Text("Unit price:"),
+					button.Primary("£3", bind.SetSignal("signals.price", "3")),
+					button.Primary("£10", bind.SetSignal("signals.price", "10")),
+				),
+				layout.Row(
+					span.Text("Line total: £"),
+					bind.Apply(span.Text("3").Dynamic("computed-total"),
+						bind.Computed("signals.total", "signals.qty * signals.price"),
+						bind.Text("signals.total"),
+					),
+					bind.Apply(badge.Green("bulk order"),
+						bind.ShowWhen("signals.total", ">=", 25),
+					),
+				),
 			),
 		),
 

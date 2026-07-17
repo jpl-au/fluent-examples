@@ -92,6 +92,9 @@ func Handle(sess tether.Session, s State, ev tether.Event) State {
 		sess.ReplaceURL("/navigation/?tab=b")
 	case "nav.goto-target":
 		sess.Navigate("/navigation/target/")
+	case "nav.prefetch":
+		sess.Prefetch("/navigation/target/")
+		sess.Toast("Target page prefetched - the next visit is instant.")
 	}
 	return s
 }

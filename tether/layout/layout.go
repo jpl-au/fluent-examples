@@ -69,6 +69,7 @@ var sidebar = []sidebarGroup{
 			{"/morph/", "Full-Page Morph"},
 			{"/html-wire/", "HTML Wire Format"},
 			{"/client-actions/", "Client-Side Actions"},
+			{"/view-transitions/", "View Transitions"},
 			{"/selection/", "Multi-Select"},
 			{"/touch/", "Touch Gestures"},
 			{"/security/", "Security (Sanitise & CSP)"},

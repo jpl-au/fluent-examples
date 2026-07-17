@@ -50,6 +50,7 @@ import (
 	"github.com/jpl-au/fluent-examples/tether/site/uploads"
 	filteredupload "github.com/jpl-au/fluent-examples/tether/site/uploads/filtered"
 	"github.com/jpl-au/fluent-examples/tether/site/valuestore"
+	"github.com/jpl-au/fluent-examples/tether/site/viewtransitions"
 	"github.com/jpl-au/fluent-examples/tether/site/windowing"
 )
 
@@ -87,6 +88,7 @@ func New(ctx context.Context, assets *tether.Asset, wf wire.Format) (http.Handle
 	selectionHandler := selection.New(app, assets)
 	securityHandler := security.New(app, assets)
 	touchHandler := touch.New(app, assets)
+	viewtransitionsHandler := viewtransitions.New(app, assets)
 
 	// WebSocket features (tether.Handler).
 	notificationsHandler := notifications.New(app, assets)
@@ -185,6 +187,7 @@ func New(ctx context.Context, assets *tether.Asset, wf wire.Format) (http.Handle
 	mux.Handle("/security/", securityHandler)
 	mux.Handle("/selection/", selectionHandler)
 	mux.Handle("/touch/", touchHandler)
+	mux.Handle("/view-transitions/", viewtransitionsHandler)
 	mux.Handle("/hotkey/", hotkeyHandler)
 	mux.Handle("/dragdrop/", dragdropHandler)
 	mux.Handle("/scroll/", scrollHandler)

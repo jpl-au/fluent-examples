@@ -45,9 +45,9 @@ func Render(b *store.Board, cleaner *security.Cleaner) func(State) node.Node {
 		switch s.View {
 		case "detail":
 			if s.SelectedID == "" {
-				content = detail.New(store.Card{}, cleaner)
+				content = detail.New(store.Card{}, cleaner, s.MenuOpen)
 			} else if c, ok := b.Card(s.SelectedID); ok {
-				content = detail.New(c, cleaner)
+				content = detail.New(c, cleaner, s.MenuOpen)
 			} else {
 				content = memoiseBoard(b, s.BoardVersion)
 			}
