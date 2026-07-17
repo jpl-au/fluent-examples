@@ -36,15 +36,18 @@ application.
 
 | Demo | Package | What it shows |
 |------|---------|---------------|
-| Rendering | `site/rendering` | Dynamic keys, dynamic lists, error boundaries (`tether.Catch`), components, nested routing (`RouteTyped`) |
+| Rendering | `site/rendering` | Dynamic keys, dynamic lists, components, nested routing (`RouteTyped`) |
 | Events | `site/events` | Every event binding: click, submit, input, change, keydown, focus, blur, viewport, throttle, debounce, confirm, custom events, typed extraction (`ev.Int`, `ev.Bool`, `ev.Bind`) |
 | Errors | `site/errors` | `tether.Catch` error boundaries recovering from panics in child components |
 | Morph | `site/morph` | Full-page morph fallback when no Dynamic keys are present |
 | Navigation | `site/navigation` | `bind.Link`, `OnNavigate`, query parameter extraction (`Params`), `ReplaceURL`, server-driven `Navigate` |
+| Middleware | `site/mw` | `tether.Middleware` chain: timing, guard, counting, and ordered wrappers showing onion execution |
 | Client-Side Actions | `site/clientactions` | `bind.CopyToClipboard`, `bind.FlashText`, `bind.FlashClass` - client-side copy with flash feedback, no server round-trip |
 | Multi-Select | `site/selection` | `bind.Selectable`, `bind.CollectSelected` - click, Ctrl+click, Shift+click selection (auto-loaded `tether-select.js` extension) |
 | HTML Wire | `site/htmlwire` | `WireFormat: wire.HTML` - plain-HTML responses with targeted fragments via `sess.Morph`, effects island, `CacheControl`, curl-inspectable |
 | Touch Gestures | `site/touch` | `bind.OnSwipe`, `bind.OnLongPress` - swipe direction detection and sustained touch |
+| View Transitions | `site/viewtransitions` | `Client.ViewTransitions` - server-driven DOM updates wrapped in native View Transitions, shared-element motion via `view-transition-name` |
+| Security | `site/security` | `security.HTML` sanitisation of untrusted input, `security.Nonce` coordinated with a CSP header |
 
 ### WebSocket + SSE (stateful)
 
@@ -57,7 +60,6 @@ application.
 | Groups | `site/groups` | Room membership with `Group.Add`/`Remove`, `Broadcast`, `BroadcastOthers`, `OnJoin`/`OnLeave` callbacks |
 | Value Store | `site/valuestore` | `tether.Value` for shared observable state, `Store`, `Update`, `WatchValue`, shared vs local state |
 | Components | `site/components` | `tether.Component`, `StatefulConfig.Components`, `Mounter`, `Event.Target`, multiple independent instances |
-| Middleware | `site/mw` | `tether.Middleware` chain: timing, guard, counting, and ordered wrappers showing onion execution |
 | Notifications | `site/notifications` | Server-push side effects: `Toast`, `Flash`, `Announce`, `Signal` |
 | Diagnostics | `site/diagnostics` | `Handler.Diagnostics` bus, live event feed via `WatchBus`, triggerable panics, diagnostic kind reference, the `/_tether/debug` dev dashboard |
 | Configuration | `site/configuration` | `Timeouts`, `Limits`, `Security`, compression, `SessionStore`, `DiffStore`, `OnRestore` |
@@ -68,6 +70,10 @@ application.
 | Hotkeys | `site/hotkey` | `bind.Hotkey` - global shortcuts with the platform-aware `mod` modifier (Cmd/Ctrl), distinct ctrl/meta, and the editable-field guard |
 | Drag and Drop | `site/dragdrop` | `bind.Draggable`, `bind.Sortable` - drag between zones with within-zone reordering, cross-session sync |
 | Scroll | `site/scroll` | `bind.ScrollTo`, `sess.ScrollTo`, `bind.PreserveScroll` - client and server scroll control |
+| Timers | `site/timer` | `bind.Timer`, `bind.Countdown`, `bind.TimerPrecision`, `bind.TimerFormat`, `bind.TimerOnComplete` - client-side ticking, server-controlled via signals |
+| Memoisation | `site/memoise` | `jit.Memoise` with `tether.Versioned` keys - expensive subtrees skipped when unchanged, plus a memoised live dashboard combining `sess.Patch` |
+| Windowing | `site/windowing` | Server-side virtual scrolling - large datasets rendered one page at a time |
+| Targeted Updates | `site/patch` | `sess.Patch` - re-render a single Dynamic key instead of the full page |
 
 ### Service Worker
 

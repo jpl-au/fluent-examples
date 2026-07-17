@@ -54,7 +54,14 @@ func New(c store.Card, cleaner *security.Cleaner, menuOpen bool) node.Node {
 			input.Hidden("id", c.ID),
 			div.New(
 				field.Label("Title"),
-				field.TextValue("title", c.Title, "Card title"),
+				// Required uses the native constraint validation API:
+				// submitting with an empty title shows a browser
+				// tooltip instead of silently doing nothing (the
+				// handler also guards server-side).
+				bind.Apply(
+					field.TextValue("title", c.Title, "Card title"),
+					bind.Required("A card needs a title"),
+				),
 			).Class("form-group"),
 			div.New(
 				field.Label("Description"),

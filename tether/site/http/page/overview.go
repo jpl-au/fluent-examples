@@ -26,13 +26,18 @@ func OverviewRender(_ state.State) node.Node {
 			"Stateless pages served via plain HTTP. No WebSocket, no SSE. State is reconstructed from each request. Events are sent as fetch POST requests and the response carries the HTML update.",
 			"tether.Stateless", panel.AllTransports,
 			toc.List(
-				toc.Item(toc.Link("/events/", "Events & Forms"), "Click, Input, Submit, Change, KeyDown, Focus, Confirm, Throttle, DebounceLeading, Outside, EventData, Indicator, On, Reset, Viewport"),
-				toc.Item(toc.Link("/rendering/", "State & Rendering"), "Dynamic keys, tether.Catch, tether.Component"),
+				toc.Item(toc.Link("/events/", "Events & Forms"), "Click, Input, Submit, Change, KeyDown, Focus, Confirm, Throttle, DebounceLeading, Outside, EventData, Indicator, Event, Reset, Viewport"),
+				toc.Item(toc.Link("/rendering/", "State & Rendering"), "Dynamic keys, tether.Component, tether.RouteTyped"),
 				toc.Item(toc.Link("/morph/", "Full-Page Morph"), "Rendering without Dynamic keys, idiomorph fallback"),
 				toc.Item(toc.Link("/errors/", "Error Boundaries"), "tether.Catch, panic recovery"),
-				toc.Item(toc.Link("/navigation/", "Navigation"), "Navigate, ReplaceURL, Prefetch, SetTitle"),
+				toc.Item(toc.Link("/navigation/", "Navigation"), "bind.Link, Params, ReplaceURL, Navigate, Prefetch"),
 				toc.Item(toc.Link("/view-transitions/", "View Transitions"), "tether.Client{ViewTransitions}, view-transition-name"),
 				toc.Item(toc.Link("/middleware/", "Middleware"), "Chain, Guard, Timing, custom middleware"),
+				toc.Item(toc.Link("/html-wire/", "HTML Wire Format"), "WireFormat: wire.HTML, sess.Morph fragments, CacheControl"),
+				toc.Item(toc.Link("/client-actions/", "Client-Side Actions"), "CopyToClipboard, FlashText, FlashClass"),
+				toc.Item(toc.Link("/selection/", "Multi-Select"), "Selectable, CollectSelected"),
+				toc.Item(toc.Link("/touch/", "Touch Gestures"), "OnSwipe, OnLongPress"),
+				toc.Item(toc.Link("/security/", "Security"), "security.HTML sanitisation, security.Nonce with CSP"),
 			),
 		),
 
@@ -41,8 +46,9 @@ func OverviewRender(_ state.State) node.Node {
 			"Client-side reactivity powered by server-pushed signals. Elements bind to signal values and update instantly without a full re-render.",
 			"bind.Text · bind.Show · bind.SetSignal", panel.AllTransports,
 			toc.List(
-				toc.Item(toc.Link("/signals/ws/", "WebSocket"), "Text, Show, SetSignal, Computed, ShowWhen, ToggleClass, Optimistic, Hook, Transition, FocusTrap, Cloak, Permanent"),
-				toc.Item(toc.Link("/signals/sse/", "SSE"), "Text, Show, SetSignal, ToggleClass, Optimistic"),
+				toc.Item(toc.Link("/signals/ws/", "WebSocket"), "Text, Show, SetSignal, ToggleSignal, Computed, ShowWhen, ToggleTarget, Class, Attr, Value, Optimistic, Hook, Transition, FocusTrap, Cloak, Permanent"),
+				toc.Item(toc.Link("/signals/sse/", "SSE"), "Text, Show, SetSignal, ToggleSignal, Optimistic"),
+				toc.Item(toc.Link("/timer/", "Client-Side Timers"), "Timer, Countdown, TimerPrecision, TimerFormat, TimerOnComplete"),
 			),
 		),
 
@@ -72,6 +78,21 @@ func OverviewRender(_ state.State) node.Node {
 				toc.Item(toc.Link("/valuestore/", "Value Store"), "tether.Value, Store, Update, WatchValue"),
 				toc.Item(toc.Link("/groups/", "Groups"), "tether.Group, Broadcast, BroadcastOthers, OnJoin, OnLeave"),
 				toc.Item(toc.Link("/freeze/", "Freeze & Restore"), "FreezeMode, SessionStore"),
+				toc.Item(toc.Link("/hotkey/", "Hotkeys"), "bind.Hotkey, the platform-aware mod modifier"),
+				toc.Item(toc.Link("/dragdrop/", "Drag and Drop"), "bind.Draggable, bind.Sortable, cross-session sync"),
+				toc.Item(toc.Link("/scroll/", "Scroll"), "bind.ScrollTo, sess.ScrollTo, bind.PreserveScroll"),
+			),
+		),
+
+		panel.Card(
+			"Performance",
+			"Rendering optimisations for expensive pages: skip unchanged subtrees, re-render single regions, and keep the DOM small for large datasets.",
+			"jit.Memoise · sess.Patch", panel.AllTransports,
+			toc.List(
+				toc.Item(toc.Link("/memoise/", "Memoisation"), "jit.Memoise, tether.Versioned, StatefulConfig.Memoise"),
+				toc.Item(toc.Link("/memoise/realtime/", "Memoised Dashboard"), "jit.Memoise and sess.Patch together on live charts"),
+				toc.Item(toc.Link("/windowing/", "Windowing"), "Virtual scrolling, slice rendering for large lists"),
+				toc.Item(toc.Link("/patch/", "Targeted Updates"), "sess.Patch, single-key re-renders"),
 			),
 		),
 
@@ -92,6 +113,7 @@ func OverviewRender(_ state.State) node.Node {
 				toc.Item(toc.Link("/sw/", "Overview"), "Service Worker architecture"),
 				toc.Item(toc.Link("/sw/push", "Push Notifications"), "PushSubscribe, Push, Notification, NotificationAction"),
 				toc.Item(toc.Link("/sw/caching", "Caching & Offline"), "Precache, cache-first assets, offline shell fallback"),
+				toc.Item(toc.Link("/sw/lifecycle", "PWA Lifecycle"), "Online/offline connectivity, appinstalled events"),
 			),
 		),
 	)

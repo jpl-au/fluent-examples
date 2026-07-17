@@ -26,10 +26,9 @@ func Shell(name string, onlineCount int, actions node.Node, content node.Node) n
 }
 
 // header builds the top bar with app title, user name, online badge,
-// and action nodes. The badge text is initially rendered from state
-// (for the first paint) and then kept up to date via the
-// "online-count" signal - no re-render needed when sessions
-// connect or disconnect.
+// and action nodes. The badge text is rendered from state: WatchValue
+// on Group.Count updates State.OnlineCount whenever sessions connect
+// or disconnect, and the resulting re-render refreshes the badge.
 func header(name string, onlineCount int, actions node.Node) node.Node {
 	badge := span.Text(fmt.Sprintf("%d online", onlineCount)).Class("badge badge-green")
 

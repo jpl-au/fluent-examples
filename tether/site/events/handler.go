@@ -100,7 +100,10 @@ func Handle(sess tether.Session, s State, ev tether.Event) State {
 	case "events.change":
 		s.ChangeValue = ev.Value()
 	case "events.keydown":
-		s.LastKey = "Enter"
+		// The pressed key name arrives in the event data under "key".
+		// bind.FilterKey ensures only Enter reaches the server.
+		key, _ := ev.Get("key")
+		s.LastKey = key
 	case "events.focus":
 		s.FocusBlurResult = "Field focused"
 	case "events.blur":

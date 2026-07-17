@@ -42,6 +42,10 @@ func Handle(sess tether.Session, s State, ev tether.Event) State {
 			"signals.toggle_demo":   false,
 			"signals.highlight":     false,
 			"signals.colour":        "",
+			// Re-seed the Computed demo inputs to their OnConnect
+			// values so the derived total resets too.
+			"signals.qty":   1,
+			"signals.price": 3,
 		})
 	}
 	return s

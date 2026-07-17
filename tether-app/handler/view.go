@@ -27,8 +27,8 @@ import (
 // descriptions with the hoisted UGC policy. Card previews on the
 // board use security.PlainText directly and do not need the cleaner.
 //
-// Presence indicators are signal-bound (not rendered here) and the
-// online count badge uses bind.Text - see layout.Shell.
+// Presence indicators are signal-bound (not rendered here); the
+// online count badge re-renders via WatchValue - see layout.Shell.
 //
 // The board view is wrapped in jit.Memoise keyed on BoardVersion.
 // When BoardVersion hasn't changed (e.g. navigation between views),

@@ -28,7 +28,7 @@ import (
 // viewport, throttle, custom events, and typed/bound parsing.
 func Render(s State) node.Node {
 	return page.New(
-		panel.Card("Click Events", "Click the button - each click sends an event to the server and increments the counter. Because this page is stateless HTTP, the count is carried with each event.", "bind.Click + bind.EventData", panel.AllTransports,
+		panel.Card("Click Events", "Click the button - each click sends an event to the server and increments the counter. Because this page is stateless HTTP, the count is carried with each event.", "bind.OnClick · bind.EventData", panel.AllTransports,
 			layout.Row(
 				button.PrimaryAction("Click me", "events.click",
 					bind.EventData("count", strconv.Itoa(s.ClickCount)),
@@ -37,7 +37,7 @@ func Render(s State) node.Node {
 			),
 		),
 
-		panel.Card("Input with Debounce", "Type in the field - the server only receives the value after you stop typing for 300ms, reducing unnecessary requests.", "bind.Input + bind.Debounce", panel.AllTransports,
+		panel.Card("Input with Debounce", "Type in the field - the server only receives the value after you stop typing for 300ms, reducing unnecessary requests.", "bind.OnInput · bind.Debounce", panel.AllTransports,
 			layout.Stack(
 				bind.Apply(field.TextValue("text", s.InputValue, "Type something..."),
 					bind.OnInput("events.input"),
@@ -47,7 +47,7 @@ func Render(s State) node.Node {
 			),
 		),
 
-		panel.Card("Leading-Edge Debounce", "Type quickly - unlike the trailing debounce above, the first keystroke reaches the server immediately; the burst that follows is coalesced until you pause for 300ms. Reach for the leading edge when the first character should act at once (open a suggestions panel, mark a field dirty) while the rest is batched.", "bind.Input + bind.DebounceLeading", panel.AllTransports,
+		panel.Card("Leading-Edge Debounce", "Type quickly - unlike the trailing debounce above, the first keystroke reaches the server immediately; the burst that follows is coalesced until you pause for 300ms. Reach for the leading edge when the first character should act at once (open a suggestions panel, mark a field dirty) while the rest is batched.", "bind.OnInput · bind.DebounceLeading", panel.AllTransports,
 			layout.Stack(
 				bind.Apply(field.TextValue("leading", s.LeadingValue, "Type quickly..."),
 					bind.OnInput("events.leading"),
@@ -61,7 +61,7 @@ func Render(s State) node.Node {
 			menuDemo(s.MenuOpen),
 		),
 
-		panel.Card("Form Submit", "Enter a name and submit. The button disables while the server processes the request, then shows the result below.", "bind.Submit + bind.Disable", panel.AllTransports,
+		panel.Card("Form Submit", "Enter a name and submit. The button disables while the server processes the request, then shows the result below.", "bind.OnSubmit · bind.Disable", panel.AllTransports,
 			bind.Apply(field.Inline(
 				field.Group(field.Label("name", "Name"), field.Text("name", "Enter a name...")),
 				button.Submit("Submit", bind.Disable("Submitting...")),
@@ -83,7 +83,7 @@ func Render(s State) node.Node {
 			),
 		),
 
-		panel.Card("Change Events", "Pick a colour from the dropdown - the server receives the selected value when the selection changes.", "bind.Change", panel.AllTransports,
+		panel.Card("Change Events", "Pick a colour from the dropdown - the server receives the selected value when the selection changes.", "bind.OnChange", panel.AllTransports,
 			layout.Stack(
 				bind.Apply(dropdown.Options(option.Option("", "Select a colour..."), option.Option("red", "Red"), option.Option("green", "Green"), option.Option("blue", "Blue")).Name("colour"),
 					bind.OnChange("events.change"),
@@ -92,7 +92,7 @@ func Render(s State) node.Node {
 			),
 		),
 
-		panel.Card("Keyboard Events", "Click into the field and press Enter - only the Enter key triggers the server event. Other keys are filtered out.", "bind.KeyDown + bind.FilterKey", panel.AllTransports,
+		panel.Card("Keyboard Events", "Click into the field and press Enter - only the Enter key triggers the server event - other keys are filtered out client-side. The handler reads the key name from the event data.", "bind.OnKeyDown · bind.FilterKey", panel.AllTransports,
 			layout.Stack(
 				bind.Apply(field.Text("key", "Press Enter..."),
 					bind.OnKeyDown("events.keydown"),
@@ -102,7 +102,7 @@ func Render(s State) node.Node {
 			),
 		),
 
-		panel.Card("Focus & Blur", "Click into the field to trigger a focus event; click away to trigger blur. Each fires a separate server event so the handler knows exactly when the element gains or loses attention.", "bind.Focus · bind.Blur", panel.AllTransports,
+		panel.Card("Focus & Blur", "Click into the field to trigger a focus event; click away to trigger blur. Each fires a separate server event so the handler knows exactly when the element gains or loses attention.", "bind.OnFocus · bind.OnBlur", panel.AllTransports,
 			layout.Stack(
 				bind.Apply(field.Text("focus-demo", "Click in and out of this field..."),
 					bind.OnFocus("events.focus"),
@@ -190,7 +190,7 @@ func Render(s State) node.Node {
 			),
 		),
 
-		panel.Card("Arbitrary DOM Events", "Double-click the button - bind.On lets you listen for any DOM event, not just the built-in ones.", "bind.On", panel.AllTransports,
+		panel.Card("Arbitrary DOM Events", "Double-click the button - bind.Event lets you listen for any DOM event, not just the built-in ones.", "bind.Event", panel.AllTransports,
 			layout.Stack(
 				button.Primary("Double-click me", bind.Event("dblclick", "events.custom")),
 				layout.Container(valueResult("Result", s.CustomEventResult, "Double-click the button above")).Dynamic("custom-result"),
@@ -208,7 +208,7 @@ func Render(s State) node.Node {
 			layout.Container(resetResult(s.ResetResult)).Dynamic("reset-result"),
 		),
 
-		panel.Card("Viewport Trigger", "Scroll to the bottom of the list - each time the sentinel enters the viewport the server loads five more items. This is the infinite scroll pattern: bind.Viewport on the trailing sentinel triggers automatic pagination. The current page is carried in EventData so the stateless handler knows which batch to append.", "bind.Viewport · bind.EventData", panel.AllTransports,
+		panel.Card("Viewport Trigger", "Scroll to the bottom of the list - each time the sentinel enters the viewport the server loads five more items. This is the infinite scroll pattern: bind.Viewport on the trailing sentinel triggers automatic pagination. The current page is carried in EventData so the stateless handler knows which batch to append.", "bind.OnViewport · bind.EventData", panel.AllTransports,
 			viewportList(s.ViewportPage),
 		),
 

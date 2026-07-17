@@ -24,12 +24,12 @@ import (
 //
 // The handler demonstrates three optimisation strategies:
 //
-//   - Signals for presence indicators (typing, viewing, online count).
+//   - Signals for presence indicators (typing, viewing).
 //     High-frequency, text-only updates that skip the render cycle.
 //   - Memoise for board columns. Expensive subtrees that only
 //     re-render when BoardVersion changes (board mutations).
-//   - Patch for targeted card updates after edits. Only the saved
-//     card is re-rendered and diffed, not the entire board.
+//   - Group.Broadcast for board mutations. Every session re-renders
+//     from the shared store, and Memoise keeps unchanged columns cheap.
 func New(board *store.Board, assets *tether.Asset) *tether.Handler[State] {
 	group := tether.NewGroup[State]()
 	viewers := newViewers()
@@ -81,10 +81,10 @@ func New(board *store.Board, assets *tether.Asset) *tether.Handler[State] {
 
 		Groups: []*tether.Group[State]{group},
 		Watchers: []tether.Watcher[State]{
-			// WatchValue tracks the online count in state for the
-			// initial SSR render. The signal push in the callback
-			// keeps the badge up to date on subsequent changes
-			// without a render cycle.
+			// WatchValue maps the group count into state whenever a
+			// session connects or disconnects; the resulting
+			// re-render keeps the header badge accurate. One update
+			// path covers both the initial SSR and later changes.
 			tether.WatchValue(group.Count(), func(n int, s State) State {
 				s.OnlineCount = n
 				return s

@@ -1,4 +1,4 @@
-// Package dragdrop demonstrates bind.Draggable and bind.DropTarget -
-// drag items between zones with cross-session synchronisation via
-// Group.Broadcast.
+// Package dragdrop demonstrates bind.Draggable and bind.Sortable -
+// drag items between zones, with within-zone ordering and
+// cross-session synchronisation via Group.Broadcast.
 package dragdrop

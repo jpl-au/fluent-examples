@@ -124,6 +124,7 @@ var sidebar = []sidebarGroup{
 			{"/sw/", "Overview"},
 			{"/sw/push", "Push Notifications"},
 			{"/sw/caching", "Caching & Offline"},
+			{"/sw/lifecycle", "PWA Lifecycle"},
 		}},
 	}},
 }

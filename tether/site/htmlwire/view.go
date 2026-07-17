@@ -34,7 +34,7 @@ func Render(s State) node.Node {
 				"whole rendered page with the toast riding in a JSON effects island "+
 				"appended to the HTML. Watch the Network tab: both responses are "+
 				"readable HTML.",
-			"wire.HTML + sess.Morph", panel.HTTP,
+			"wire.HTML · sess.Morph", panel.HTTP,
 			layout.Row(
 				button.PrimaryAction("Targeted fragment", "htmlwire.fragment",
 					bind.EventData("count", counterStr),

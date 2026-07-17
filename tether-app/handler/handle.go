@@ -12,15 +12,17 @@ import (
 // Handle processes all kanban board events. The handler demonstrates
 // three update strategies depending on what changed:
 //
-//   - Signals for presence events (card.typing, card.select,
-//     card.back). Only text content changes, so we push signal
-//     values directly - no render cycle at all.
+//   - Signals for presence text (card.typing, card.select,
+//     card.back). Other sessions only see indicator text change, so
+//     pushPresenceSignals pushes values directly - no render cycle
+//     on their side. The acting session still re-renders its own
+//     view change as normal.
 //   - Full refresh for board mutations (card.save, card.move,
 //     card.delete, card.new). The board structure changed, so all
 //     sessions re-render. Memoise ensures unchanged columns are
 //     skipped.
-//   - The online count signal is pushed alongside every refresh
-//     so the header badge stays current.
+//   - The online count lives in state via WatchValue on Group.Count,
+//     so the header badge re-renders whenever sessions come and go.
 func Handle(board *store.Board, group *tether.Group[State], viewers *viewers) func(tether.Session, State, tether.Event) State {
 	return func(sess tether.Session, s State, ev tether.Event) State {
 		switch ev.Action {
