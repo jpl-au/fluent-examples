@@ -1,14 +1,15 @@
 package handler
 
 import (
-	"fmt"
 	"log/slog"
 	"net/http"
 	"time"
 
+	htmx "github.com/jpl-au/fluent-htmx/htmx2"
 	"github.com/jpl-au/fluent/html5/div"
 	"github.com/jpl-au/fluent/html5/script"
 	"github.com/jpl-au/fluent/html5/span"
+	"github.com/jpl-au/fluent/text"
 
 	"github.com/jpl-au/fluent-examples/fluent-htmx/components/composite/card"
 	"github.com/jpl-au/fluent-examples/fluent-htmx/components/composite/logentry"
@@ -83,38 +84,32 @@ document.body.addEventListener("htmx:sseError", function() {
 // The stream runs until the client disconnects. Each entry is an HTML
 // fragment that htmx swaps into the page.
 func SSEFeed(w http.ResponseWriter, r *http.Request) {
-	// SSE requires these headers to keep the connection open and
-	// prevent buffering by proxies or the Go runtime.
-	w.Header().Set("Content-Type", "text/event-stream")
-	w.Header().Set("Cache-Control", "no-cache")
-	w.Header().Set("Connection", "keep-alive")
-
-	flusher, ok := w.(http.Flusher)
-	if !ok {
+	sse, err := htmx.NewSSE(w)
+	if err != nil {
 		http.Error(w, "streaming not supported", http.StatusInternalServerError)
 		return
 	}
 
 	slog.Info("sse: client connected", "remote", r.RemoteAddr)
 
-	// Send a status update as the first event so the page shows
-	// "connected" instead of "connecting...". The event name
-	// "status" matches the sse-swap="status" on the status span.
-	fmt.Fprintf(w, "event: status\ndata: connected\n\n")
-	flusher.Flush()
+	// Send a status update as the first event so the page shows "connected"
+	// instead of "connecting...". The event name "status" matches the
+	// sse-swap="status" on the status span.
+	if err := sse.Send("status", text.Text("connected")); err != nil {
+		slog.Warn("sse: failed to send status", "remote", r.RemoteAddr, "error", err)
+		return
+	}
 
 	// Push log entries until the client disconnects. The request
 	// context is cancelled when the client closes the connection.
 	ctx := r.Context()
 	for {
-		entry := generate.LogEntry()
-		html := logentry.New(entry).RenderBytes()
-
-		// SSE data frame format: "data: <payload>\n\n"
-		// The default event name is "message" which matches the
-		// sse-swap="message" attribute on the log container.
-		fmt.Fprintf(w, "data: %s\n\n", html)
-		flusher.Flush()
+		// The "message" event matches the sse-swap="message" attribute on
+		// the log container.
+		if err := sse.Send("message", logentry.New(generate.LogEntry())); err != nil {
+			slog.Warn("sse: failed to send log entry", "remote", r.RemoteAddr, "error", err)
+			return
+		}
 
 		select {
 		case <-ctx.Done():
