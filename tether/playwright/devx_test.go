@@ -98,6 +98,10 @@ document.startViewTransition = function (cb) {
 };
 `
 
+// addInit registers a script to run on the page before any page script,
+// on the initial load and after every navigation. The devx tests use it to
+// install a stub before the runtime boots, for example the View Transitions
+// probe (vtStub).
 func addInit(t *testing.T, page pw.Page, script string) {
 	t.Helper()
 	if err := page.AddInitScript(pw.Script{Content: pw.String(script)}); err != nil {

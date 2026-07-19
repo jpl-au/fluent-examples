@@ -17,6 +17,13 @@
 //
 // Uses the system-installed Chrome. Requires Chrome or Chromium to be
 // installed - no Playwright browser download is performed.
+//
+// Shared, cross-cutting helpers (startApp, newPage, waitForConnected,
+// serverMode, expect, primaryModifier, WithPermissions, and the ServerMode
+// and PageOption types) live in this file. Add new shared helpers here so they
+// stay discoverable and are not duplicated; keep per-feature app scaffolding
+// (each feature's start/render/handle functions and its state type) in that
+// feature's own test file.
 package playwright_test
 
 import (
@@ -26,6 +33,7 @@ import (
 	"net/http/httptest"
 	"os"
 	"os/exec"
+	"runtime"
 	"testing"
 
 	tether "github.com/jpl-au/tether"
@@ -34,6 +42,20 @@ import (
 
 	"github.com/jpl-au/fluent-examples/tether/app"
 )
+
+// primaryModifier is the platform's primary command modifier key: Meta (Cmd)
+// on macOS, Control on Windows and Linux. It is what bind.Hotkey's "mod" alias
+// resolves to on the client (which reads navigator.platform) and what selects
+// multiple items with Cmd/Ctrl+click. Playwright's headless Chromium reports the
+// host OS, so any test that drives a mod-based shortcut must press the modifier
+// matching the machine the suite runs on, or it passes on one OS and fails on
+// another.
+func primaryModifier() pw.KeyboardModifier {
+	if runtime.GOOS == "darwin" {
+		return "Meta"
+	}
+	return "Control"
+}
 
 // useHTTP2 reports whether the test suite is running in HTTP/2 mode.
 // Set TETHER_PROTO=HTTP2 to enable.

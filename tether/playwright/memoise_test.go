@@ -104,7 +104,7 @@ func TestMemoisedAddItemUpdatesTable(t *testing.T) {
 	}
 
 	// New row should appear.
-	newRow := page.Locator("#row-" + itoa(initialCount+1))
+	newRow := page.Locator("#row-" + strconv.Itoa(initialCount+1))
 	if err := expect(newRow).ToBeAttached(); err != nil {
 		t.Fatalf("new row not in DOM: %v", err)
 	}
@@ -117,10 +117,6 @@ func TestMemoisedAddItemUpdatesTable(t *testing.T) {
 	if afterCount != initialCount+1 {
 		t.Errorf("expected %d rows after add, got %d", initialCount+1, afterCount)
 	}
-}
-
-func itoa(n int) string {
-	return strconv.Itoa(n)
 }
 
 // TestMemoisedRealtimePageRenders verifies the memoised real-time

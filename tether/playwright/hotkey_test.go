@@ -24,9 +24,9 @@ func TestHotkeyPageRenders(t *testing.T) {
 	}
 }
 
-// TestHotkeyModK presses Ctrl+K (the "mod" modifier on Linux, where
-// these tests run headless) and verifies the server receives the
-// hotkey event with the platform-aware mod-k combo.
+// TestHotkeyModK presses the platform mod modifier plus K (Cmd+K on
+// macOS, Ctrl+K elsewhere) and verifies the server receives the
+// platform-aware mod-k combo.
 func TestHotkeyModK(t *testing.T) {
 	srv := startApp(t, serverMode())
 	page, cleanup := newPage(t)
@@ -39,8 +39,8 @@ func TestHotkeyModK(t *testing.T) {
 
 	waitForConnected(t, page)
 
-	if err := page.Keyboard().Press("Control+k"); err != nil {
-		t.Fatalf("press ctrl+k: %v", err)
+	if err := page.Keyboard().Press(string(primaryModifier()) + "+k"); err != nil {
+		t.Fatalf("press mod+k: %v", err)
 	}
 
 	result := page.GetByText("Last hotkey: mod-k")
@@ -72,8 +72,9 @@ func TestHotkeyEscape(t *testing.T) {
 	}
 }
 
-// TestHotkeyModSlash presses Ctrl+/ (matching the mod+/ binding),
-// whose key is a character that is special in CSS selectors.
+// TestHotkeyModSlash presses the platform mod modifier plus / (matching
+// the mod+/ binding), whose key is a character that is special in CSS
+// selectors.
 func TestHotkeyModSlash(t *testing.T) {
 	srv := startApp(t, serverMode())
 	page, cleanup := newPage(t)
@@ -86,13 +87,13 @@ func TestHotkeyModSlash(t *testing.T) {
 
 	waitForConnected(t, page)
 
-	if err := page.Keyboard().Press("Control+/"); err != nil {
-		t.Fatalf("press ctrl+/: %v", err)
+	if err := page.Keyboard().Press(string(primaryModifier()) + "+/"); err != nil {
+		t.Fatalf("press mod+/: %v", err)
 	}
 
 	result := page.GetByText("Last hotkey: mod-/")
 	if err := expect(result).ToBeVisible(); err != nil {
-		t.Errorf("ctrl+/ did not match the mod+/ binding: %v", err)
+		t.Errorf("mod+/ did not match the mod+/ binding: %v", err)
 	}
 }
 
@@ -136,22 +137,22 @@ func TestHotkeySequence(t *testing.T) {
 
 	waitForConnected(t, page)
 
-	// Press Ctrl+/ first (special character)
-	if err := page.Keyboard().Press("Control+/"); err != nil {
-		t.Fatalf("press ctrl+/: %v", err)
+	// Press mod plus / first (special character key)
+	if err := page.Keyboard().Press(string(primaryModifier()) + "+/"); err != nil {
+		t.Fatalf("press mod+/: %v", err)
 	}
 	result := page.GetByText("Last hotkey: mod-/")
 	if err := expect(result).ToBeVisible(); err != nil {
-		t.Errorf("ctrl+/ not reflected: %v", err)
+		t.Errorf("mod+/ not reflected: %v", err)
 	}
 
-	// Then press Ctrl+K (normal character) to confirm handler still works
-	if err := page.Keyboard().Press("Control+k"); err != nil {
-		t.Fatalf("press ctrl+k: %v", err)
+	// Then press mod plus K (normal character) to confirm the handler still works
+	if err := page.Keyboard().Press(string(primaryModifier()) + "+k"); err != nil {
+		t.Fatalf("press mod+k: %v", err)
 	}
 	result = page.GetByText("Last hotkey: mod-k")
 	if err := expect(result).ToBeVisible(); err != nil {
-		t.Errorf("ctrl+k after ctrl+/ not reflected: %v", err)
+		t.Errorf("mod+k after mod+/ not reflected: %v", err)
 	}
 
 	// Then Escape
