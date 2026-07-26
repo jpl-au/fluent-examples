@@ -39,7 +39,7 @@ func TestFreezeIncrement(t *testing.T) {
 
 	waitForConnected(t, page)
 
-	btn := page.Locator("[data-tether-click='freeze.increment']")
+	btn := page.Locator("[data-tether-event-click='freeze.increment']")
 	for range 3 {
 		if err := btn.Click(); err != nil {
 			t.Fatalf("click: %v", err)
@@ -70,7 +70,7 @@ func TestFreezeStateSurvivesDisconnect(t *testing.T) {
 	waitForConnected(t, page)
 
 	// Increment to 5.
-	btn := page.Locator("[data-tether-click='freeze.increment']")
+	btn := page.Locator("[data-tether-event-click='freeze.increment']")
 	for range 5 {
 		if err := btn.Click(); err != nil {
 			t.Fatalf("click: %v", err)

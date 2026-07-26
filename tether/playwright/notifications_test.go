@@ -193,7 +193,7 @@ func TestNotificationsIndicator(t *testing.T) {
 
 	// Click the indicator button - the bind.Indicator directive
 	// shows the spinner while the action is in flight.
-	btn := page.Locator("[data-tether-click='notify.indicator']").First()
+	btn := page.Locator("[data-tether-event-click='notify.indicator']").First()
 	if err := btn.Click(); err != nil {
 		t.Fatalf("click: %v", err)
 	}
@@ -219,7 +219,7 @@ func TestNotificationsFlashCompare(t *testing.T) {
 	waitForConnected(t, page)
 
 	// The "Flash vs Signal" panel has two buttons. Click the Flash one.
-	btn := page.Locator("[data-tether-click='notify.flash-compare']").First()
+	btn := page.Locator("[data-tether-event-click='notify.flash-compare']").First()
 	if err := btn.Click(); err != nil {
 		t.Fatalf("click: %v", err)
 	}
@@ -247,7 +247,7 @@ func TestNotificationsSignalFlash(t *testing.T) {
 	waitForConnected(t, page)
 
 	// Click the signal button in the comparison panel.
-	btn := page.Locator("[data-tether-click='notify.signal-flash']").First()
+	btn := page.Locator("[data-tether-event-click='notify.signal-flash']").First()
 	if err := btn.Click(); err != nil {
 		t.Fatalf("click: %v", err)
 	}

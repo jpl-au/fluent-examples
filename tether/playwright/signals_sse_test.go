@@ -41,7 +41,7 @@ func TestSignalsSSEIncrement(t *testing.T) {
 
 	waitForConnected(t, page)
 
-	btn := page.Locator("[data-tether-click='signals.increment']")
+	btn := page.Locator("[data-tether-event-click='signals.increment']")
 	if err := btn.Click(); err != nil {
 		t.Fatalf("click: %v", err)
 	}

@@ -37,7 +37,7 @@ func TestMorphIncrement(t *testing.T) {
 		t.Fatalf("goto: %v", err)
 	}
 
-	btn := page.Locator("[data-tether-click='morph.increment']")
+	btn := page.Locator("[data-tether-event-click='morph.increment']")
 	if err := btn.Click(); err != nil {
 		t.Fatalf("click: %v", err)
 	}
@@ -63,7 +63,7 @@ func TestMorphDecrement(t *testing.T) {
 		t.Fatalf("goto: %v", err)
 	}
 
-	inc := page.Locator("[data-tether-click='morph.increment']")
+	inc := page.Locator("[data-tether-event-click='morph.increment']")
 	if err := inc.Click(); err != nil {
 		t.Fatalf("click increment: %v", err)
 	}
@@ -73,7 +73,7 @@ func TestMorphDecrement(t *testing.T) {
 		t.Fatalf("counter did not reach 1: %v", err)
 	}
 
-	dec := page.Locator("[data-tether-click='morph.decrement']")
+	dec := page.Locator("[data-tether-event-click='morph.decrement']")
 	if err := dec.Click(); err != nil {
 		t.Fatalf("click decrement: %v", err)
 	}
@@ -96,7 +96,7 @@ func TestMorphDecrementLowerBound(t *testing.T) {
 		t.Fatalf("goto: %v", err)
 	}
 
-	dec := page.Locator("[data-tether-click='morph.decrement']")
+	dec := page.Locator("[data-tether-event-click='morph.decrement']")
 	if err := dec.Click(); err != nil {
 		t.Fatalf("click decrement: %v", err)
 	}
@@ -119,7 +119,7 @@ func TestMorphMultipleIncrements(t *testing.T) {
 		t.Fatalf("goto: %v", err)
 	}
 
-	btn := page.Locator("[data-tether-click='morph.increment']")
+	btn := page.Locator("[data-tether-event-click='morph.increment']")
 
 	for i := 1; i <= 5; i++ {
 		if err := btn.Click(); err != nil {

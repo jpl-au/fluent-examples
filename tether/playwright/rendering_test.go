@@ -39,7 +39,7 @@ func TestRenderingCounterIncrement(t *testing.T) {
 	waitForConnected(t, page)
 
 	// The + button in the Dynamic Keys section.
-	btn := page.Locator("[data-tether-click='rendering.increment']")
+	btn := page.Locator("[data-tether-event-click='rendering.increment']")
 	if err := btn.Click(); err != nil {
 		t.Fatalf("click: %v", err)
 	}
@@ -64,7 +64,7 @@ func TestRenderingAddItem(t *testing.T) {
 
 	waitForConnected(t, page)
 
-	btn := page.Locator("[data-tether-click='rendering.add-item']")
+	btn := page.Locator("[data-tether-event-click='rendering.add-item']")
 	if err := btn.Click(); err != nil {
 		t.Fatalf("click: %v", err)
 	}
@@ -90,7 +90,7 @@ func TestRenderingCounterDecrement(t *testing.T) {
 
 	waitForConnected(t, page)
 
-	inc := page.Locator("[data-tether-click='rendering.increment']")
+	inc := page.Locator("[data-tether-event-click='rendering.increment']")
 	if err := inc.Click(); err != nil {
 		t.Fatalf("click increment: %v", err)
 	}
@@ -100,7 +100,7 @@ func TestRenderingCounterDecrement(t *testing.T) {
 		t.Fatalf("counter did not reach 1: %v", err)
 	}
 
-	dec := page.Locator("[data-tether-click='rendering.decrement']")
+	dec := page.Locator("[data-tether-event-click='rendering.decrement']")
 	if err := dec.Click(); err != nil {
 		t.Fatalf("click decrement: %v", err)
 	}
@@ -125,7 +125,7 @@ func TestRenderingDecrementLowerBound(t *testing.T) {
 
 	waitForConnected(t, page)
 
-	dec := page.Locator("[data-tether-click='rendering.decrement']")
+	dec := page.Locator("[data-tether-event-click='rendering.decrement']")
 	if err := dec.Click(); err != nil {
 		t.Fatalf("click decrement: %v", err)
 	}
@@ -151,7 +151,7 @@ func TestRenderingRemoveItem(t *testing.T) {
 
 	waitForConnected(t, page)
 
-	addBtn := page.Locator("[data-tether-click='rendering.add-item']")
+	addBtn := page.Locator("[data-tether-event-click='rendering.add-item']")
 
 	// Add two items.
 	if err := addBtn.Click(); err != nil {
@@ -171,7 +171,7 @@ func TestRenderingRemoveItem(t *testing.T) {
 	}
 
 	// Remove the last item.
-	removeBtn := page.Locator("[data-tether-click='rendering.remove-item']")
+	removeBtn := page.Locator("[data-tether-event-click='rendering.remove-item']")
 	if err := removeBtn.Click(); err != nil {
 		t.Fatalf("click remove: %v", err)
 	}

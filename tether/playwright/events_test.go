@@ -39,7 +39,7 @@ func TestEventsClick(t *testing.T) {
 		t.Fatalf("goto: %v", err)
 	}
 
-	btn := page.Locator("[data-tether-click='events.click']")
+	btn := page.Locator("[data-tether-event-click='events.click']")
 	if err := btn.Click(); err != nil {
 		t.Fatalf("click: %v", err)
 	}
@@ -66,7 +66,7 @@ func TestEventsFormSubmit(t *testing.T) {
 
 	// Two inputs share name="name" (Submit form and Bind form), so
 	// scope the locator to the submit form.
-	formScope := page.Locator("[data-tether-submit='events.submit']")
+	formScope := page.Locator("[data-tether-event-submit='events.submit']")
 	nameField := formScope.Locator("input[name='name']")
 	if err := nameField.Fill("Alice"); err != nil {
 		t.Fatalf("fill: %v", err)
@@ -96,7 +96,7 @@ func TestEventsFormSubmitEmpty(t *testing.T) {
 		t.Fatalf("goto: %v", err)
 	}
 
-	formScope := page.Locator("[data-tether-submit='events.submit']")
+	formScope := page.Locator("[data-tether-event-submit='events.submit']")
 	submit := formScope.Locator("button[type='submit']")
 	if err := submit.Click(); err != nil {
 		t.Fatalf("submit: %v", err)
@@ -175,7 +175,7 @@ func TestEventsPaste(t *testing.T) {
 	// Dispatch a paste event with text via JS since Playwright
 	// doesn't have a native paste API.
 	_, err = page.Evaluate(`() => {
-		var el = document.querySelector('[data-tether-paste="events.paste"]');
+		var el = document.querySelector('[data-tether-event-paste="events.paste"]');
 		if (!el) return;
 		var dt = new DataTransfer();
 		dt.setData('text', 'hello from clipboard');
@@ -207,7 +207,7 @@ func TestEventsContextMenu(t *testing.T) {
 	// Dispatch a contextmenu event via JS. Playwright's right-click
 	// may not trigger the DOM event consistently on all platforms.
 	_, err = page.Evaluate(`() => {
-		var el = document.querySelector('[data-tether-contextmenu]');
+		var el = document.querySelector('[data-tether-event-contextmenu]');
 		if (!el) return;
 		el.dispatchEvent(new MouseEvent('contextmenu', {bubbles: true}));
 	}`)
@@ -218,6 +218,53 @@ func TestEventsContextMenu(t *testing.T) {
 	result := page.GetByText("Context menu intercepted!")
 	if err := expect(result).ToBeVisible(); err != nil {
 		t.Errorf("context menu result not visible: %v", err)
+	}
+}
+
+// TestEventsArbitraryBubbling covers bind.On with an event that has no
+// dedicated helper. dblclick bubbles, so root delegation finds the
+// nearest bound ancestor.
+func TestEventsArbitraryBubbling(t *testing.T) {
+	srv := startApp(t, serverMode())
+	page, cleanup := newPage(t)
+	defer cleanup()
+
+	if _, err := page.Goto(srv + "/events/"); err != nil {
+		t.Fatalf("goto: %v", err)
+	}
+
+	btn := page.Locator("[data-tether-event-dblclick='events.custom']")
+	if err := btn.Dblclick(); err != nil {
+		t.Fatalf("dblclick: %v", err)
+	}
+
+	result := page.GetByText("dblclick received")
+	if err := expect(result).ToBeVisible(); err != nil {
+		t.Errorf("dblclick result not visible: %v", err)
+	}
+}
+
+// TestEventsArbitraryNonBubbling is the counterpart for an event that
+// does not bubble. The client registers both phases and lets each claim
+// the events it owns, so mouseenter reaches the server without the
+// framework keeping a table of which events bubble.
+func TestEventsArbitraryNonBubbling(t *testing.T) {
+	srv := startApp(t, serverMode())
+	page, cleanup := newPage(t)
+	defer cleanup()
+
+	if _, err := page.Goto(srv + "/events/"); err != nil {
+		t.Fatalf("goto: %v", err)
+	}
+
+	btn := page.Locator("[data-tether-event-mouseenter='events.hover']")
+	if err := btn.Hover(); err != nil {
+		t.Fatalf("hover: %v", err)
+	}
+
+	result := page.GetByText("mouseenter received")
+	if err := expect(result).ToBeVisible(); err != nil {
+		t.Errorf("mouseenter result not visible: %v", err)
 	}
 }
 
@@ -234,7 +281,7 @@ func TestEventsValidationRequired(t *testing.T) {
 	}
 
 	// Submit the validation form without filling the required field.
-	form := page.Locator("[data-tether-submit='events.validated']")
+	form := page.Locator("[data-tether-event-submit='events.validated']")
 	submit := form.Locator("button[type='submit']")
 	if err := submit.Click(); err != nil {
 		t.Fatalf("click submit: %v", err)
@@ -259,7 +306,7 @@ func TestEventsValidationSuccess(t *testing.T) {
 		t.Fatalf("goto: %v", err)
 	}
 
-	form := page.Locator("[data-tether-submit='events.validated']")
+	form := page.Locator("[data-tether-event-submit='events.validated']")
 	input := form.Locator("input[name='validated-name']")
 	if err := input.Fill("Alice"); err != nil {
 		t.Fatalf("fill: %v", err)

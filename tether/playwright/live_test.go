@@ -66,7 +66,7 @@ func TestLiveSSEBroadcast(t *testing.T) {
 
 	waitForConnected(t, page)
 
-	btn := page.Locator("[data-tether-click='live.broadcast']")
+	btn := page.Locator("[data-tether-event-click='live.broadcast']")
 	if err := btn.Click(); err != nil {
 		t.Fatalf("click: %v", err)
 	}
@@ -91,7 +91,7 @@ func TestLiveWSBroadcast(t *testing.T) {
 
 	waitForConnected(t, page)
 
-	btn := page.Locator("[data-tether-click='live.broadcast']")
+	btn := page.Locator("[data-tether-event-click='live.broadcast']")
 	if err := btn.Click(); err != nil {
 		t.Fatalf("click: %v", err)
 	}
@@ -117,7 +117,7 @@ func TestLiveWSSetTitle(t *testing.T) {
 
 	waitForConnected(t, page)
 
-	btn := page.Locator("[data-tether-click='live.set-title']")
+	btn := page.Locator("[data-tether-event-click='live.set-title']")
 	if err := btn.Click(); err != nil {
 		t.Fatalf("click: %v", err)
 	}

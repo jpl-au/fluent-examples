@@ -190,10 +190,13 @@ func Render(s State) node.Node {
 			),
 		),
 
-		panel.Card("Arbitrary DOM Events", "Double-click the button - bind.Event lets you listen for any DOM event, not just the built-in ones.", "bind.Event", panel.AllTransports,
+		panel.Card("Arbitrary DOM Events", "bind.On takes any DOM event name - there is no list to be on. Double-click the first button, then hover the second. dblclick bubbles and mouseenter does not, and neither needs a dedicated helper: the client attaches a listener for every event name it finds in the page.", "bind.On", panel.AllTransports,
 			layout.Stack(
-				button.Primary("Double-click me", bind.Event("dblclick", "events.custom")),
-				layout.Container(valueResult("Result", s.CustomEventResult, "Double-click the button above")).Dynamic("custom-result"),
+				layout.Row(
+					button.Primary("Double-click me", bind.On("dblclick", "events.custom")),
+					button.Secondary("Hover me", bind.On("mouseenter", "events.hover")),
+				),
+				layout.Container(valueResult("Result", s.CustomEventResult, "Double-click or hover a button above")).Dynamic("custom-result"),
 			),
 		),
 
@@ -223,7 +226,7 @@ func Render(s State) node.Node {
 			layout.Stack(
 				bind.Apply(
 					div.New(result.Block("Right-click me")),
-					bind.Event("contextmenu", "events.contextmenu"),
+					bind.On("contextmenu", "events.contextmenu"),
 					bind.PreventDefault(),
 				),
 				contextMenuResult(s.ContextMenuResult),

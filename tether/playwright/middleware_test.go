@@ -42,7 +42,7 @@ func TestMiddlewareChainOrder(t *testing.T) {
 
 	waitForConnected(t, page)
 
-	btn := page.Locator("[data-tether-click='mw.ping']").First()
+	btn := page.Locator("[data-tether-event-click='mw.ping']").First()
 	if err := btn.Click(); err != nil {
 		t.Fatalf("click: %v", err)
 	}
@@ -68,7 +68,7 @@ func TestMiddlewareChainFullOrder(t *testing.T) {
 
 	waitForConnected(t, page)
 
-	btn := page.Locator("[data-tether-click='mw.ping']").First()
+	btn := page.Locator("[data-tether-event-click='mw.ping']").First()
 	if err := btn.Click(); err != nil {
 		t.Fatalf("click: %v", err)
 	}
@@ -126,7 +126,7 @@ func TestMiddlewareSlowEvent(t *testing.T) {
 
 	waitForConnected(t, page)
 
-	btn := page.Locator("[data-tether-click='mw.slow']")
+	btn := page.Locator("[data-tether-event-click='mw.slow']")
 	if err := btn.Click(); err != nil {
 		t.Fatalf("click slow: %v", err)
 	}
@@ -153,7 +153,7 @@ func TestMiddlewareEventCount(t *testing.T) {
 	waitForConnected(t, page)
 
 	// The "Click Me" button in the Event Counting card.
-	btn := page.Locator("[data-tether-click='mw.ping']").Last()
+	btn := page.Locator("[data-tether-event-click='mw.ping']").Last()
 	if err := btn.Click(); err != nil {
 		t.Fatalf("click 1: %v", err)
 	}

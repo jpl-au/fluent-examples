@@ -144,7 +144,12 @@ func Handle(sess tether.Session, s State, ev tether.Event) State {
 		time.Sleep(time.Second)
 		sess.Toast("Loading complete!")
 	case "events.custom":
-		s.CustomEventResult = "Double-click received!"
+		s.CustomEventResult = "dblclick received - a bubbling event with no dedicated helper."
+	case "events.hover":
+		// mouseenter does not bubble, so the client matches the element
+		// the event was dispatched on rather than the nearest bound
+		// ancestor - exactly as addEventListener would.
+		s.CustomEventResult = "mouseenter received - a non-bubbling event with no dedicated helper."
 	case "events.reset":
 		msg, _ := ev.Get("message")
 		if msg != "" {

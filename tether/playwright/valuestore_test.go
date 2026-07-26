@@ -47,7 +47,7 @@ func TestValuestoreIncrement(t *testing.T) {
 	count := page.Locator("[data-fluent-key='update-count']")
 	before := readCountText(t, count)
 
-	btn := page.Locator("[data-tether-click='value.increment']")
+	btn := page.Locator("[data-tether-event-click='value.increment']")
 	if err := btn.Click(); err != nil {
 		t.Fatalf("click: %v", err)
 	}
@@ -74,7 +74,7 @@ func TestValuestoreReset(t *testing.T) {
 	waitForConnected(t, page)
 
 	// Increment first to ensure the counter is non-zero.
-	inc := page.Locator("[data-tether-click='value.increment']")
+	inc := page.Locator("[data-tether-event-click='value.increment']")
 	if err := inc.Click(); err != nil {
 		t.Fatalf("increment: %v", err)
 	}
@@ -87,7 +87,7 @@ func TestValuestoreReset(t *testing.T) {
 		page.WaitForTimeout(500)
 	}
 
-	reset := page.Locator("[data-tether-click='value.reset']")
+	reset := page.Locator("[data-tether-event-click='value.reset']")
 	if err := reset.Click(); err != nil {
 		t.Fatalf("reset: %v", err)
 	}
@@ -114,7 +114,7 @@ func TestValuestoreLocalIncrement(t *testing.T) {
 
 	waitForConnected(t, page)
 
-	btn := page.Locator("[data-tether-click='value.local-inc']")
+	btn := page.Locator("[data-tether-event-click='value.local-inc']")
 	if err := btn.Click(); err != nil {
 		t.Fatalf("click: %v", err)
 	}

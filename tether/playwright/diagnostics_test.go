@@ -30,7 +30,7 @@ func TestDiagnosticsPageRenders(t *testing.T) {
 	// The button might be inside a section that needs scrolling
 	// or is below the fold. Use a locator count check instead of
 	// visibility.
-	btn := page.Locator("[data-tether-click='diag.trigger-panic']")
+	btn := page.Locator("[data-tether-event-click='diag.trigger-panic']")
 	count, _ := btn.Count()
 	if count == 0 {
 		t.Fatal("trigger button not found in DOM")
@@ -52,7 +52,7 @@ func TestDiagnosticsTriggerPanic(t *testing.T) {
 
 	waitForConnected(t, page)
 
-	btn := page.Locator("[data-tether-click='diag.trigger-panic']").First()
+	btn := page.Locator("[data-tether-event-click='diag.trigger-panic']").First()
 	if err := btn.Click(pw.LocatorClickOptions{Force: pw.Bool(true)}); err != nil {
 		t.Fatalf("click: %v", err)
 	}
@@ -79,7 +79,7 @@ func TestDiagnosticsSessionSurvivesPanic(t *testing.T) {
 
 	waitForConnected(t, page)
 
-	btn := page.Locator("[data-tether-click='diag.trigger-panic']").First()
+	btn := page.Locator("[data-tether-event-click='diag.trigger-panic']").First()
 
 	// First panic.
 	if err := btn.Click(pw.LocatorClickOptions{Force: pw.Bool(true)}); err != nil {
@@ -124,7 +124,7 @@ func TestDiagnosticsEventShowsSessionID(t *testing.T) {
 
 	waitForConnected(t, page)
 
-	btn := page.Locator("[data-tether-click='diag.trigger-panic']").First()
+	btn := page.Locator("[data-tether-event-click='diag.trigger-panic']").First()
 	if err := btn.Click(pw.LocatorClickOptions{Force: pw.Bool(true)}); err != nil {
 		t.Fatalf("click: %v", err)
 	}
