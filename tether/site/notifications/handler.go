@@ -115,10 +115,14 @@ func Handle(sess tether.Session, s State, ev tether.Event) State {
 		})
 
 	case "notify.indicator":
-		sess.Go(func(_ context.Context) {
-			time.Sleep(simulatedDelay)
-			sess.Toast("bind.Indicator - loading complete")
-		})
+		// bind.Indicator shows the spinner for the lifetime of the event
+		// round trip and clears it when the server responds, so the work
+		// has to block the handler. Deferring it to sess.Go returns
+		// immediately and the spinner clears before it is ever seen.
+		// The bind.Optimistic demo below is the opposite: it flips a
+		// signal client-side, so its work belongs in a goroutine.
+		time.Sleep(simulatedDelay)
+		sess.Toast("bind.Indicator - loading complete")
 
 	case "notify.signal-indicator":
 		sess.Go(func(_ context.Context) {
