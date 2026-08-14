@@ -163,7 +163,7 @@ func TestComputedDrivesShow(t *testing.T) {
 		t.Errorf("BIG should be hidden at total=10: %v", err)
 	}
 	// Six clicks total: qty=6, total=60 > 50, BIG visible.
-	for i := 0; i < 5; i++ {
+	for range 5 {
 		if err := inc.Click(); err != nil {
 			t.Fatalf("click inc: %v", err)
 		}

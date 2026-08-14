@@ -8,8 +8,10 @@ github.com/davecgh/go-spew v1.1.1 h1:vj9j/u1bqnvCEfJOwUhtlOARqs3+rkHYY13jYWTU97c
 github.com/davecgh/go-spew v1.1.1/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
 github.com/google/brotli/go/cbrotli v0.0.0-20230829110029-ed738e842d2f h1:jopqB+UTSdJGEJT8tEqYyE29zN91fi2827oLET8tl7k=
 github.com/google/brotli/go/cbrotli v0.0.0-20230829110029-ed738e842d2f/go.mod h1:nOPhAkwVliJdNTkj3gXpljmWhjc4wCaVqbMJcPKWP4s=
-github.com/jpl-au/fluent v0.3.2 h1:cLelE0uKtz+hpssg/3ErIpNsUhdHlPER6CTpMPr3oMg=
-github.com/jpl-au/fluent v0.3.2/go.mod h1:Iptw7Q1CEBYMWKUTo5K9RpWjlpgDltRc3eHdUehPNIE=
+github.com/jpl-au/fluent v0.5.0 h1:eQmzU8zixbF6m8FLIRwZKsbVMeCq5GLAoQDcXj10yaM=
+github.com/jpl-au/fluent v0.5.0/go.mod h1:Iptw7Q1CEBYMWKUTo5K9RpWjlpgDltRc3eHdUehPNIE=
+github.com/jpl-au/fluent-datastar v0.5.0 h1:c0K0UrH2IqXgJNzPcABch8LS1MEfgG/uPjYTLgLV/44=
+github.com/jpl-au/fluent-datastar v0.5.0/go.mod h1:2wyF0vxtvgotMqM+MwJkv3WqfYSZCi+5H9BBOyhUtKo=
 github.com/klauspost/compress v1.16.7/go.mod h1:ntbaceVETuRiXiv4DpjP66DpAtAGkEQskQzEyD//IeE=
 github.com/klauspost/compress v1.18.0 h1:c/Cqfb0r+Yi+JtIEq73FWXVkRonBlf0CRNYc8Zttxdo=
 github.com/klauspost/compress v1.18.0/go.mod h1:2Pp+KzxcywXVXMr50+X0Q/Lsb43OQHYWRCY2AiWywWQ=

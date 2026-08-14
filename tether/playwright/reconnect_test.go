@@ -121,7 +121,7 @@ func (s *restartableServer) restart() {
 // the expected count so events are never sent faster than asserted.
 func clickIncrement(t *testing.T, page pw.Page, n, want int) {
 	t.Helper()
-	for i := 0; i < n; i++ {
+	for range n {
 		if err := page.Locator("#inc").Click(); err != nil {
 			t.Fatalf("click: %v", err)
 		}
