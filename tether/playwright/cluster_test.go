@@ -85,13 +85,13 @@ func TestClusterCrossSession(t *testing.T) {
 	}
 
 	// The sender sees their own message immediately.
-	senderMessages := sender.Locator("[data-fluent-key='cluster-messages']")
+	senderMessages := sender.Locator("#cluster-messages")
 	if err := expect(senderMessages).ToContainText("cluster hello"); err != nil {
 		t.Errorf("sender did not see own message: %v", err)
 	}
 
 	// The receiver should see the message via WatchBus.
-	receiverMessages := receiver.Locator("[data-fluent-key='cluster-messages']")
+	receiverMessages := receiver.Locator("#cluster-messages")
 	if err := expect(receiverMessages).ToContainText("cluster hello"); err != nil {
 		t.Errorf("receiver did not see message from other session: %v", err)
 	}
@@ -129,7 +129,7 @@ func TestClusterPageRenders(t *testing.T) {
 	waitForConnected(t, page)
 
 	// The page should show the placeholder text.
-	placeholder := page.Locator("[data-fluent-key='cluster-messages']")
+	placeholder := page.Locator("#cluster-messages")
 	if err := expect(placeholder).ToContainText("No messages yet"); err != nil {
 		t.Errorf("placeholder not visible: %v", err)
 	}

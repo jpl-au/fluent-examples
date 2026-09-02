@@ -37,7 +37,7 @@ func TestComponentsLikesIncrement(t *testing.T) {
 	waitForConnected(t, page)
 
 	// The Likes counter is in the likes-section Dynamic container.
-	section := page.Locator("[data-fluent-key='likes-section']")
+	section := page.Locator("#likes-section")
 	btn := section.GetByText("+")
 	if err := btn.Click(); err != nil {
 		t.Fatalf("click: %v", err)
@@ -67,7 +67,7 @@ func TestComponentsLikesDecrement(t *testing.T) {
 
 	waitForConnected(t, page)
 
-	section := page.Locator("[data-fluent-key='likes-section']")
+	section := page.Locator("#likes-section")
 	plus := section.GetByText("+")
 	minus := section.GetByText("-")
 
@@ -116,7 +116,7 @@ func TestComponentsReset(t *testing.T) {
 
 	waitForConnected(t, page)
 
-	section := page.Locator("[data-fluent-key='likes-section']")
+	section := page.Locator("#likes-section")
 	plus := section.GetByText("+")
 	reset := section.GetByText("Reset")
 
@@ -151,8 +151,8 @@ func TestComponentsIndependent(t *testing.T) {
 
 	waitForConnected(t, page)
 
-	likes := page.Locator("[data-fluent-key='likes-section']")
-	stars := page.Locator("[data-fluent-key='stars-section']")
+	likes := page.Locator("#likes-section")
+	stars := page.Locator("#stars-section")
 
 	// Increment Likes three times.
 	likesPlus := likes.GetByText("+")

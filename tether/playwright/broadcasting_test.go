@@ -50,7 +50,7 @@ func TestBroadcastingSendMessage(t *testing.T) {
 	}
 
 	// The sender sees their own message immediately.
-	messages := page.Locator("[data-fluent-key='messages']")
+	messages := page.Locator("#messages")
 	if err := expect(messages).ToContainText("hello from test"); err != nil {
 		t.Errorf("message not visible in sender: %v", err)
 	}
@@ -90,7 +90,7 @@ func TestBroadcastingCrossSession(t *testing.T) {
 	}
 
 	// The receiver should see the message via WatchBus.
-	receiverMessages := receiver.Locator("[data-fluent-key='messages']")
+	receiverMessages := receiver.Locator("#messages")
 	if err := expect(receiverMessages).ToContainText("cross-session test"); err != nil {
 		t.Errorf("message not received by other session: %v", err)
 	}
@@ -147,7 +147,7 @@ func TestBroadcastingMessageCounter(t *testing.T) {
 	}
 
 	// The message counter should show at least 1.
-	counter := page.Locator("[data-fluent-key='message-count']")
+	counter := page.Locator("#message-count")
 	if err := expect(counter).Not().ToContainText("Total messages: 0"); err != nil {
 		text, _ := counter.TextContent()
 		t.Errorf("counter should have incremented, got %q", text)
