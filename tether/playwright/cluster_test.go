@@ -1,7 +1,6 @@
 package playwright_test
 
 import (
-	"net"
 	"net/http"
 	"testing"
 
@@ -33,16 +32,7 @@ func startClusterServer(t *testing.T, cluster tether.Cluster) string {
 	mux.Handle("/_tether/", handler)
 	mux.Handle("/_test/cluster/", handler)
 
-	ln, err := net.Listen("tcp", "127.0.0.1:0")
-	if err != nil {
-		t.Fatalf("listen: %v", err)
-	}
-
-	srv := &http.Server{Handler: mux}
-	go srv.Serve(ln)
-	t.Cleanup(func() { srv.Close() })
-
-	return "http://" + ln.Addr().String()
+	return startServer(t, RealHTTP1, mux, handler.Shutdown)
 }
 
 // TestClusterCrossSession starts a server with a Redis-backed cluster,
@@ -109,15 +99,7 @@ func TestClusterPageRenders(t *testing.T) {
 	mux.Handle("/_tether/", handler)
 	mux.Handle("/_test/cluster/", handler)
 
-	ln, err := net.Listen("tcp", "127.0.0.1:0")
-	if err != nil {
-		t.Fatalf("listen: %v", err)
-	}
-	srv := &http.Server{Handler: mux}
-	go srv.Serve(ln)
-	t.Cleanup(func() { srv.Close() })
-
-	base := "http://" + ln.Addr().String()
+	base := startServer(t, RealHTTP1, mux, handler.Shutdown)
 
 	page, cleanup := newPage(t)
 	defer cleanup()

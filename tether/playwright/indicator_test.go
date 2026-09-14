@@ -1,10 +1,8 @@
 package playwright_test
 
 import (
-	"net"
 	"net/http"
 	"testing"
-	"time"
 
 	"github.com/jpl-au/fluent/html5/button"
 	"github.com/jpl-au/fluent/html5/div"
@@ -44,40 +42,40 @@ func renderIndicator(s indicatorState) node.Node {
 	)
 }
 
-func handleIndicator(_ tether.Session, s indicatorState, ev tether.Event) indicatorState {
-	// Serialised per session: the fast action settles well before the
-	// slow one, opening a window where only the slow event is in flight.
-	switch ev.Action {
-	case "fast":
-		time.Sleep(300 * time.Millisecond)
-	case "slow":
-		time.Sleep(2500 * time.Millisecond)
-	}
-	return s
-}
-
-func startIndicatorServer(t *testing.T) string {
+func startIndicatorServer(t *testing.T) (base string, finishFast, finishSlow func()) {
 	t.Helper()
+	fast, slow := make(chan struct{}), make(chan struct{})
 	h := tether.Stateful(tether.App{DevMode: true}, tether.StatefulConfig[indicatorState]{
 		InitialState: func(*http.Request) indicatorState { return indicatorState{} },
 		Render:       renderIndicator,
-		Handle:       handleIndicator,
+		Handle: func(sess tether.Session, s indicatorState, ev tether.Event) indicatorState {
+			var release <-chan struct{}
+			switch ev.Action {
+			case "fast":
+				release = fast
+			case "slow":
+				release = slow
+			default:
+				return s
+			}
+			// This fixture deliberately holds replies until the browser has
+			// observed each in-flight state. Shutdown also releases a handler
+			// if an assertion fails before the test opens its gate.
+			select {
+			case <-release:
+			case <-sess.Context().Done():
+			}
+			return s
+		},
 	})
-	ln, err := net.Listen("tcp", "127.0.0.1:0")
-	if err != nil {
-		t.Fatalf("listen: %v", err)
-	}
-	srv := &http.Server{Handler: h}
-	go srv.Serve(ln)
-	t.Cleanup(func() { srv.Close() })
-	return "http://" + ln.Addr().String()
+	return startServer(t, RealHTTP1, h, h.Shutdown), func() { close(fast) }, func() { close(slow) }
 }
 
 // TestIndicatorRefCounted fires two overlapping events that share one
 // indicator and asserts the spinner stays lit until the last one
 // settles.
 func TestIndicatorRefCounted(t *testing.T) {
-	srv := startIndicatorServer(t)
+	srv, finishFast, finishSlow := startIndicatorServer(t)
 	page, cleanup := newPage(t)
 	defer cleanup()
 
@@ -88,14 +86,17 @@ func TestIndicatorRefCounted(t *testing.T) {
 
 	lit := page.Locator("#spinner.tether-pending")
 
-	// Fire both events; the fast one settles first, the slow one keeps
-	// running. Clicking dispatches immediately (well before either echo),
-	// so both are in flight together.
+	// Hold both replies until the browser confirms both events are in flight.
 	if err := page.Locator("#fast").Click(); err != nil {
 		t.Fatalf("click fast: %v", err)
 	}
 	if err := page.Locator("#slow").Click(); err != nil {
 		t.Fatalf("click slow: %v", err)
+	}
+	for _, id := range []string{"#fast", "#slow"} {
+		if err := expect(page.Locator(id)).ToBeDisabled(); err != nil {
+			t.Fatalf("%s event is not in flight: %v", id, err)
+		}
 	}
 
 	// Both in flight: the spinner is lit.
@@ -104,6 +105,7 @@ func TestIndicatorRefCounted(t *testing.T) {
 	}
 
 	// Wait for the fast event to settle (its button re-enables).
+	finishFast()
 	if err := expect(page.Locator("#fast")).Not().ToBeDisabled(); err != nil {
 		t.Fatalf("fast event did not settle: %v", err)
 	}
@@ -115,6 +117,7 @@ func TestIndicatorRefCounted(t *testing.T) {
 	}
 
 	// Once the slow event settles, the spinner clears.
+	finishSlow()
 	if err := expect(page.Locator("#slow")).Not().ToBeDisabled(); err != nil {
 		t.Fatalf("slow event did not settle: %v", err)
 	}

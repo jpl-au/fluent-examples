@@ -2,7 +2,6 @@ package playwright_test
 
 import (
 	"net/http"
-	"net/http/httptest"
 	"strconv"
 	"testing"
 
@@ -80,9 +79,7 @@ func startDevx(t *testing.T, viewTransitions bool) string {
 		Handle:       devxHandle,
 		Layout:       devxLayout,
 	})
-	srv := httptest.NewTLSServer(h)
-	t.Cleanup(srv.Close)
-	return srv.URL
+	return startServer(t, HTTP1, h, h.Shutdown)
 }
 
 // vtStub replaces document.startViewTransition with a recorder that

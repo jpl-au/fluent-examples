@@ -1,7 +1,6 @@
 package playwright_test
 
 import (
-	"context"
 	"net"
 	"net/http"
 	"strconv"
@@ -53,11 +52,11 @@ func handleReconnect(_ tether.Session, s reconnectState, ev tether.Event) reconn
 // so a "process restart" can bring up a brand-new handler - with
 // empty in-memory pools - at the same URL the browser reconnects to.
 type restartableServer struct {
-	t     *testing.T
-	addr  string
-	store tether.SessionStore // nil = no crash recovery
-	srv   *http.Server
-	h     *tether.Handler[reconnectState]
+	t         *testing.T
+	addr      string
+	store     tether.SessionStore // nil = no crash recovery
+	h         *tether.Handler[reconnectState]
+	closeHTTP func()
 }
 
 func startRestartable(t *testing.T, sessionStore tether.SessionStore) *restartableServer {
@@ -79,17 +78,17 @@ func (s *restartableServer) start(ln net.Listener) {
 		Handle:       handleReconnect,
 		SessionStore: s.store,
 	})
-	s.srv = &http.Server{Handler: s.h}
-	go s.srv.Serve(ln)
+	s.closeHTTP = serveHTTP(s.t, &http.Server{Handler: s.h}, ln)
 }
 
 func (s *restartableServer) stop() {
-	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
-	defer cancel()
 	// Handler shutdown first: it persists session state to the store
 	// (when one is configured) before the listener goes away.
-	s.h.Shutdown(ctx)
-	s.srv.Close()
+	stopped := shutdownHandlers(s.t, s.h.Shutdown)
+	s.closeHTTP()
+	if !stopped {
+		panic("restart fixture handler did not shut down")
+	}
 }
 
 // restart simulates a deploy: the old process shuts down (persisting
@@ -98,6 +97,9 @@ func (s *restartableServer) stop() {
 func (s *restartableServer) restart() {
 	s.t.Helper()
 	s.stop()
+	if s.t.Failed() {
+		s.t.FailNow()
+	}
 
 	// The port is only free once the old listener has fully closed;
 	// the browser may also be hammering it with reconnect attempts.

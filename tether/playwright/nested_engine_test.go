@@ -1,10 +1,8 @@
 package playwright_test
 
 import (
-	"context"
 	"fmt"
 	"net/http"
-	"net/http/httptest"
 	"testing"
 	"time"
 
@@ -50,12 +48,10 @@ func TestNestedEngineBrowser(t *testing.T) {
 					Handle:    func(_ tether.Session, s nestedBrowserState, _ tether.Event) nestedBrowserState { return s },
 					OnConnect: func(s *tether.StatefulSession[nestedBrowserState]) { sessions <- s },
 				})
-				srv := httptest.NewServer(h)
-				defer srv.Close()
-				defer h.Shutdown(context.Background())
+				base := startServer(t, RealHTTP1, h, h.Shutdown)
 				page, cleanup := newPage(t)
 				defer cleanup()
-				if _, err := page.Goto(srv.URL); err != nil {
+				if _, err := page.Goto(base); err != nil {
 					t.Fatal(err)
 				}
 				waitForConnected(t, page)
@@ -151,12 +147,10 @@ func TestNestedMoveKeepsDOMIdentity(t *testing.T) {
 				Handle:    func(_ tether.Session, s bool, _ tether.Event) bool { return s },
 				OnConnect: func(s *tether.StatefulSession[bool]) { sessions <- s },
 			})
-			srv := httptest.NewServer(h)
-			defer srv.Close()
-			defer h.Shutdown(context.Background())
+			base := startServer(t, RealHTTP1, h, h.Shutdown)
 			page, cleanup := newPage(t)
 			defer cleanup()
-			if _, err := page.Goto(srv.URL); err != nil {
+			if _, err := page.Goto(base); err != nil {
 				t.Fatal(err)
 			}
 			waitForConnected(t, page)

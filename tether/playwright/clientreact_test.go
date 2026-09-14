@@ -1,7 +1,6 @@
 package playwright_test
 
 import (
-	"net"
 	"net/http"
 	"testing"
 
@@ -94,14 +93,7 @@ func startReactServer(t *testing.T) string {
 		Render:       renderReact,
 		Handle:       handleReact,
 	})
-	ln, err := net.Listen("tcp", "127.0.0.1:0")
-	if err != nil {
-		t.Fatalf("listen: %v", err)
-	}
-	srv := &http.Server{Handler: h}
-	go srv.Serve(ln)
-	t.Cleanup(func() { srv.Close() })
-	return "http://" + ln.Addr().String()
+	return startServer(t, RealHTTP1, h, h.Shutdown)
 }
 
 // TestConditionalBindingsReactToSignal clicks an increment button that

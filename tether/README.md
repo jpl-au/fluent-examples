@@ -136,6 +136,24 @@ TETHER_PROTO=HTTP2 go test -count=1 ./playwright/...     # HTTP/2 over TLS
 Add `GOWORK=off` to test the released dependency pins when working inside a
 Go workspace. Without it, Go uses the workspace's local library modules.
 
+Tests run sequentially, with their own servers and fresh browser processes. Every test can run independently:
+
+```bash
+go test -v -count=1 -run '^TestComponentsLikesIncrement$' ./playwright
+```
+
+### Investigating slow runs
+
+Enable fixture timings to see application setup, driver startup, Chrome launch, browser context and page setup, connection readiness, and teardown:
+
+```bash
+TETHER_TEST_TIMINGS=1 go test -v -count=1 -run '^TestComponentsLikesIncrement$' ./playwright
+```
+
+Each phase logs its start, elapsed time and Go goroutine count. A start with no completion identifies the phase that stalled. Goroutine counts are diagnostic; they include asynchronous work and are not timing assertions. For navigation and assertion details, add `DEBUG=pw:api` to the command.
+
+Fixture cleanup shuts down tether handlers before closing their HTTP server and waits for the test's own browser and driver to exit. Cleanup failures fail the test. Cleanup operations have a 30-second allowance; the existing browser action and assertion timeouts are unchanged. If the driver cannot exit after its input pipe closes, cleanup terminates that fixture's driver. If forced cleanup also cannot finish, the test process aborts so subsequent tests cannot inherit the stuck resources.
+
 ### How it works
 
 The tests start an isolated server per test, open a headless Chrome or Chromium

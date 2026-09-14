@@ -17,23 +17,26 @@
 // Uses the system-installed Chrome. Requires Chrome or Chromium to be
 // installed - no Playwright browser download is performed.
 //
-// Shared, cross-cutting helpers (startApp, newPage, waitForConnected,
-// serverMode, expect, primaryModifier, WithPermissions, and the ServerMode
-// and PageOption types) live in this file. Add new shared helpers here so they
-// stay discoverable and are not duplicated; keep per-feature app scaffolding
+// Shared helpers for server and browser setup, cleanup, timing, connection
+// readiness, and assertions live in this file. Add new shared helpers here so
+// they stay discoverable and are not duplicated; keep per-feature app scaffolding
 // (each feature's start/render/handle functions and its state type) in that
 // feature's own test file.
 package playwright_test
 
 import (
 	"context"
+	"errors"
+	"fmt"
 	"net"
 	"net/http"
 	"net/http/httptest"
 	"os"
 	"os/exec"
 	"runtime"
+	"sync"
 	"testing"
+	"time"
 
 	tether "github.com/jpl-au/tether"
 	"github.com/jpl-au/tether/wire"
@@ -86,38 +89,155 @@ func serverMode() ServerMode {
 // URL. The server is shut down when the test ends.
 func startApp(t *testing.T, mode ServerMode) string {
 	t.Helper()
+	finish := testPhase(t, "application setup")
+	defer finish()
 	ctx, cancel := context.WithCancel(context.Background())
+	// Also cancel subscriptions if application setup fails before startServer.
 	t.Cleanup(cancel)
 
 	assets := &tether.Asset{
 		FS:     os.DirFS("../static"),
 		Prefix: "/static/",
 	}
-	mux, _ := app.New(ctx, assets, wire.JSON)
+	mux, handlers := app.New(ctx, assets, wire.JSON)
+	shutdown := make([]func(context.Context) error, 0, len(handlers)+1)
+	shutdown = append(shutdown, func(context.Context) error { cancel(); return nil })
+	for _, handler := range handlers {
+		shutdown = append(shutdown, handler.Shutdown)
+	}
+	return startServer(t, mode, mux, shutdown...)
+}
 
-	switch mode {
-	case HTTP2:
-		srv := httptest.NewUnstartedServer(mux)
-		srv.EnableHTTP2 = true
-		srv.StartTLS()
-		t.Cleanup(srv.Close)
-		return srv.URL
+// Cleanup has its own allowance; browser actions and assertions retain their
+// existing timeouts. Tests stay sequential, with a fresh server and browser
+// for every fixture, including when selected individually with -run.
+const cleanupTimeout = 30 * time.Second
 
-	case RealHTTP1:
+// testPhase reports setup and teardown timings when TETHER_TEST_TIMINGS=1.
+// Start messages identify a stalled phase; goroutine counts help expose
+// resources retained across sequential tests. They are diagnostic, not assertions.
+func testPhase(t *testing.T, name string) func() {
+	t.Helper()
+	if os.Getenv("TETHER_TEST_TIMINGS") != "1" {
+		return func() {}
+	}
+	started := time.Now()
+	t.Logf("%s: start (goroutines=%d)", name, runtime.NumGoroutine())
+	return func() {
+		t.Helper()
+		t.Logf("%s: %s (goroutines=%d)", name, time.Since(started).Round(time.Millisecond), runtime.NumGoroutine())
+	}
+}
+
+// shutdownHandlers uses one deadline for the entire fixture. Even after a
+// timeout, every handler gets Shutdown so all of them begin releasing resources.
+func shutdownHandlers(t *testing.T, shutdown ...func(context.Context) error) bool {
+	t.Helper()
+	defer testPhase(t, "handler shutdown")()
+	ctx, cancel := context.WithTimeout(context.Background(), cleanupTimeout)
+	defer cancel()
+	ok := true
+	for i, stop := range shutdown {
+		if err := stop(ctx); err != nil {
+			t.Errorf("handler %d shutdown: %v", i, err)
+			ok = false
+		}
+	}
+	return ok
+}
+
+// waitCleanup waits for a cleanup operation owned by this test. The caller
+// must unblock and join an operation that times out before returning.
+func waitCleanup(t *testing.T, name string, done <-chan error) bool {
+	t.Helper()
+	timer := time.NewTimer(cleanupTimeout)
+	defer timer.Stop()
+	select {
+	case err := <-done:
+		if err != nil {
+			t.Errorf("%s: %v", name, err)
+		}
+		return true
+	case <-timer.C:
+		t.Errorf("%s did not finish within %s", name, cleanupTimeout)
+		return false
+	}
+}
+
+// Once forced shutdown has also failed, abort this test process instead of
+// starting another test alongside resources that could not be released.
+func requireCleanup(t *testing.T, name string, done <-chan error) {
+	t.Helper()
+	if !waitCleanup(t, name, done) {
+		panic(name + " is still running after forced shutdown")
+	}
+}
+
+// serveHTTP owns the serving goroutine as well as the listener. Its returned
+// cleanup is idempotent so restart fixtures can stop early and still register
+// automatic cleanup for a failed test.
+func serveHTTP(t *testing.T, srv *http.Server, ln net.Listener) func() {
+	t.Helper()
+	done := make(chan error, 1)
+	go func() {
+		err := srv.Serve(ln)
+		if errors.Is(err, http.ErrServerClosed) {
+			err = nil
+		}
+		done <- err
+	}()
+	return sync.OnceFunc(func() {
+		defer testPhase(t, "HTTP server close")()
+		if err := srv.Close(); err != nil {
+			t.Errorf("HTTP server close: %v", err)
+		}
+		requireCleanup(t, "HTTP serving goroutine", done)
+	})
+}
+
+// startServer registers handler shutdown before closing the HTTP server, so
+// persistent transports cannot keep httptest.Close waiting on a live handler.
+// The shutdown callbacks belong only to this fixture.
+func startServer(t *testing.T, mode ServerMode, handler http.Handler, shutdown ...func(context.Context) error) string {
+	t.Helper()
+	defer testPhase(t, "server setup")()
+
+	if mode == RealHTTP1 {
+		var closeServer func()
+		t.Cleanup(func() {
+			stopped := shutdownHandlers(t, shutdown...)
+			if closeServer != nil {
+				closeServer()
+			}
+			if !stopped {
+				panic("fixture handlers did not shut down")
+			}
+		})
 		ln, err := net.Listen("tcp", "127.0.0.1:0")
 		if err != nil {
 			t.Fatalf("listen: %v", err)
 		}
-		srv := &http.Server{Handler: mux}
-		go srv.Serve(ln)
-		t.Cleanup(func() { srv.Close() })
+		closeServer = serveHTTP(t, &http.Server{Handler: handler}, ln)
 		return "http://" + ln.Addr().String()
-
-	default: // HTTP1
-		srv := httptest.NewTLSServer(mux)
-		t.Cleanup(srv.Close)
-		return srv.URL
 	}
+
+	srv := httptest.NewUnstartedServer(handler)
+	srv.EnableHTTP2 = mode == HTTP2
+	t.Cleanup(func() {
+		stopped := shutdownHandlers(t, shutdown...)
+		defer testPhase(t, "HTTPS server close")()
+		done := make(chan error, 1)
+		go func() { srv.Close(); done <- nil }()
+		if !waitCleanup(t, "HTTPS server close", done) {
+			srv.CloseClientConnections()
+			requireCleanup(t, "HTTPS server close after closing connections", done)
+		}
+		if !stopped {
+			panic("fixture handlers did not shut down")
+		}
+	})
+	srv.StartTLS()
+	return srv.URL
 }
 
 // PageOption configures a browser page created by [newPage].
@@ -143,12 +263,68 @@ func WithPermissions(origin string, permissions ...string) PageOption {
 func newPage(t *testing.T, opts ...PageOption) (pw.Page, func()) {
 	t.Helper()
 
+	finish := testPhase(t, "Playwright driver startup")
 	playwright, err := pw.Run()
+	finish()
 	if err != nil {
 		t.Skipf("Playwright driver unavailable: %v\n"+
 			"Install the driver matching go.mod (no browser download) with:\n\n"+
 			"  go run github.com/playwright-community/playwright-go/cmd/playwright --version\n", err)
 	}
+	var browser pw.Browser
+	var ctx pw.BrowserContext
+	var page pw.Page
+	cleanup := sync.OnceFunc(func() {
+		defer testPhase(t, "browser cleanup")()
+		closed := make(chan error, 1)
+		go func() {
+			var errs []error
+			collect := func(name string, err error) {
+				if err != nil {
+					errs = append(errs, fmt.Errorf("%s: %w", name, err))
+				}
+			}
+			if page != nil {
+				collect("page close", page.Close())
+			}
+			if ctx != nil {
+				collect("context close", ctx.Close())
+			}
+			if browser != nil {
+				collect("browser close", browser.Close())
+			}
+			closed <- errors.Join(errs...)
+		}()
+		browserClosed := waitCleanup(t, "browser cleanup", closed)
+
+		// Stop owns driver shutdown even when a browser close operation stalls.
+		// Closing its pipe releases outstanding Playwright calls. Only this
+		// fixture's driver may be killed if it fails to exit after that.
+		stopped := make(chan error, 1)
+		pid := playwright.Pid()
+		finish := testPhase(t, "Playwright driver stop")
+		go func() { stopped <- playwright.Stop() }()
+		if !waitCleanup(t, "Playwright driver stop", stopped) {
+			if pid > 0 {
+				process, err := os.FindProcess(pid)
+				if err == nil {
+					err = process.Kill()
+					if releaseErr := process.Release(); releaseErr != nil {
+						t.Errorf("release Playwright driver process handle: %v", releaseErr)
+					}
+				}
+				if err != nil && !errors.Is(err, os.ErrProcessDone) {
+					t.Errorf("kill stalled Playwright driver %d: %v", pid, err)
+				}
+			}
+			requireCleanup(t, "Playwright driver exit after kill", stopped)
+		}
+		finish()
+		if !browserClosed {
+			requireCleanup(t, "browser cleanup after driver stop", closed)
+		}
+	})
+	t.Cleanup(cleanup)
 
 	launchOpts := pw.BrowserTypeLaunchOptions{
 		Headless: pw.Bool(true),
@@ -163,43 +339,33 @@ func newPage(t *testing.T, opts ...PageOption) (pw.Page, func()) {
 	} else {
 		launchOpts.Channel = pw.String("chrome")
 	}
-	browser, err := playwright.Chromium.Launch(launchOpts)
+	finish = testPhase(t, "Chrome launch")
+	browser, err = playwright.Chromium.Launch(launchOpts)
+	finish()
 	if err != nil {
-		playwright.Stop()
 		t.Fatalf("browser launch: %v", err)
 	}
 
-	ctx, err := browser.NewContext(pw.BrowserNewContextOptions{
+	finish = testPhase(t, "browser context setup")
+	ctx, err = browser.NewContext(pw.BrowserNewContextOptions{
 		IgnoreHttpsErrors: pw.Bool(true),
 	})
+	finish()
 	if err != nil {
-		browser.Close()
-		playwright.Stop()
 		t.Fatalf("new context: %v", err)
 	}
 
 	for _, opt := range opts {
 		if err := opt(ctx); err != nil {
-			ctx.Close()
-			browser.Close()
-			playwright.Stop()
 			t.Fatalf("page option: %v", err)
 		}
 	}
 
-	page, err := ctx.NewPage()
+	finish = testPhase(t, "browser page setup")
+	page, err = ctx.NewPage()
+	finish()
 	if err != nil {
-		ctx.Close()
-		browser.Close()
-		playwright.Stop()
 		t.Fatalf("new page: %v", err)
-	}
-
-	cleanup := func() {
-		page.Close()
-		ctx.Close()
-		browser.Close()
-		playwright.Stop()
 	}
 	return page, cleanup
 }
@@ -215,6 +381,7 @@ func expect(l pw.Locator) pw.LocatorAssertions {
 // transport is open and the client is ready to send/receive events.
 func waitForConnected(t *testing.T, page pw.Page) {
 	t.Helper()
+	defer testPhase(t, "tether connection")()
 	connected := page.Locator("[data-tether-state='connected']")
 	if err := connected.WaitFor(); err != nil {
 		t.Fatalf("tether did not connect: %v", err)

@@ -2,7 +2,6 @@ package playwright_test
 
 import (
 	"fmt"
-	"net"
 	"net/http"
 	"testing"
 
@@ -72,14 +71,7 @@ func startModsServer(t *testing.T) string {
 		Render:       renderMods,
 		Handle:       handleMods,
 	})
-	ln, err := net.Listen("tcp", "127.0.0.1:0")
-	if err != nil {
-		t.Fatalf("listen: %v", err)
-	}
-	srv := &http.Server{Handler: h}
-	go srv.Serve(ln)
-	t.Cleanup(func() { srv.Close() })
-	return "http://" + ln.Addr().String()
+	return startServer(t, RealHTTP1, h, h.Shutdown)
 }
 
 // TestModifierOutside opens a panel, clicks inside it (which must NOT

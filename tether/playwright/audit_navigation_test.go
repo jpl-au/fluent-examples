@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 	"net/http"
-	"net/http/httptest"
 	"sync/atomic"
 	"testing"
 	"time"
@@ -42,12 +41,13 @@ func TestAuditReconnectNavigation(t *testing.T) {
 				h := tether.Stateful(tether.App{DevMode: true}, cfg)
 				var current atomic.Pointer[tether.Handler[string]]
 				current.Store(h)
-				srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) { current.Load().ServeHTTP(w, r) }))
-				defer srv.Close()
-				defer func() { current.Load().Shutdown(context.Background()) }()
+				base := startServer(t, RealHTTP1,
+					http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) { current.Load().ServeHTTP(w, r) }),
+					func(ctx context.Context) error { return current.Load().Shutdown(ctx) },
+				)
 				page, cleanup := newPage(t)
 				defer cleanup()
-				if _, err := page.Goto(srv.URL); err != nil {
+				if _, err := page.Goto(base); err != nil {
 					t.Fatal(err)
 				}
 				waitForConnected(t, page)
@@ -69,8 +69,8 @@ func TestAuditReconnectNavigation(t *testing.T) {
 					}
 				}
 				if scenario == "restore" {
-					if err := h.Shutdown(context.Background()); err != nil {
-						t.Fatal(err)
+					if !shutdownHandlers(t, h.Shutdown) {
+						t.FailNow()
 					}
 					current.Store(tether.Stateful(tether.App{DevMode: true}, cfg))
 				}

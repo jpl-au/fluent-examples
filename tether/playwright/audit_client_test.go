@@ -3,7 +3,6 @@ package playwright_test
 import (
 	"fmt"
 	"net/http"
-	"net/http/httptest"
 	"strings"
 	"testing"
 
@@ -22,8 +21,7 @@ func auditClient(t *testing.T, content string, attrs ...string) pw.Page {
 	mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprintf(w, `<!doctype html><div data-tether-root data-tether-endpoint="/" data-tether-session="ORIGINAL" data-tether-transport="sse" data-tether-flash-duration="137" %s><span id="count">0</span>%s</div><script src="/_tether/idiomorph.min.js"></script><script src="/_tether/tether.js"></script>`, strings.Join(attrs, " "), content)
 	})
-	srv := httptest.NewServer(mux)
-	t.Cleanup(srv.Close)
+	base := startServer(t, RealHTTP1, mux)
 	page, cleanup := newPage(t)
 	t.Cleanup(cleanup)
 	if err := page.AddInitScript(pw.Script{Content: pw.String(`
@@ -43,7 +41,7 @@ Object.defineProperty(navigator, "clipboard", {value: {writeText: () => Promise.
 `)}); err != nil {
 		t.Fatal(err)
 	}
-	if _, err := page.Goto(srv.URL); err != nil {
+	if _, err := page.Goto(base); err != nil {
 		t.Fatal(err)
 	}
 	if _, err := page.WaitForFunction(`window.__source && document.querySelector('[data-tether-root]').getAttribute('data-tether-state') === 'connected'`, nil); err != nil {
