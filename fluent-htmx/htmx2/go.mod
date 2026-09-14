@@ -1,11 +1,11 @@
-module github.com/jpl-au/fluent-examples/fluent-htmx
+module github.com/jpl-au/fluent-examples/fluent-htmx/htmx2
 
 go 1.25.0
 
 require (
 	github.com/jpl-au/chain v0.1.1
-	github.com/jpl-au/fluent v0.5.0
-	github.com/jpl-au/fluent-htmx/htmx2 v0.5.0
+	github.com/jpl-au/fluent v0.6.0
+	github.com/jpl-au/fluent-htmx/htmx2 v0.5.1
 	github.com/jpl-au/fluent-security v0.5.0
 	github.com/lxzan/gws v1.9.0
 )

@@ -11,10 +11,10 @@ import (
 	"github.com/jpl-au/fluent/html5/script"
 	"github.com/jpl-au/fluent/html5/span"
 
-	"github.com/jpl-au/fluent-examples/fluent-htmx/components/composite/card"
-	"github.com/jpl-au/fluent-examples/fluent-htmx/components/composite/logentry"
-	"github.com/jpl-au/fluent-examples/fluent-htmx/generate"
-	"github.com/jpl-au/fluent-examples/fluent-htmx/layout"
+	"github.com/jpl-au/fluent-examples/fluent-htmx/htmx2/components/composite/card"
+	"github.com/jpl-au/fluent-examples/fluent-htmx/htmx2/components/composite/logentry"
+	"github.com/jpl-au/fluent-examples/fluent-htmx/htmx2/generate"
+	"github.com/jpl-au/fluent-examples/fluent-htmx/htmx2/layout"
 )
 
 // wsUpgrader is shared across requests. The default configuration

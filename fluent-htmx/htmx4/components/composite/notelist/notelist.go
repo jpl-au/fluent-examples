@@ -1,0 +1,51 @@
+// Package notelist provides the note list and item components. Delete
+// forms use HTMX to swap the content area without a full page reload.
+package notelist
+
+import (
+	htmx "github.com/jpl-au/fluent-htmx/htmx4"
+	"github.com/jpl-au/fluent-htmx/htmx4/swap"
+	security "github.com/jpl-au/fluent-security"
+	"github.com/jpl-au/fluent/html5/button"
+	"github.com/jpl-au/fluent/html5/div"
+	"github.com/jpl-au/fluent/html5/form"
+	"github.com/jpl-au/fluent/html5/span"
+	"github.com/jpl-au/fluent/node"
+
+	"github.com/jpl-au/fluent-examples/fluent-htmx/htmx4/components/simple/text"
+	"github.com/jpl-au/fluent-examples/fluent-htmx/htmx4/store"
+)
+
+// New creates a styled note list. If notes is empty a hint is shown.
+func New(contactID string, notes []store.Note) node.Node {
+	if len(notes) == 0 {
+		return text.Hint("No notes yet.")
+	}
+	items := make([]node.Node, len(notes))
+	for i, n := range notes {
+		items[i] = Item(contactID, n)
+	}
+	return div.New(items...).Class("note-list")
+}
+
+// Item renders a single note with content, timestamp, and a delete
+// button. Note content is treated as untrusted HTML and passed
+// through fluent-security's UGC policy before rendering, so
+// formatting tags survive while scripts, event handlers, and
+// javascript: URIs are stripped. See the seeded attack fixtures in
+// store.init for what this catches in practice. The delete form uses
+// HTMX to swap the content in place.
+func Item(contactID string, n store.Note) node.Node {
+	// Progressive enhancement: form.Post provides a standard form
+	// submission for non-JS clients; HxPost upgrades it to swap just
+	// the content partial when htmx is available.
+	action := "/contacts/" + contactID + "/notes/" + n.ID + "/delete"
+	f := form.Post(action)
+	htmx.New(f).HxPost(action).HxTarget("#content").HxSwap(swap.InnerHTML)
+
+	return div.New(
+		div.New(security.HTML(n.Content)).Class("note-content"),
+		span.Text(n.Created.Format("2 Jan 2006, 15:04")).Class("note-time"),
+		f.Add(button.Submit("Delete").Class("btn btn-danger btn-sm")),
+	).Class("note-item")
+}

@@ -15,7 +15,7 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/jpl-au/fluent-examples/fluent-htmx/server"
+	"github.com/jpl-au/fluent-examples/fluent-htmx/htmx2/server"
 )
 
 //go:embed static

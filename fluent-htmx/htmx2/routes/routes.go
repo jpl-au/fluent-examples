@@ -4,7 +4,7 @@ package routes
 import (
 	"github.com/jpl-au/chain"
 
-	"github.com/jpl-au/fluent-examples/fluent-htmx/handler"
+	"github.com/jpl-au/fluent-examples/fluent-htmx/htmx2/handler"
 )
 
 // Register adds all contact and note routes to the given mux.

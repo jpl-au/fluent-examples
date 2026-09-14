@@ -5,9 +5,9 @@ import (
 
 	htmx "github.com/jpl-au/fluent-htmx/htmx2"
 
-	"github.com/jpl-au/fluent-examples/fluent-htmx/components/simple/button"
-	"github.com/jpl-au/fluent-examples/fluent-htmx/layout"
-	"github.com/jpl-au/fluent-examples/fluent-htmx/store"
+	"github.com/jpl-au/fluent-examples/fluent-htmx/htmx2/components/simple/button"
+	"github.com/jpl-au/fluent-examples/fluent-htmx/htmx2/layout"
+	"github.com/jpl-au/fluent-examples/fluent-htmx/htmx2/store"
 )
 
 // CreateNote adds a note and returns the updated detail partial.

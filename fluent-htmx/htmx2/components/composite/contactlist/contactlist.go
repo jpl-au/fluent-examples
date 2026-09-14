@@ -12,8 +12,8 @@ import (
 	"github.com/jpl-au/fluent/html5/span"
 	"github.com/jpl-au/fluent/node"
 
-	"github.com/jpl-au/fluent-examples/fluent-htmx/components/simple/text"
-	"github.com/jpl-au/fluent-examples/fluent-htmx/store"
+	"github.com/jpl-au/fluent-examples/fluent-htmx/htmx2/components/simple/text"
+	"github.com/jpl-au/fluent-examples/fluent-htmx/htmx2/store"
 )
 
 // New creates a styled contact list. If contacts is empty a hint is

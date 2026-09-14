@@ -1,6 +1,6 @@
 # Fluent-HTMX Example - Contact Manager
 
-The same contact manager as the [Fluent example](../fluent/), refactored to use [Fluent-HTMX](https://github.com/jpl-au/fluent-htmx) for partial page updates. Navigation and form submissions swap the content area via HTMX instead of triggering full page reloads.
+The same contact manager as the [Fluent example](../../fluent/), refactored to use [Fluent-HTMX](https://github.com/jpl-au/fluent-htmx) for partial page updates. Navigation and form submissions swap the content area via HTMX instead of triggering full page reloads.
 
 This is a **teaching example** showing both HTMX handler patterns so you
 can see each approach clearly. A real application would typically settle on
@@ -56,4 +56,4 @@ func CreateContact(w http.ResponseWriter, r *http.Request) {
 
 ## Structure
 
-Same structure as the Fluent example - see [../fluent/README.md](../fluent/README.md).
+Same structure as the Fluent example - see [../../fluent/README.md](../../fluent/README.md).

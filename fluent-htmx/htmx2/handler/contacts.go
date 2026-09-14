@@ -10,16 +10,16 @@ import (
 	"github.com/jpl-au/fluent/html5/span"
 	"github.com/jpl-au/fluent/node"
 
-	"github.com/jpl-au/fluent-examples/fluent-htmx/components/composite/card"
-	"github.com/jpl-au/fluent-examples/fluent-htmx/components/composite/contactlist"
-	"github.com/jpl-au/fluent-examples/fluent-htmx/components/composite/menu"
-	"github.com/jpl-au/fluent-examples/fluent-htmx/components/composite/notelist"
-	"github.com/jpl-au/fluent-examples/fluent-htmx/components/composite/row"
-	"github.com/jpl-au/fluent-examples/fluent-htmx/components/simple/button"
-	"github.com/jpl-au/fluent-examples/fluent-htmx/components/simple/field"
-	"github.com/jpl-au/fluent-examples/fluent-htmx/components/simple/text"
-	"github.com/jpl-au/fluent-examples/fluent-htmx/layout"
-	"github.com/jpl-au/fluent-examples/fluent-htmx/store"
+	"github.com/jpl-au/fluent-examples/fluent-htmx/htmx2/components/composite/card"
+	"github.com/jpl-au/fluent-examples/fluent-htmx/htmx2/components/composite/contactlist"
+	"github.com/jpl-au/fluent-examples/fluent-htmx/htmx2/components/composite/menu"
+	"github.com/jpl-au/fluent-examples/fluent-htmx/htmx2/components/composite/notelist"
+	"github.com/jpl-au/fluent-examples/fluent-htmx/htmx2/components/composite/row"
+	"github.com/jpl-au/fluent-examples/fluent-htmx/htmx2/components/simple/button"
+	"github.com/jpl-au/fluent-examples/fluent-htmx/htmx2/components/simple/field"
+	"github.com/jpl-au/fluent-examples/fluent-htmx/htmx2/components/simple/text"
+	"github.com/jpl-au/fluent-examples/fluent-htmx/htmx2/layout"
+	"github.com/jpl-au/fluent-examples/fluent-htmx/htmx2/store"
 )
 
 // ListContacts renders the contact list page. HTMX requests receive

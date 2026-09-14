@@ -20,8 +20,8 @@ import (
 	"github.com/jpl-au/fluent/html5/title"
 	"github.com/jpl-au/fluent/node"
 
-	"github.com/jpl-au/fluent-examples/fluent-htmx/components/composite/footer"
-	"github.com/jpl-au/fluent-examples/fluent-htmx/components/composite/page"
+	"github.com/jpl-au/fluent-examples/fluent-htmx/htmx2/components/composite/footer"
+	"github.com/jpl-au/fluent-examples/fluent-htmx/htmx2/components/composite/page"
 )
 
 // Page renders a full HTML page with the HTMX library loaded. The

@@ -10,7 +10,7 @@ import (
 
 	"github.com/jpl-au/chain"
 
-	"github.com/jpl-au/fluent-examples/fluent-htmx/routes"
+	"github.com/jpl-au/fluent-examples/fluent-htmx/htmx2/routes"
 )
 
 // New creates a chain.Mux with middleware, static file serving, and

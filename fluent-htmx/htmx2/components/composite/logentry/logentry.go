@@ -8,7 +8,7 @@ import (
 	"github.com/jpl-au/fluent/html5/span"
 	"github.com/jpl-au/fluent/node"
 
-	"github.com/jpl-au/fluent-examples/fluent-htmx/generate"
+	"github.com/jpl-au/fluent-examples/fluent-htmx/htmx2/generate"
 )
 
 // New builds a single log entry div with time, level, message, and
