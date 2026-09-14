@@ -40,33 +40,38 @@ Unit tests run with no extra dependencies:
 
 ```bash
 cd tether
-go test ./...
+go test ./component/... ./site/tethertest/...
 ```
 
 ### Playwright browser tests
 
 The tether example includes end-to-end browser tests in `tether/playwright/`.
-These require the Playwright driver and Chrome or Chromium. If either is
-missing, the tests skip automatically.
+These require the Playwright driver and Chrome or Chromium. Tests skip if
+the driver is unavailable; browser launch failures fail the tests.
 
-To install the Playwright driver:
+To install the Playwright driver matching the module's dependency and print
+its version, without downloading browser binaries:
 
 ```bash
-go run github.com/playwright-community/playwright-go/cmd/playwright@latest install
+cd tether
+go run github.com/playwright-community/playwright-go/cmd/playwright --version
 ```
 
 To run the browser tests:
 
 ```bash
 cd tether
-go test -v ./playwright/...
+go test -v -count=1 ./playwright/...
 ```
 
 To run under HTTP/2 instead of the default HTTP/1.1:
 
 ```bash
-TETHER_PROTO=HTTP2 go test -v ./playwright/...
+TETHER_PROTO=HTTP2 go test -v -count=1 ./playwright/...
 ```
+
+When working inside a Go workspace, add `GOWORK=off` to verify the example
+against its released dependency pins instead of local library checkouts.
 
 ## Licence
 

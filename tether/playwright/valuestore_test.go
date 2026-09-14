@@ -53,7 +53,7 @@ func TestValuestoreIncrement(t *testing.T) {
 	}
 
 	expected := fmt.Sprintf("Count: %d", before+1)
-	if err := expect(count).ToContainText(strconv.Itoa(before + 1)); err != nil {
+	if err := expect(count).ToHaveText(expected); err != nil {
 		text, _ := count.TextContent()
 		t.Errorf("count = %q, want %q", text, expected)
 	}
@@ -74,17 +74,16 @@ func TestValuestoreReset(t *testing.T) {
 	waitForConnected(t, page)
 
 	// Increment first to ensure the counter is non-zero.
+	count := page.Locator("#store-count")
+	before := readCountText(t, count)
 	inc := page.Locator("[data-tether-event-click='value.increment']")
 	if err := inc.Click(); err != nil {
 		t.Fatalf("increment: %v", err)
 	}
 
 	// Wait for the increment to register before resetting.
-	count := page.Locator("#store-count")
-	before := readCountText(t, count)
-	if before == 0 {
-		// The watcher may not have propagated yet - wait briefly.
-		page.WaitForTimeout(500)
+	if err := expect(count).ToHaveText(fmt.Sprintf("Count: %d", before+1)); err != nil {
+		t.Fatalf("counter did not increment before reset: %v", err)
 	}
 
 	reset := page.Locator("[data-tether-event-click='value.reset']")
@@ -92,9 +91,9 @@ func TestValuestoreReset(t *testing.T) {
 		t.Fatalf("reset: %v", err)
 	}
 
-	if err := expect(count).ToContainText("0"); err != nil {
+	if err := expect(count).ToHaveText("Count: 0"); err != nil {
 		text, _ := count.TextContent()
-		t.Errorf("count = %q, want to contain 0", text)
+		t.Errorf("count = %q, want Count: 0", text)
 	}
 }
 
@@ -120,26 +119,29 @@ func TestValuestoreLocalIncrement(t *testing.T) {
 	}
 
 	local := page.Locator("#local-count")
-	if err := expect(local).ToContainText("1"); err != nil {
+	if err := expect(local).ToHaveText("Local: 1"); err != nil {
 		text, _ := local.TextContent()
-		t.Errorf("local = %q, want to contain 1", text)
+		t.Errorf("local = %q, want Local: 1", text)
 	}
 }
 
 // readCountText extracts the numeric value from a "Count: N" or
-// "Shared: N" text element. Returns 0 if unparseable.
+// "Shared: N" text element. Fails the test if the value cannot be read.
 func readCountText(t *testing.T, locator pw.Locator) int {
 	t.Helper()
 	text, err := locator.TextContent()
 	if err != nil {
-		return 0
+		t.Fatalf("read count: %v", err)
 	}
 	// Extract the number after the last space or colon.
 	text = strings.TrimSpace(text)
 	parts := strings.Fields(text)
 	if len(parts) == 0 {
-		return 0
+		t.Fatal("count text is empty")
 	}
-	n, _ := strconv.Atoi(parts[len(parts)-1])
+	n, err := strconv.Atoi(parts[len(parts)-1])
+	if err != nil {
+		t.Fatalf("invalid count %q: %v", text, err)
+	}
 	return n
 }

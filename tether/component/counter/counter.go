@@ -72,8 +72,11 @@ func (c Counter) Mount(sess tether.Session) tether.Component {
 func (c Counter) Handle(sess tether.Session, ev tether.Event) tether.Component {
 	// Restore count from event data so the component works on stateless
 	// pages where state is reconstructed from scratch each request.
-	if s, _ := ev.Get("count"); s != "" {
-		c.Count, _ = strconv.Atoi(s)
+	// Live sessions keep server state; rapid clicks can carry stale counts.
+	if sess.ID() == "" {
+		if s, _ := ev.Get("count"); s != "" {
+			c.Count, _ = strconv.Atoi(s)
+		}
 	}
 	switch ev.Action {
 	case "increment":

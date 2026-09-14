@@ -10,10 +10,9 @@
 //	go test -v ./playwright/...                      # default: HTTP1 (HTTP/1.1)
 //	TETHER_PROTO=HTTP2 go test -v ./playwright/...   # HTTP/2 over TLS
 //
-// HTTP/1.1 uses a real http.Server (not httptest) because httptest's
-// internal connection tracking stalls SSE EventSource retries for
-// ~30s. HTTP/2 uses httptest with TLS and EnableHTTP2, matching
-// modern production defaults. Both modes verify the same test suite.
+// Both modes use httptest with TLS. Tests that need plain HTTP/1.1
+// use RealHTTP1 because httptest's internal connection tracking can
+// stall SSE EventSource retries for ~30s. HTTP/2 enables EnableHTTP2.
 //
 // Uses the system-installed Chrome. Requires Chrome or Chromium to be
 // installed - no Playwright browser download is performed.
@@ -57,8 +56,6 @@ func primaryModifier() pw.KeyboardModifier {
 	return "Control"
 }
 
-// useHTTP2 reports whether the test suite is running in HTTP/2 mode.
-// Set TETHER_PROTO=HTTP2 to enable.
 // ServerMode selects the server type for startApp.
 type ServerMode int
 
@@ -148,9 +145,9 @@ func newPage(t *testing.T, opts ...PageOption) (pw.Page, func()) {
 
 	playwright, err := pw.Run()
 	if err != nil {
-		t.Skipf("Playwright driver not installed, skipping browser tests.\n" +
-			"Install it with:\n\n" +
-			"  go run github.com/playwright-community/playwright-go/cmd/playwright@latest install\n")
+		t.Skipf("Playwright driver unavailable: %v\n"+
+			"Install the driver matching go.mod (no browser download) with:\n\n"+
+			"  go run github.com/playwright-community/playwright-go/cmd/playwright --version\n", err)
 	}
 
 	launchOpts := pw.BrowserTypeLaunchOptions{

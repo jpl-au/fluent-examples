@@ -1,6 +1,11 @@
 package playwright_test
 
-import "testing"
+import (
+	"regexp"
+	"testing"
+
+	pw "github.com/playwright-community/playwright-go"
+)
 
 // TestLiveWSPageRenders verifies the WebSocket live updates page loads.
 func TestLiveWSPageRenders(t *testing.T) {
@@ -122,17 +127,7 @@ func TestLiveWSSetTitle(t *testing.T) {
 		t.Fatalf("click: %v", err)
 	}
 
-	// The page title should change to include "Title set at".
-	titleText, err := page.Title()
-	if err != nil {
-		t.Fatalf("title: %v", err)
-	}
-
-	// Wait briefly for the title to update.
-	page.WaitForTimeout(500)
-	titleText, _ = page.Title()
-
-	if len(titleText) == 0 {
-		t.Error("page title is empty after SetTitle")
+	if err := pw.NewPlaywrightAssertions().Page(page).ToHaveTitle(regexp.MustCompile(`^tether - Title set at \d{2}:\d{2}:\d{2}$`)); err != nil {
+		t.Errorf("SetTitle did not update the page title: %v", err)
 	}
 }

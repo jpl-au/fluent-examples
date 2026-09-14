@@ -88,7 +88,8 @@ func counterButtons(count, sibling string) node.Node {
 func (g Group) Handle(sess tether.Session, ev tether.Event) tether.Component {
 	// Restore the sibling counter's count from event data so both
 	// children survive stateless page reconstruction.
-	if s, _ := ev.Get("sibling"); s != "" {
+	// Live sessions already have the latest counts for both children.
+	if s, _ := ev.Get("sibling"); sess.ID() == "" && s != "" {
 		n, _ := strconv.Atoi(s)
 		if strings.HasPrefix(ev.Action, "left.") {
 			g.Right.Count = n

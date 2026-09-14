@@ -114,18 +114,37 @@ The suite includes `reconnect_test.go`, which drives a real browser through the 
 
 ### Prerequisites
 
-1. **Google Chrome** must be installed at the default system path.
-2. **Playwright Go driver** - installed automatically as a Go module dependency.
+1. **Google Chrome or Chromium** - the tests search `PATH`, then fall back to
+   Chrome's default installation path (including `/Applications/Google Chrome.app`
+   on macOS).
+2. **Playwright driver** - install the version matching `go.mod` from this directory:
+
+   ```bash
+   go run github.com/playwright-community/playwright-go/cmd/playwright --version
+   ```
+
+   This downloads the driver if needed and prints its version. It does not
+   download browser binaries.
 
 ### Running
 
 ```bash
-go test ./playwright/...                      # HTTP/1.1 (default)
-TETHER_PROTO=HTTP2 go test ./playwright/...   # HTTP/2 over TLS
+go test -count=1 ./playwright/...                       # HTTP/1.1 (default)
+TETHER_PROTO=HTTP2 go test -count=1 ./playwright/...     # HTTP/2 over TLS
 ```
+
+Add `GOWORK=off` to test the released dependency pins when working inside a
+Go workspace. Without it, Go uses the workspace's local library modules.
 
 ### How it works
 
-The tests start a full `httptest` server per test, open a headless Chrome page via `Channel: "chrome"` (system Chrome, not a Playwright-managed download), and interact with the application using Playwright's Go API. The `IgnoreHttpsErrors` context option handles the self-signed certificate from `httptest.NewTLSServer`.
+The tests start an isolated server per test, open a headless Chrome or Chromium
+page, and interact with the application using Playwright's Go API. Application
+tests use `httptest` with TLS for both HTTP versions; SSE retry tests can select
+a plain HTTP server. The `IgnoreHttpsErrors` context option handles the
+self-signed test certificates. Keyboard shortcuts use Cmd on macOS and Ctrl
+on Windows and Linux where the application uses the `mod` alias.
 
-No Playwright browser binaries are downloaded or cached. If Chrome is not installed, the tests skip with a descriptive message.
+No Playwright browser binaries are downloaded or cached. Tests skip if the
+driver is unavailable and report the underlying error. A browser launch
+failure fails the test.
