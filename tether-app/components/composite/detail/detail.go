@@ -4,6 +4,7 @@
 package detail
 
 import (
+	"slices"
 	"time"
 
 	security "github.com/jpl-au/fluent-security"
@@ -103,8 +104,8 @@ func activity(events []store.Event) node.Node {
 	}
 
 	items := make([]node.Node, len(events))
-	for i := len(events) - 1; i >= 0; i-- {
-		ev := events[i]
+	for i, ev := range slices.Backward(events) {
+
 		items[len(events)-1-i] = div.New(
 			span.Text(ev.User).Class("activity-user"),
 			span.Text(ev.Action).Class("activity-action"),
