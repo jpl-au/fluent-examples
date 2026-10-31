@@ -9,7 +9,7 @@ require (
 	github.com/jpl-au/fluent v0.6.0
 	github.com/jpl-au/fluent-jit v0.5.1
 	github.com/jpl-au/fluent-security v0.5.0
-	github.com/jpl-au/tether v0.6.1
+	github.com/jpl-au/tether v0.6.2
 	github.com/jpl-au/tether-adapter/redis v0.2.1
 	github.com/playwright-community/playwright-go v0.5700.1
 	github.com/redis/go-redis/v9 v9.23.0

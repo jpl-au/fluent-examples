@@ -6,7 +6,7 @@ require (
 	github.com/jpl-au/fluent v0.6.0
 	github.com/jpl-au/fluent-jit v0.5.1
 	github.com/jpl-au/fluent-security v0.5.0
-	github.com/jpl-au/tether v0.6.1
+	github.com/jpl-au/tether v0.6.2
 	github.com/jpl-au/tether-adapter/fs v0.2.1
 	github.com/microcosm-cc/bluemonday v1.0.27
 )

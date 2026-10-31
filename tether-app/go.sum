@@ -16,8 +16,8 @@ github.com/jpl-au/fluent-jit v0.5.1 h1:ng+Zb5bsnL2BDHmdQip2YhBSJpRdMQkFJaFnQLSNV
 github.com/jpl-au/fluent-jit v0.5.1/go.mod h1:hLvPBJknLY5jH+yUTi16E1hvF5izKVibkbLx3d4gVGs=
 github.com/jpl-au/fluent-security v0.5.0 h1:Y1yY0rHvQ16KrqmcpD4z5WcGd9F+SM/ViWvlfH10ZCk=
 github.com/jpl-au/fluent-security v0.5.0/go.mod h1:2F8JSlwVO/L1dMREfqGg0Az6YLrDzZw2vS7JKNPGwF4=
-github.com/jpl-au/tether v0.6.1 h1:vTWYE0mxAYH9FAGiuf9+W+mPCIEl/sy5ETOHX/ukoW4=
-github.com/jpl-au/tether v0.6.1/go.mod h1:J9dKzTU/Fzfs3UaWj+f3zg5XhTJj7N/IBAPHcjnmQQo=
+github.com/jpl-au/tether v0.6.2 h1:3adCrdZbNL7EVZ1TH+2ePyei0G3fovLFWJiiG0llg/A=
+github.com/jpl-au/tether v0.6.2/go.mod h1:J9dKzTU/Fzfs3UaWj+f3zg5XhTJj7N/IBAPHcjnmQQo=
 github.com/jpl-au/tether-adapter/fs v0.2.1 h1:IDrvu0al/UoxnsdM5bZ50SQo48fyOAcBbaG7g9MWnps=
 github.com/jpl-au/tether-adapter/fs v0.2.1/go.mod h1:x510//V42ehXDkHnIYGYhK1AdD+OIUaK4i3yjJ6LjtM=
 github.com/klauspost/compress v1.20.3 h1:zWNoFqq/lSuYQRim3dUXlXeA0IqwuZGicdG5ZTfY5j4=

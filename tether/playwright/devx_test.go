@@ -85,13 +85,20 @@ func startDevx(t *testing.T, viewTransitions bool) string {
 // vtStub replaces document.startViewTransition with a recorder that
 // still invokes the mutation callback, so the DOM updates exactly as a
 // real transition would while the test can observe whether the runtime
-// took the transition path.
+// took the transition path. Its ready promise rejects, as a real one does
+// when the browser or a newer update skips the transition, and every
+// unhandled rejection the page sees is recorded.
 const vtStub = `
 window.__vtCalls = 0;
+window.__rejections = [];
+window.addEventListener("unhandledrejection", function (e) {
+  window.__rejections.push(String(e.reason && e.reason.message));
+});
 document.startViewTransition = function (cb) {
   window.__vtCalls++;
   var p = Promise.resolve(cb ? cb() : undefined);
-  return { updateCallbackDone: p, ready: p, finished: p, skipTransition: function () {} };
+  var skipped = Promise.reject(new DOMException("Transition was skipped", "AbortError"));
+  return { updateCallbackDone: p, ready: skipped, finished: p, skipTransition: function () {} };
 };
 `
 
@@ -133,6 +140,17 @@ func TestViewTransitionsUsed(t *testing.T) {
 	}
 	if jsNumber(calls) < 1 {
 		t.Errorf("startViewTransition was not used, __vtCalls = %v", calls)
+	}
+
+	// A skipped transition must leave no unhandled rejection. One is
+	// reported once the microtasks around it have run, so let the page
+	// settle before reading.
+	rejections, err := page.Evaluate("() => new Promise(r => setTimeout(() => r(window.__rejections), 200))")
+	if err != nil {
+		t.Fatalf("evaluate rejections: %v", err)
+	}
+	if list, ok := rejections.([]any); !ok || len(list) != 0 {
+		t.Errorf("skipped transition left unhandled rejections: %v", rejections)
 	}
 }
 
