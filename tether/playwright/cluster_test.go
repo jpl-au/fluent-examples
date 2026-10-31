@@ -6,10 +6,10 @@ import (
 
 	"github.com/alicebob/miniredis/v2"
 	pw "github.com/playwright-community/playwright-go"
-	"github.com/redis/go-redis/v9"
+	goredis "github.com/redis/go-redis/v9"
 
 	tether "github.com/jpl-au/tether"
-	"github.com/jpl-au/tether/tetheredis"
+	"github.com/jpl-au/tether-adapter/redis"
 
 	"github.com/jpl-au/fluent-examples/tether/site/clustertest"
 )
@@ -42,10 +42,10 @@ func startClusterServer(t *testing.T, cluster tether.Cluster) string {
 func TestClusterCrossSession(t *testing.T) {
 	mr := miniredis.RunT(t)
 
-	rdb := redis.NewClient(&redis.Options{Addr: mr.Addr()})
+	rdb := goredis.NewClient(&goredis.Options{Addr: mr.Addr()})
 	t.Cleanup(func() { rdb.Close() })
 
-	cluster := tetheredis.New(rdb)
+	cluster := redis.New(rdb)
 	srv := startClusterServer(t, cluster)
 
 	sender, cleanupSender := newPage(t)

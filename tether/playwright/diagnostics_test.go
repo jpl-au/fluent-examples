@@ -53,7 +53,7 @@ func TestDiagnosticsTriggerPanic(t *testing.T) {
 	waitForConnected(t, page)
 
 	btn := page.Locator("[data-tether-event-click='diag.trigger-panic']").First()
-	if err := btn.Click(pw.LocatorClickOptions{Force: pw.Bool(true)}); err != nil {
+	if err := btn.Click(pw.LocatorClickOptions{Force: new(true)}); err != nil {
 		t.Fatalf("click: %v", err)
 	}
 
@@ -82,7 +82,7 @@ func TestDiagnosticsSessionSurvivesPanic(t *testing.T) {
 	btn := page.Locator("[data-tether-event-click='diag.trigger-panic']").First()
 
 	// First panic.
-	if err := btn.Click(pw.LocatorClickOptions{Force: pw.Bool(true)}); err != nil {
+	if err := btn.Click(pw.LocatorClickOptions{Force: new(true)}); err != nil {
 		t.Fatalf("click 1: %v", err)
 	}
 
@@ -92,7 +92,7 @@ func TestDiagnosticsSessionSurvivesPanic(t *testing.T) {
 	}
 
 	// Second panic - session should still be alive.
-	if err := btn.Click(pw.LocatorClickOptions{Force: pw.Bool(true)}); err != nil {
+	if err := btn.Click(pw.LocatorClickOptions{Force: new(true)}); err != nil {
 		t.Fatalf("click 2: %v", err)
 	}
 
@@ -125,7 +125,7 @@ func TestDiagnosticsEventShowsSessionID(t *testing.T) {
 	waitForConnected(t, page)
 
 	btn := page.Locator("[data-tether-event-click='diag.trigger-panic']").First()
-	if err := btn.Click(pw.LocatorClickOptions{Force: pw.Bool(true)}); err != nil {
+	if err := btn.Click(pw.LocatorClickOptions{Force: new(true)}); err != nil {
 		t.Fatalf("click: %v", err)
 	}
 

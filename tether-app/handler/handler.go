@@ -12,7 +12,7 @@ import (
 	"github.com/jpl-au/fluent/html5/title"
 	"github.com/jpl-au/fluent/node"
 	tether "github.com/jpl-au/tether"
-	tetherfs "github.com/jpl-au/tether-store/fs"
+	tetherfs "github.com/jpl-au/tether-adapter/fs"
 	"github.com/jpl-au/tether/mode"
 
 	"github.com/jpl-au/fluent-examples/tether-app/store"

@@ -101,7 +101,7 @@ document.startViewTransition = function (cb) {
 // probe (vtStub).
 func addInit(t *testing.T, page pw.Page, script string) {
 	t.Helper()
-	if err := page.AddInitScript(pw.Script{Content: pw.String(script)}); err != nil {
+	if err := page.AddInitScript(pw.Script{Content: new(script)}); err != nil {
 		t.Fatalf("add init script: %v", err)
 	}
 }

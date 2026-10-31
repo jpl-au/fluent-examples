@@ -24,7 +24,7 @@ func auditClient(t *testing.T, content string, attrs ...string) pw.Page {
 	base := startServer(t, RealHTTP1, mux)
 	page, cleanup := newPage(t)
 	t.Cleanup(cleanup)
-	if err := page.AddInitScript(pw.Script{Content: pw.String(`
+	if err := page.AddInitScript(pw.Script{Content: new(`
 window.__frames = new Map(); window.__frameID = 0; window.__requests = []; window.__timeouts = []; window.__beacons = []; window.__listeners = [];
 const realAddListener = window.addEventListener.bind(window);
 window.addEventListener = (type, ...args) => { __listeners.push(type); return realAddListener(type, ...args); };
@@ -93,7 +93,7 @@ func TestAuditEventReplayPreservesOrder(t *testing.T) {
 		t.Run(map[bool]string{false: "client", true: "worker"}[worker], func(t *testing.T) {
 			page := auditClient(t, "", `data-tether-background-sync="true"`)
 			if worker {
-				if _, err := page.AddScriptTag(pw.PageAddScriptTagOptions{URL: pw.String("/_tether/tether-worker.js")}); err != nil {
+				if _, err := page.AddScriptTag(pw.PageAddScriptTagOptions{URL: new("/_tether/tether-worker.js")}); err != nil {
 					t.Fatal(err)
 				}
 			}
@@ -137,7 +137,7 @@ return {remaining:count, sent:__attempts.join(',')};
 
 func TestAuditWorkerRetriesSessionsIndependently(t *testing.T) {
 	page := auditClient(t, "")
-	if _, err := page.AddScriptTag(pw.PageAddScriptTagOptions{URL: pw.String("/_tether/tether-worker.js")}); err != nil {
+	if _, err := page.AddScriptTag(pw.PageAddScriptTagOptions{URL: new("/_tether/tether-worker.js")}); err != nil {
 		t.Fatal(err)
 	}
 	got := auditEval(t, page, `async () => {

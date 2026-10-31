@@ -327,7 +327,7 @@ func newPage(t *testing.T, opts ...PageOption) (pw.Page, func()) {
 	t.Cleanup(cleanup)
 
 	launchOpts := pw.BrowserTypeLaunchOptions{
-		Headless: pw.Bool(true),
+		Headless: new(true),
 		Args:     []string{"--ignore-certificate-errors"},
 	}
 	// Find a Chromium-based browser across platforms. The Channel
@@ -335,9 +335,9 @@ func newPage(t *testing.T, opts ...PageOption) (pw.Page, func()) {
 	// Snap, Homebrew, and distro packages put the binary elsewhere,
 	// so we fall back to an explicit PATH lookup.
 	if path := findChromium(); path != "" {
-		launchOpts.ExecutablePath = pw.String(path)
+		launchOpts.ExecutablePath = new(path)
 	} else {
-		launchOpts.Channel = pw.String("chrome")
+		launchOpts.Channel = new("chrome")
 	}
 	finish = testPhase(t, "Chrome launch")
 	browser, err = playwright.Chromium.Launch(launchOpts)
@@ -348,7 +348,7 @@ func newPage(t *testing.T, opts ...PageOption) (pw.Page, func()) {
 
 	finish = testPhase(t, "browser context setup")
 	ctx, err = browser.NewContext(pw.BrowserNewContextOptions{
-		IgnoreHttpsErrors: pw.Bool(true),
+		IgnoreHttpsErrors: new(true),
 	})
 	finish()
 	if err != nil {

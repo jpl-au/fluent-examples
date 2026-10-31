@@ -5,7 +5,7 @@
 //
 // This package exists to demonstrate how to implement the store
 // interfaces yourself. For a ready-made filesystem store, use
-// github.com/jpl-au/tether-store/fs instead.
+// github.com/jpl-au/tether-adapter/fs instead.
 //
 // Production applications would typically use Redis, SQLite, or
 // another external store suited to their deployment.
