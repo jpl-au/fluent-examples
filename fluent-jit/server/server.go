@@ -35,9 +35,14 @@ func requestLogging(next http.Handler) http.Handler {
 		start := time.Now()
 		next.ServeHTTP(w, r)
 
-		status := 0
+		var status any = 0
 		if rw, ok := w.(chain.ResponseWriter); ok {
 			status = rw.Status()
+			// Chain cannot see the response a handler writes straight to a
+			// hijacked connection, such as a WebSocket upgrade.
+			if hrw, ok := rw.(chain.HijackedResponseWriter); ok && hrw.Hijacked() && rw.Status() == 0 {
+				status = "unknown (hijacked)"
+			}
 		}
 
 		slog.Info("http",

@@ -5,7 +5,7 @@ go 1.26.0
 require (
 	github.com/alicebob/miniredis/v2 v2.40.0
 	github.com/go-echarts/go-echarts/v2 v2.7.3
-	github.com/jpl-au/chain v0.2.0
+	github.com/jpl-au/chain v0.2.1
 	github.com/jpl-au/fluent v0.6.0
 	github.com/jpl-au/fluent-jit v0.5.1
 	github.com/jpl-au/fluent-security v0.5.0
