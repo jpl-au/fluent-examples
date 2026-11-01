@@ -20,17 +20,20 @@ import (
 // SSEPage renders the SSE live log page. The log container opens the
 // stream with hx-sse:connect, which the htmax.js bundle provides.
 // Each unnamed event from the server is swapped into the container
-// with afterbegin, so the newest entry is at the top. The lifecycle
-// events fire on the connecting element, so HxOn binds the status
-// updates there.
+// with afterbegin, so the newest entry is at the top. The container
+// targets itself, so it does not inherit the shell's #content. The
+// lifecycle events fire on the connecting element, so HxOn binds the
+// status updates there. After an error htmx reconnects by itself; it
+// fires close only when the stream ends for good.
 func SSEPage(w http.ResponseWriter, _ *http.Request) {
 	logDiv := div.New().Class("log-feed").ID("sse-log")
 	htmx.New(logDiv).
 		SSEConnect("/sse/feed").
+		HxTarget("this").
 		HxSwap(swap.AfterBegin).
 		HxOn(event.SSEAfterConnection, setStatus("sse-status", "connected", "status-connected")).
-		HxOn(event.SSEClose, setStatus("sse-status", "reconnecting...", "status-reconnecting")).
-		HxOn(event.SSEError, setStatus("sse-status", "disconnected", "status-disconnected"))
+		HxOn(event.SSEError, setStatus("sse-status", "reconnecting...", "status-reconnecting")).
+		HxOn(event.SSEClose, setStatus("sse-status", "closed", "status-disconnected"))
 
 	content := card.New("SSE Live Log",
 		div.New(

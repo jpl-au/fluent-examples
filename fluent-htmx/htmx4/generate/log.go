@@ -28,14 +28,28 @@ var pool = []template{
 	{"DEBUG", "auth token issued", authAttrs},
 }
 
+// timeFormat is the timestamp every entry carries.
+const timeFormat = "15:04:05.000"
+
 // LogEntry creates a single fake log entry with the current timestamp.
 func LogEntry() Entry {
 	t := pool[rand.IntN(len(pool))]
 	return Entry{
-		Time:    time.Now().Format("15:04:05.000"),
+		Time:    time.Now().Format(timeFormat),
 		Level:   t.level,
 		Message: t.message,
 		Attrs:   t.attrs(),
+	}
+}
+
+// Sent creates the entry for a line sent from the WebSocket page,
+// stamped the same way as the generated ones.
+func Sent(message string) Entry {
+	return Entry{
+		Time:    time.Now().Format(timeFormat),
+		Level:   "INFO",
+		Message: message,
+		Attrs:   "source=browser",
 	}
 }
 

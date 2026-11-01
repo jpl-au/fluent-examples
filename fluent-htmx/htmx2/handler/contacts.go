@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	htmx "github.com/jpl-au/fluent-htmx/htmx2"
+	"github.com/jpl-au/fluent-htmx/htmx2/swap"
 	"github.com/jpl-au/fluent/html5/div"
 	"github.com/jpl-au/fluent/html5/form"
 	"github.com/jpl-au/fluent/html5/span"
@@ -40,14 +41,14 @@ func ListContacts(w http.ResponseWriter, r *http.Request) {
 // NewContactForm renders the "add contact" form.
 // Demonstrates the htmx.HxRequest(r) if-check pattern.
 func NewContactForm(w http.ResponseWriter, r *http.Request) {
-	content := card.New("New Contact",
-		form.Post("/contacts",
-			field.Group(field.Label("name", "Name"), field.Text("name", "Full name")),
-			field.Group(field.Label("email", "Email"), field.Text("email", "email@example.com")),
-			field.Group(field.Label("phone", "Phone"), field.Text("phone", "+61 400 000 000")),
-			row.New(button.Submit("Create Contact")),
-		),
+	f := form.Post("/contacts",
+		field.Group(field.Label("name", "Name"), field.Text("name", "Full name")),
+		field.Group(field.Label("email", "Email"), field.Text("email", "email@example.com")),
+		field.Group(field.Label("phone", "Phone"), field.Text("phone", "+61 400 000 000")),
+		row.New(button.Submit("Create Contact"), text.Indicator("Saving...")),
 	)
+	htmx.New(f).HxPost("/contacts").HxTarget("#content").HxSwap(swap.InnerHTML)
+	content := card.New("New Contact", f)
 	actions := button.Back("/")
 
 	if htmx.HxRequest(r) {
@@ -107,14 +108,15 @@ func EditContactForm(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	content := card.New("Edit Contact",
-		form.Post("/contacts/"+c.ID,
-			field.Group(field.Label("name", "Name"), field.TextValue("name", c.Name, "Full name")),
-			field.Group(field.Label("email", "Email"), field.TextValue("email", c.Email, "email@example.com")),
-			field.Group(field.Label("phone", "Phone"), field.TextValue("phone", c.Phone, "+61 400 000 000")),
-			row.New(button.Submit("Save Changes")),
-		),
+	action := "/contacts/" + c.ID
+	f := form.Post(action,
+		field.Group(field.Label("name", "Name"), field.TextValue("name", c.Name, "Full name")),
+		field.Group(field.Label("email", "Email"), field.TextValue("email", c.Email, "email@example.com")),
+		field.Group(field.Label("phone", "Phone"), field.TextValue("phone", c.Phone, "+61 400 000 000")),
+		row.New(button.Submit("Save Changes"), text.Indicator("Saving...")),
 	)
+	htmx.New(f).HxPost(action).HxTarget("#content").HxSwap(swap.InnerHTML)
+	content := card.New("Edit Contact", f)
 	actions := button.Back("/contacts/" + c.ID)
 
 	if htmx.HxRequest(r) {
@@ -137,6 +139,7 @@ func UpdateContact(w http.ResponseWriter, r *http.Request) {
 	if htmx.Handle(r, func() {
 		c, ok := store.Get(id)
 		if !ok {
+			notFound(w, r)
 			return
 		}
 		htmx.HxPushURL(w, "/contacts/"+id)
@@ -174,7 +177,7 @@ func contactDetail(c store.Contact) (node.Node, node.Node) {
 	details := card.NewWithAction(c.Name,
 		menu.New(
 			menu.Link("Edit", "/contacts/"+c.ID+"/edit"),
-			menu.FormAction("Delete", "/contacts/"+c.ID+"/delete"),
+			menu.FormAction("Delete", "/contacts/"+c.ID+"/delete", "Delete this contact?"),
 		),
 		div.New(
 			detailRow("Email", c.Email),
@@ -183,13 +186,13 @@ func contactDetail(c store.Contact) (node.Node, node.Node) {
 		).Class("detail-grid"),
 	)
 
-	notes := card.New("Notes",
-		notelist.New(c.ID, c.Notes),
-		form.Post("/contacts/"+c.ID+"/notes",
-			field.Group(field.TextArea("content", "Add a note. Basic HTML (strong, em, a, code) survives; scripts are stripped.")),
-			row.New(button.Submit("Add Note")),
-		),
+	action := "/contacts/" + c.ID + "/notes"
+	f := form.Post(action,
+		field.Group(field.TextArea("content", "Add a note. Basic HTML (strong, em, a, code) survives; scripts are stripped.")),
+		row.New(button.Submit("Add Note"), text.Indicator("Saving...")),
 	)
+	htmx.New(f).HxPost(action).HxTarget("#content").HxSwap(swap.InnerHTML)
+	notes := card.New("Notes", notelist.New(c.ID, c.Notes), f)
 
 	return details, notes
 }

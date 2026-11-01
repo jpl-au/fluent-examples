@@ -47,27 +47,35 @@ func Page(w http.ResponseWriter, pageTitle string, headerActions node.Node, cont
 	doc.Render(w)
 }
 
-// Partial renders the page content for an HTMX swap, plus the two
-// header sections as <hx-partial> blocks. htmx swaps the main content
-// into the target of the element that made the request and routes
-// each block to its own target, so the title and actions stay in
-// sync with the content.
+// Partial renders the page content for an HTMX swap, plus the page
+// title and the two header sections as <hx-partial> blocks. htmx
+// swaps the main content into the target of the element that made
+// the request, sets the tab title from the <title>, and routes each
+// block to its own target, so the header stays in sync with the
+// content.
 func Partial(w http.ResponseWriter, pageTitle string, headerActions node.Node, content ...node.Node) {
 	slog.Debug("render", "mode", "htmx partial", "title", pageTitle)
 
+	title.Text("Fluent-HTMX - " + pageTitle).Render(w)
 	page.New(content...).Render(w)
 
 	htmx.Partial("#header-left", headerLeftNode(pageTitle)).HxSwap(swap.OuterHTML).Render(w)
 	htmx.Partial("#header-actions", headerActionsNode(headerActions)).HxSwap(swap.OuterHTML).Render(w)
 }
 
-// Shell wraps content in the header and content structure.
+// Shell wraps content in the header and content structure. It sets
+// the target and swap style once, with htmx 4's inheritance, so every
+// link, button and form inside swaps the content area without
+// repeating them. An element that swaps somewhere else, such as the
+// live log pages' containers, sets its own target.
 func Shell(pageTitle string, headerActions node.Node, content ...node.Node) node.Node {
-	return div.New(
+	shell := div.New(
 		div.New(headerLeftNode(pageTitle), headerActionsNode(headerActions)).Class("header"),
 		div.New(page.New(content...)).Class("content").ID("content"),
 		footer.New(),
 	).Class("shell")
+	htmx.New(shell).HxTarget("#content", htmx.Inherited).HxSwap(swap.InnerHTML, htmx.Inherited)
+	return shell
 }
 
 // headerLeftNode builds the brand + title section of the header with

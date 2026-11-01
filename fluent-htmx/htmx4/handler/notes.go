@@ -23,6 +23,7 @@ func CreateNote(w http.ResponseWriter, r *http.Request) {
 	if htmx.Handle(r, func() {
 		c, ok := store.Get(contactID)
 		if !ok {
+			notFound(w, r)
 			return
 		}
 		details, notes := contactDetail(c)
@@ -43,6 +44,7 @@ func DeleteNote(w http.ResponseWriter, r *http.Request) {
 	if htmx.Handle(r, func() {
 		c, ok := store.Get(contactID)
 		if !ok {
+			notFound(w, r)
 			return
 		}
 		details, notes := contactDetail(c)

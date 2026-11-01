@@ -5,6 +5,7 @@ package text
 import (
 	"fmt"
 
+	"github.com/jpl-au/fluent-htmx/htmx4/class"
 	"github.com/jpl-au/fluent/html5/p"
 	"github.com/jpl-au/fluent/html5/span"
 )
@@ -27,4 +28,12 @@ func Result(s string) *span.Element {
 // Muted creates a de-emphasised inline span.
 func Muted(s string) *span.Element {
 	return span.Text(s).Class("result-text result-muted")
+}
+
+// Indicator creates a de-emphasised inline span that shows only while
+// a request runs. htmx marks the element making the request with the
+// htmx-request class, and its built-in styles show any htmx-indicator
+// inside it, so a form needs no hx-indicator to show its own.
+func Indicator(s string) *span.Element {
+	return span.Text(s).Class("result-text result-muted " + class.Indicator)
 }

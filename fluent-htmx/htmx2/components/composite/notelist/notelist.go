@@ -41,7 +41,7 @@ func Item(contactID string, n store.Note) node.Node {
 	// the content partial when htmx is available.
 	action := "/contacts/" + contactID + "/notes/" + n.ID + "/delete"
 	f := form.Post(action)
-	htmx.New(f).HxPost(action).HxTarget("#content").HxSwap(swap.InnerHTML)
+	htmx.New(f).HxPost(action).HxConfirm("Delete this note?").HxTarget("#content").HxSwap(swap.InnerHTML)
 
 	return div.New(
 		div.New(security.HTML(n.Content)).Class("note-content"),

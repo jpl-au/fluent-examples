@@ -1,14 +1,17 @@
 // Package layout provides the HTML shell for the contact manager.
-// The full page includes the HTMX library and a target ID on the
-// content area. HTMX requests receive partials via the Partial
-// function which also includes an out-of-band header swap so the
-// page title updates without a full reload.
+// The full page loads the HTMX library, carries the htmx config and
+// gives the content area a target ID. HTMX requests receive partials
+// from the Partial function, which sends the page title and the
+// header sections as <hx-partial> blocks so they update alongside
+// the content.
 package layout
 
 import (
 	"log/slog"
 	"net/http"
 
+	htmx "github.com/jpl-au/fluent-htmx/htmx2"
+	"github.com/jpl-au/fluent-htmx/htmx2/swap"
 	"github.com/jpl-au/fluent/html5/body"
 	"github.com/jpl-au/fluent/html5/div"
 	"github.com/jpl-au/fluent/html5/head"
@@ -24,20 +27,40 @@ import (
 	"github.com/jpl-au/fluent-examples/fluent-htmx/htmx2/components/composite/page"
 )
 
+// htmxConfig is the htmx config every page carries in its head.
+//
+// The handlers answer HX-Request with a partial, so a history restore
+// must not carry it: htmx 2 sends HX-Request on a history cache miss
+// by default and would swap the partial in as the whole page.
+//
+// htmx 2 swaps no 4xx response by default, so "Contact not found"
+// would never show. The 404 rule swaps it like a normal response;
+// htmx replaces the whole list, so its default rules are restated
+// around it. htmx 4 swaps 4xx responses already.
+var htmxConfig = func() string {
+	cfg, err := htmx.Config().
+		HistoryRestoreAsHxRequest(false).
+		ResponseHandling([]map[string]any{
+			{"code": "204", "swap": false},
+			{"code": "[23]..", "swap": true},
+			{"code": "404", "swap": true},
+			{"code": "[45]..", "swap": false, "error": true},
+		}).
+		ToJSON()
+	if err != nil {
+		// The settings are fixed, so this fails only if they are mistyped.
+		panic(err)
+	}
+	return cfg
+}()
+
 // Page renders a full HTML page with the HTMX library loaded. The
 // content area has id="content" which HTMX requests target for
-// partial swaps. The header has id="header-left" for out-of-band
-// title updates.
+// partial swaps.
 func Page(w http.ResponseWriter, pageTitle string, headerActions node.Node, content ...node.Node) {
 	slog.Debug("render", "mode", "full page", "title", pageTitle)
 	doc := html.New(
-		head.New(
-			meta.UTF8(),
-			meta.Viewport("width=device-width, initial-scale=1.0"),
-			title.Text("Fluent-HTMX - "+pageTitle),
-			link.Stylesheet("/static/app.css"),
-			script.JavaScript("/static/htmx.min.js"),
-		),
+		headNode(pageTitle),
 		body.New(
 			Shell(pageTitle, headerActions, content...),
 		),
@@ -55,67 +78,65 @@ func PageWithScripts(w http.ResponseWriter, pageTitle string, headerActions node
 		children = append(children, script.JavaScript(src))
 	}
 	doc := html.New(
-		head.New(
-			meta.UTF8(),
-			meta.Viewport("width=device-width, initial-scale=1.0"),
-			title.Text("Fluent-HTMX - "+pageTitle),
-			link.Stylesheet("/static/app.css"),
-			script.JavaScript("/static/htmx.min.js"),
-		),
+		headNode(pageTitle),
 		body.New(children...),
 	)
 	doc.Render(w)
 }
 
-// Partial renders the page content for an HTMX swap, plus an
-// out-of-band header update so the title changes alongside the
-// content. The OOB element carries hx-swap-oob="true" which tells
-// HTMX to swap it by ID independently of the main target.
+// Partial renders the page content for an HTMX swap, plus the page
+// title and the two header sections as <hx-partial> blocks. htmx
+// swaps the main content into the target of the element that made
+// the request, sets the tab title from the <title>, and routes each
+// block to its own target, so the header stays in sync with the
+// content.
 func Partial(w http.ResponseWriter, pageTitle string, headerActions node.Node, content ...node.Node) {
 	slog.Debug("render", "mode", "htmx partial", "title", pageTitle)
 
-	// Main content - swapped into #content by the triggering element.
+	title.Text("Fluent-HTMX - " + pageTitle).Render(w)
 	page.New(content...).Render(w)
 
-	// Out-of-band header update - HTMX matches by id="header-left"
-	// and swaps it independently so the title stays in sync.
-	headerLeft := headerLeftNode(pageTitle)
-	headerLeft.SetAttribute("hx-swap-oob", "true")
-	headerLeft.Render(w)
-
-	// Out-of-band header actions update.
-	actionsNode := div.New()
-	if headerActions != nil {
-		actionsNode = div.New(headerActions)
-	}
-	actionsNode.Class("header-actions").ID("header-actions")
-	actionsNode.SetAttribute("hx-swap-oob", "true")
-	actionsNode.Render(w)
+	htmx.Partial("#header-left", headerLeftNode(pageTitle)).HxSwap(swap.OuterHTML).Render(w)
+	htmx.Partial("#header-actions", headerActionsNode(headerActions)).HxSwap(swap.OuterHTML).Render(w)
 }
 
 // Shell wraps content in the header and content structure.
 func Shell(pageTitle string, headerActions node.Node, content ...node.Node) node.Node {
-	headerNodes := []node.Node{
-		headerLeftNode(pageTitle),
-	}
-	actionsNode := div.New()
-	if headerActions != nil {
-		actionsNode = div.New(headerActions)
-	}
-	headerNodes = append(headerNodes, actionsNode.Class("header-actions").ID("header-actions"))
-
 	return div.New(
-		div.New(headerNodes...).Class("header"),
+		div.New(headerLeftNode(pageTitle), headerActionsNode(headerActions)).Class("header"),
 		div.New(page.New(content...)).Class("content").ID("content"),
 		footer.New(),
 	).Class("shell")
 }
 
+// headNode builds the document head shared by every full page.
+func headNode(pageTitle string) node.Node {
+	return head.New(
+		meta.UTF8(),
+		meta.Viewport("width=device-width, initial-scale=1.0"),
+		meta.Name("htmx-config", htmxConfig),
+		title.Text("Fluent-HTMX - "+pageTitle),
+		link.Stylesheet("/static/app.css"),
+		script.JavaScript("/static/htmx.min.js"),
+	)
+}
+
 // headerLeftNode builds the brand + title section of the header with
-// a stable ID so it can be swapped out-of-band on HTMX requests.
+// a stable ID so an <hx-partial> block can replace it.
 func headerLeftNode(pageTitle string) *div.Element {
 	return div.New(
 		span.Static("Fluent-HTMX").Class("header-brand"),
 		span.Text(pageTitle).Class("header-title"),
 	).Class("header-left").ID("header-left")
+}
+
+// headerActionsNode builds the header actions container with a
+// stable ID so an <hx-partial> block can replace it. A nil action
+// renders an empty container so the ID is always present.
+func headerActionsNode(headerActions node.Node) *div.Element {
+	actions := div.New()
+	if headerActions != nil {
+		actions = div.New(headerActions)
+	}
+	return actions.Class("header-actions").ID("header-actions")
 }

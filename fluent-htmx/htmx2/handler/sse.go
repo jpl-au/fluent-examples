@@ -6,8 +6,9 @@ import (
 	"time"
 
 	htmx "github.com/jpl-au/fluent-htmx/htmx2"
+	"github.com/jpl-au/fluent-htmx/htmx2/event"
+	"github.com/jpl-au/fluent-htmx/htmx2/swap"
 	"github.com/jpl-au/fluent/html5/div"
-	"github.com/jpl-au/fluent/html5/script"
 	"github.com/jpl-au/fluent/html5/span"
 	"github.com/jpl-au/fluent/text"
 
@@ -25,15 +26,13 @@ func SSEPage(w http.ResponseWriter, _ *http.Request) {
 	// swap the text from "connecting..." to "connected" when the
 	// server sends the first event.
 	statusSpan := span.Text("connecting...").Class("status-connecting").ID("sse-status")
-	statusSpan.SetAttribute("sse-swap", "status")
-	statusSpan.SetAttribute("hx-swap", "innerHTML")
+	htmx.New(statusSpan).SSESwap("status").HxSwap(swap.InnerHTML)
 
 	// The log container listens for "message" SSE events (the
 	// default event name). Each incoming entry's HTML is prepended
 	// via afterbegin so the newest entry is always at the top.
 	logDiv := div.New().Class("log-feed").ID("sse-log")
-	logDiv.SetAttribute("sse-swap", "message")
-	logDiv.SetAttribute("hx-swap", "afterbegin")
+	htmx.New(logDiv).SSESwap("message").HxSwap(swap.AfterBegin)
 
 	sseCard := card.New("SSE Live Log",
 		div.New(
@@ -51,30 +50,18 @@ func SSEPage(w http.ResponseWriter, _ *http.Request) {
 		logDiv,
 	)
 
-	// Listen for htmx SSE lifecycle events to update the
-	// connection status.
-	statusScript := script.Static(`
-document.body.addEventListener("htmx:sseOpen", function() {
-  var s = document.getElementById("sse-status");
-  s.textContent = "connected";
-  s.className = "status-connected";
-});
-document.body.addEventListener("htmx:sseClose", function() {
-  var s = document.getElementById("sse-status");
-  s.textContent = "reconnecting...";
-  s.className = "status-reconnecting";
-});
-document.body.addEventListener("htmx:sseError", function() {
-  var s = document.getElementById("sse-status");
-  s.textContent = "disconnected";
-  s.className = "status-disconnected";
-});`)
-
 	// The sse-connect div wraps the card so htmx opens the
-	// EventSource connection to the server.
-	content := div.New(sseCard, statusScript)
-	content.SetAttribute("hx-ext", "sse")
-	content.SetAttribute("sse-connect", "/sse/feed")
+	// EventSource connection to the server. The extension fires its
+	// lifecycle events on this element, so HxOn binds the status
+	// updates here. After an error it reconnects by itself; it fires
+	// close only when the stream ends for good.
+	content := div.New(sseCard)
+	htmx.New(content).
+		HxExt("sse").
+		SSEConnect("/sse/feed").
+		HxOn(event.SSEOpen, setStatus("sse-status", "connected", "status-connected")).
+		HxOn(event.SSEError, setStatus("sse-status", "reconnecting...", "status-reconnecting")).
+		HxOn(event.SSEClose, setStatus("sse-status", "closed", "status-disconnected"))
 
 	layout.PageWithScripts(w, "SSE", nil,
 		[]string{"/static/htmx-ext-sse.js"}, content)

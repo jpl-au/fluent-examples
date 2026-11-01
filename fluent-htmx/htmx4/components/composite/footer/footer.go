@@ -1,7 +1,7 @@
 // Package footer provides the sticky footer bar linking to the
-// WebSocket and SSE live demo pages. Links use standard hrefs
-// because these pages need extra script tags that a partial swap
-// cannot add, so they load as full page navigations.
+// WebSocket and SSE live demo pages. Links use standard hrefs: the
+// live log pages always render the full page, so they load as full
+// page navigations.
 package footer
 
 import (

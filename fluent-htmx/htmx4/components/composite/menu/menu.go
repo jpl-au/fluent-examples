@@ -1,11 +1,11 @@
 // Package menu provides a three-dot dropdown menu for contextual
 // actions. Navigation items use HTMX for partial swaps; destructive
-// actions use hx-post on a form.
+// actions use hx-post on a form. The target and swap style are
+// inherited from the layout's shell.
 package menu
 
 import (
 	htmx "github.com/jpl-au/fluent-htmx/htmx4"
-	"github.com/jpl-au/fluent-htmx/htmx4/swap"
 	"github.com/jpl-au/fluent/html5/a"
 	"github.com/jpl-au/fluent/html5/button"
 	"github.com/jpl-au/fluent/html5/div"
@@ -27,22 +27,23 @@ func New(items ...node.Node) node.Node {
 // content area without a full page reload.
 func Link(label, href string) node.Node {
 	link := a.Text(label).Href(href).Class("menu-item")
-	htmx.New(link).HxGet(href).HxTarget("#content").HxPushURL(href).HxSwap(swap.InnerHTML)
+	htmx.New(link).HxGet(href).HxPushURL(href)
 	return link
 }
 
 // DangerLink creates a destructive navigation menu item with HTMX.
 func DangerLink(label, href string) node.Node {
 	link := a.Text(label).Href(href).Class("menu-item menu-item-danger")
-	htmx.New(link).HxGet(href).HxTarget("#content").HxPushURL(href).HxSwap(swap.InnerHTML)
+	htmx.New(link).HxGet(href).HxPushURL(href)
 	return link
 }
 
 // FormAction creates a menu item that submits a POST via HTMX  -
-// used for destructive actions like Delete.
-func FormAction(label, action string) node.Node {
+// used for destructive actions like Delete. htmx asks the confirm
+// question first and sends nothing if the user cancels.
+func FormAction(label, action, confirm string) node.Node {
 	f := form.Post(action)
-	htmx.New(f).HxPost(action).HxTarget("#content").HxSwap(swap.InnerHTML)
+	htmx.New(f).HxPost(action).HxConfirm(confirm)
 	return div.New(
 		f.Add(button.Submit(label).Class("menu-item menu-item-danger")),
 	).Class("menu-form")

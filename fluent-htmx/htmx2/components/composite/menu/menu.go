@@ -39,10 +39,11 @@ func DangerLink(label, href string) node.Node {
 }
 
 // FormAction creates a menu item that submits a POST via HTMX  -
-// used for destructive actions like Delete.
-func FormAction(label, action string) node.Node {
+// used for destructive actions like Delete. htmx asks the confirm
+// question first and sends nothing if the user cancels.
+func FormAction(label, action, confirm string) node.Node {
 	f := form.Post(action)
-	htmx.New(f).HxPost(action).HxTarget("#content").HxSwap(swap.InnerHTML)
+	htmx.New(f).HxPost(action).HxConfirm(confirm).HxTarget("#content").HxSwap(swap.InnerHTML)
 	return div.New(
 		f.Add(button.Submit(label).Class("menu-item menu-item-danger")),
 	).Class("menu-form")

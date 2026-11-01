@@ -1,12 +1,12 @@
 // Package contactlist provides the contact list and item components.
-// Links use HTMX to swap the content area without a full page reload.
+// Links use HTMX to swap the content area without a full page reload,
+// with the target and swap style inherited from the layout's shell.
 package contactlist
 
 import (
 	"fmt"
 
 	htmx "github.com/jpl-au/fluent-htmx/htmx4"
-	"github.com/jpl-au/fluent-htmx/htmx4/swap"
 	"github.com/jpl-au/fluent/html5/a"
 	"github.com/jpl-au/fluent/html5/div"
 	"github.com/jpl-au/fluent/html5/span"
@@ -42,7 +42,7 @@ func Item(c store.Contact) node.Node {
 	// partial when htmx is available.
 	href := "/contacts/" + c.ID
 	nameLink := a.Text(c.Name).Href(href).Class("contact-name")
-	htmx.New(nameLink).HxGet(href).HxTarget("#content").HxPushURL(href).HxSwap(swap.InnerHTML)
+	htmx.New(nameLink).HxGet(href).HxPushURL(href)
 
 	return div.New(
 		nameLink,
